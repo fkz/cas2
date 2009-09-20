@@ -29,7 +29,7 @@ namespace CAS {
 class Term
 {
   public:
-    virtual void Simplify () = 0;
+    virtual bool Simplify () = 0;
     virtual Term *Clone () const = 0;
     virtual Type *GetType () const = 0;
     virtual bool Equals (const Term &t) const = 0;

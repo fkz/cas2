@@ -19,6 +19,7 @@
 */
 
 #include "operator.h"
+#include "number.h"
 
 using namespace CAS;
 
@@ -27,16 +28,28 @@ CAS::Type* Operator::GetType() const
 
 }
 
-void Operator::Simplify()
+bool Operator::Simplify()
 {
-  for (std::multimap< Hash, Term* >::iterator it = children.begin(); it != children.end(); ++it)
+  std::vector< Term * > tempValues;
+  for (std::multimap< Hash, Term* >::iterator it = children.begin(); it != children.end();)
   {
-    (*it).second->Simplify();
+    if ((*it).second->Simplify())
+    {
+      tempValues.push_back((*it).second);
+      children.erase (it++);
+    }
+    else
+      ++it;
   }
+  for (std::vector< Term* >::iterator it = tempValues.begin(); it != tempValues.end(); ++it)
+  {
+    children.insert (std::make_pair((*it)->GetHashCode(), *it));
+  }
+  return !children.empty();
 }
 
 
-void Operator::FindEquals (void (*FindEqual) (CAS::Term *t1, int n))
+void Operator::FindEquals (void (Operator::*FindEqual) (CAS::Term *t1, int n))
 {
   //Die FindEqual-Funktion darf KEINE Änderungen an children durchführen, die Iteratoren ungültig machen; diese Änderungen sollten
   //ans Ende angestellt werden!
@@ -64,7 +77,7 @@ void Operator::FindEquals (void (*FindEqual) (CAS::Term *t1, int n))
       {
 	Term *t = it->second;
 	children.erase (it);
-	FindEqual (t, anzahl);
+	(this->*FindEqual) (t, anzahl);
       }
     }
   }
@@ -82,11 +95,136 @@ Operator::Operator(const std::multimap< Hash, Term* >& c)
 
 }
 
+Operator::Operator()
+{
+
+}
+
+
 bool Operator::Equals(const CAS::Term& t) const
 {
   const CAS::Operator* ct = dynamic_cast<const Operator *> (&t);
   if (!ct)
     return false;
-  
+  for (std::multimap< Hash, Term* >::const_iterator it = children.begin(), ctit = ct->children.begin(); ; )
+  {
+    if (it->first != ctit->first)
+      return false;
+    std::multimap< Hash, Term* >::const_iterator itend = it, ctitend = ctit;
+    while (itend != children.end() && ctitend != ct->children.end() && it->first == itend->first && ctit->first == ctitend->first)
+      ++itend, ++ctitend;
+    if ((itend != children.end()) == !(ctitend != ct->children.end()))
+      return false;
+    if (itend != children.end() && itend->first != ctitend->first)
+      return false;
+    //Wahrscheinlichkeit von Gleichheit sehr groß
+    //TODO: Mache es ganz sicher!
+    it = itend;
+    ctit = ctitend;
+    if (it == children.end())
+      return true;
+  }
 }
 
+Hash CAS::Operator::GetPseudoHashCode(hashes::Hashes hT1, uint32_t data) const
+{
+  Hash result (hT1, data);
+  for (std::multimap< Hash, Term* >::const_iterator it = children.begin(); it != children.end(); ++it)
+    result = result ^ it->first;
+}
+ 
+void Operator::PseudoToString(std::stringstream& stream, const std::string& op) const
+{
+  std::multimap< Hash, Term* >::const_iterator it = children.begin();
+  stream << "(";
+  it->second->ToString(stream);
+  for (++it; it != children.end(); ++it)
+  {
+    stream << op;
+    it->second->ToString(stream);
+  }
+  stream << ")";
+}
+
+
+Term* Add::Clone() const
+{
+  return new Add (*this);  
+}
+
+Hash Add::GetHashCode() const
+{
+  return GetPseudoHashCode (hashes::Add, 0);
+}
+
+void Add::ToString(std::stringstream& stream) const
+{
+  PseudoToString(stream, "+");  
+}
+
+Add::Add(const CAS::Add& a)
+: Operator (a.children)
+{
+
+}
+
+
+
+bool Add::Simplify()
+{
+  bool result = CAS::Operator::Simplify();
+  temporary_equality.clear();
+  FindEquals(static_cast < void (Operator::*) (Term *, int) > (&Add::EqualRoutine));
+  result |= !temporary_equality.empty();
+  for (std::vector< std::pair< Term*, int > >::const_iterator it = temporary_equality.begin(); it != temporary_equality.end(); ++it)
+  {
+    Mul *mul = Mul::CreateTerm (Number::CreateTerm (it->second), it->first);
+    children.insert (std::make_pair (mul->GetHashCode(), mul));
+  }
+  temporary_equality.clear();
+  return result;
+}
+
+void Add::EqualRoutine(Term* t, int anzahl)
+{
+  temporary_equality.push_back(std::make_pair (t, anzahl));
+}
+
+
+Term* Mul::Clone() const
+{
+  return new Mul (*this);
+}
+
+Hash Mul::GetHashCode() const
+{
+  return GetPseudoHashCode(hashes::Mul, 0);
+}
+
+Mul::Mul(const CAS::Mul& m)
+: Operator(children)
+{
+
+}
+
+
+
+void Mul::ToString(std::stringstream& stream) const
+{
+  PseudoToString(stream, "*");
+}
+
+
+Mul *Mul::CreateTerm(Term* t1, Term* t2)
+{
+  Mul* result = new Mul ();
+  result->children.insert (std::make_pair(t1->GetHashCode(), t1));
+  result->children.insert (std::make_pair(t2->GetHashCode(), t2));
+  return result;
+}
+
+
+CAS::Mul::Mul()
+{
+
+}

@@ -30,6 +30,7 @@ class Hash
 {
   private:
     uint32_t hash;
+    Hash (uint32_t h) : hash (h) { }
   public:
     Hash (hashes::Hashes type, uint32_t data)
     : hash (type ^ data)
@@ -37,6 +38,7 @@ class Hash
     
     friend bool operator == (Hash, Hash);
     friend bool operator < (Hash, Hash);
+    friend Hash operator ^ (Hash, Hash);
 };
 
 inline bool operator == (Hash h1, Hash h2)
@@ -44,9 +46,19 @@ inline bool operator == (Hash h1, Hash h2)
   return h1.hash == h2.hash;
 }
 
+inline bool operator != (Hash h1, Hash h2)
+{
+  return ! (h1 == h2 );
+}
+
 inline bool operator < (Hash h1, Hash h2)
 {
   return h1.hash < h2.hash;
+}
+
+inline Hash operator ^ (Hash h1, Hash h2)
+{
+  return Hash (h1.hash ^ h2.hash);
 }
 
 };

@@ -18,57 +18,58 @@
 
 */
 
-#ifndef CAS_NUMBER_H
-#define CAS_NUMBER_H
+#ifndef CAS_OPERATOR_H
+#define CAS_OPERATOR_H
 
-#include <../../home/fabian/svn/trunk/c++/mathematics/cas2/term.h>
-
+#include "term.h"
+#include <map>
+#include <vector>
 
 namespace CAS {
 
-class Number : public CAS::Term
+class Operator : public CAS::Term
 {
-  private:
-    Number (int z) : zahl (z) { }
-    int zahl;
+  protected:
+    std::multimap<Hash, CAS::Term *> children;
+    //Die FindEqual-Funktion darf KEINE Änderungen an children durchführen, die Iteratoren ungültig machen; diese Änderungen sollten
+    //ans Ende angestellt werden!
+    void FindEquals (void (Operator::*) (CAS::Term*, int));
+    Operator ();
+    Operator (const std::multimap<Hash, CAS::Term *> &c);
+    Hash GetPseudoHashCode (CAS::hashes::Hashes hT1, uint32_t data) const;
+    void PseudoToString (std::stringstream &stream, const std::string &op) const;
   public:
     virtual CAS::Type* GetType() const;
     virtual bool Simplify();
-    virtual Number *Clone() const;
+    virtual ~Operator();
     virtual bool Equals(const CAS::Term& t) const;
-    virtual void ToString(std::stringstream& stream) const;
-    virtual Hash GetHashCode() const;
-    static Number *CreateTerm (int number);
 };
 
-class Frac: public CAS::Term
+class Add: public Operator
 {
   private:
-    int zaehler, nenner;
-    Frac (int z, int n) : zaehler(z), nenner(n) { }
+    Add (const Add &a);
+    std::vector<std::pair< Term *, int> > temporary_equality;
+    void EqualRoutine (Term *t, int anzahl);
   public:
     virtual Term* Clone() const;
-    virtual bool Equals(const CAS::Term& t) const;
     virtual Hash GetHashCode() const;
-    virtual Type* GetType() const;
-    virtual bool Simplify();
     virtual void ToString(std::stringstream& stream) const;
+    virtual bool Simplify();
 };
 
-class Variable: public CAS::Term
+class Mul: public Operator
 {
   private:
-    int id;
-    Variable (int id) : id (id) { }
+    Mul (const Mul &m);
+    Mul ();
   public:
     virtual Term* Clone() const;
-    virtual bool Equals(const CAS::Term& t) const;
     virtual Hash GetHashCode() const;
-    virtual Type* GetType() const;
-    virtual bool Simplify();
     virtual void ToString(std::stringstream& stream) const;
+    static Mul *CreateTerm (Term *t1, Term *t2);
 };
 
 }
 
-#endif // CAS_NUMBER_H
+#endif // CAS_OPERATOR_H
