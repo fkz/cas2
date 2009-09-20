@@ -48,6 +48,7 @@ class Operator : public CAS::Term
 class Add: public Operator
 {
   private:
+    Add ();
     Add (const Add &a);
     std::vector<std::pair< Term *, int> > temporary_equality;
     void EqualRoutine (Term *t, int anzahl);
@@ -56,6 +57,7 @@ class Add: public Operator
     virtual Hash GetHashCode() const;
     virtual void ToString(std::stringstream& stream) const;
     virtual bool Simplify();
+    static Add *CreateTerm (Term *t1, Term *t2);
 };
 
 class Mul: public Operator

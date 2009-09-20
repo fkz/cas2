@@ -140,3 +140,8 @@ void Variable::ToString(std::stringstream& stream) const
   stream << "(Var:" << id << ")";
 }
 
+Variable* Variable::CreateTerm(int id)
+{
+  return new Variable (id);
+}
+

@@ -54,17 +54,19 @@ void Operator::FindEquals (void (Operator::*FindEqual) (CAS::Term *t1, int n))
   //Die FindEqual-Funktion darf KEINE Änderungen an children durchführen, die Iteratoren ungültig machen; diese Änderungen sollten
   //ans Ende angestellt werden!
   std::multimap< Hash, Term* >::iterator it = children.begin();
-  while (true)
+  while (it != children.end())
   {
     std::multimap< Hash, Term* >::iterator start = it++;
-    for (; start->first == it->first; ++it) ; //this (;) is correct
+    for (; it != children.end() && start->first == it->first; ++it) ; //this (;) is correct
     //suche gleiche
     for (; start != it; ++start)
     {
       int anzahl = 1;
-      for (std::multimap< Hash, Term* >::iterator it2 = start++; it2 != it;)
+      std::multimap< Hash, Term* >::iterator it2 = start;
+      ++it2;
+      for (; it2 != it;)
       {
-	if (it2->second->Equals (*it2->second))
+	if (start->second->Equals (*it2->second))
 	{
 	  delete it2->second;
 	  children.erase (it2++);
@@ -75,8 +77,8 @@ void Operator::FindEquals (void (Operator::*FindEqual) (CAS::Term *t1, int n))
       }
       if (anzahl > 1)
       {
-	Term *t = it->second;
-	children.erase (it);
+	Term *t = start->second;
+	children.erase (start);
 	(this->*FindEqual) (t, anzahl);
       }
     }
@@ -184,6 +186,20 @@ bool Add::Simplify()
   temporary_equality.clear();
   return result;
 }
+
+Add* Add::CreateTerm(Term* t1, Term* t2)
+{
+  Add *result = new Add ();
+  result->children.insert (std::make_pair (t1->GetHashCode(), t1));
+  result->children.insert (std::make_pair (t2->GetHashCode(), t2));
+  return result;
+}
+
+Add::Add ()
+{
+  
+}
+
 
 void Add::EqualRoutine(Term* t, int anzahl)
 {

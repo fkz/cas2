@@ -67,6 +67,7 @@ class Variable: public CAS::Term
     virtual Type* GetType() const;
     virtual bool Simplify();
     virtual void ToString(std::stringstream& stream) const;
+    static Variable *CreateTerm (int id);
 };
 
 }
