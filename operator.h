@@ -40,7 +40,7 @@ class Operator : public CAS::Term
     void PseudoToString (std::stringstream &stream, const std::string &op) const;
   public:
     virtual CAS::Type* GetType() const;
-    virtual bool Simplify();
+    virtual Term *Simplify();
     virtual ~Operator();
     virtual bool Equals(const CAS::Term& t) const;
 };
@@ -56,7 +56,7 @@ class Add: public Operator
     virtual Term* Clone() const;
     virtual Hash GetHashCode() const;
     virtual void ToString(std::stringstream& stream) const;
-    virtual bool Simplify();
+    virtual Term *Simplify();
     static Add *CreateTerm (Term *t1, Term *t2);
 };
 

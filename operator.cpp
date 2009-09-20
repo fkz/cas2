@@ -20,6 +20,7 @@
 
 #include "operator.h"
 #include "number.h"
+#include <cassert>
 
 using namespace CAS;
 
@@ -28,14 +29,15 @@ CAS::Type* Operator::GetType() const
 
 }
 
-bool Operator::Simplify()
+Term *Operator::Simplify()
 {
   std::vector< Term * > tempValues;
   for (std::multimap< Hash, Term* >::iterator it = children.begin(); it != children.end();)
   {
-    if ((*it).second->Simplify())
+    Term *t;
+    if (t = (*it).second->Simplify())
     {
-      tempValues.push_back((*it).second);
+      tempValues.push_back(t);
       children.erase (it++);
     }
     else
@@ -45,7 +47,7 @@ bool Operator::Simplify()
   {
     children.insert (std::make_pair((*it)->GetHashCode(), *it));
   }
-  return !children.empty();
+  return children.empty() ? NULL : this;
 }
 
 
@@ -172,12 +174,13 @@ Add::Add(const CAS::Add& a)
 
 
 
-bool Add::Simplify()
+Term *Add::Simplify()
 {
-  bool result = CAS::Operator::Simplify();
+  Term *result = CAS::Operator::Simplify();
+  assert (!result || result == this);
   temporary_equality.clear();
   FindEquals(static_cast < void (Operator::*) (Term *, int) > (&Add::EqualRoutine));
-  result |= !temporary_equality.empty();
+  result = (result || !temporary_equality.empty()) ? this : NULL;
   for (std::vector< std::pair< Term*, int > >::const_iterator it = temporary_equality.begin(); it != temporary_equality.end(); ++it)
   {
     Mul *mul = Mul::CreateTerm (Number::CreateTerm (it->second), it->first);

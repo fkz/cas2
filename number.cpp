@@ -27,9 +27,9 @@ CAS::Type* Number::GetType() const
   return Type::GetBuildInType(Type::Term);
 }
 
-bool Number::Simplify()
+Term *Number::Simplify()
 {
-  return false;
+  return NULL;
 }
 
 CAS::Number* CAS::Number::Clone() const
@@ -95,12 +95,12 @@ int ggT (int a, int b)
   return a;
 }
 
-bool Frac::Simplify()
+Term *Frac::Simplify()
 {
   int t = ggT (zaehler > 0 ? zaehler : -zaehler, nenner);
   zaehler /= t;
   nenner /= t;
-  return t != 1;
+  return (t != 1) ? this : NULL;
 }
 
 void Frac::ToString(std::stringstream& stream) const
@@ -130,9 +130,9 @@ Type* Variable::GetType() const
   return Type::GetBuildInType(Type::Term);
 }
 
-bool Variable::Simplify()
+Term *Variable::Simplify()
 {
-  return false;
+  return NULL;
 }
 
 void Variable::ToString(std::stringstream& stream) const
