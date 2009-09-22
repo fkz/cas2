@@ -31,6 +31,7 @@ CAS::Type* Operator::GetType() const
 
 Term *Operator::Simplify()
 {
+  Term *result = NULL;
   std::vector< Term * > tempValues;
   for (std::multimap< Hash, Term* >::iterator it = children.begin(); it != children.end();)
   {
@@ -39,6 +40,7 @@ Term *Operator::Simplify()
     {
       tempValues.push_back(t);
       children.erase (it++);
+      result = this;
     }
     else
       ++it;
@@ -47,7 +49,7 @@ Term *Operator::Simplify()
   {
     children.insert (std::make_pair((*it)->GetHashCode(), *it));
   }
-  return children.empty() ? NULL : this;
+  return result;
 }
 
 
