@@ -267,3 +267,33 @@ CAS::Mul::Mul()
 {
 
 }
+
+void Mul::EqualRoutine(Term* t, int anzahl)
+{
+  temporary_equality.push_back(std::make_pair(t, anzahl));
+}
+
+Term* Mul::Simplify()
+{
+  Term *result = CAS::Operator::Simplify();
+  assert (!result || result == this);
+  temporary_equality.clear();
+  FindEquals(static_cast< void (Operator::*) (Term *, int) > (&Mul::EqualRoutine));
+  result = (result || !temporary_equality.empty()) ? this : NULL;
+  for (std::vector< std::pair< Term*, int > >::const_iterator it = temporary_equality.begin(); it != temporary_equality.end(); ++it)
+  {
+    Ln *ln = Ln::CreateTerm (Number::CreateTerm(it->second));
+    Mul *mul = Mul::CreateTerm(ln, it->first);
+    Exp *exp = Exp::CreateTerm (mul);
+    children.insert (std::make_pair(exp->GetHashCode (), exp));
+  }
+  temporary_equality.clear();
+  
+  Term *single = GetSingleObject();
+  if (single)
+    return single;
+  
+  return result;
+}
+
+

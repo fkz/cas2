@@ -68,11 +68,14 @@ class Mul: public Operator
   private:
     Mul (const Mul &m);
     Mul ();
+    void EqualRoutine (Term *t, int anzahl);
+    std::vector< std::pair< Term*, int > > temporary_equality;
   public:
     virtual Term* Clone() const;
     virtual Hash GetHashCode() const;
     virtual void ToString(std::stringstream& stream) const;
     static Mul *CreateTerm (Term *t1, Term *t2);
+    virtual Term* Simplify();
 };
 
 }
