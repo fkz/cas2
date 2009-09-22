@@ -159,7 +159,11 @@ Term* Operator::GetSingleObject()
     Term *result = children.begin()->second;
     children.clear();
     delete this;
-    return result->Simplify();
+    Term *temp = result->Simplify();
+    if (temp)
+      return temp;
+    else
+      return result;
   }
   return NULL;
 }
