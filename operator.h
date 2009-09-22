@@ -38,6 +38,9 @@ class Operator : public CAS::Term
     Operator (const std::multimap<Hash, CAS::Term *> &c);
     Hash GetPseudoHashCode (CAS::hashes::Hashes hT1, uint32_t data) const;
     void PseudoToString (std::stringstream &stream, const std::string &op) const;
+    
+    //Vereinfachungsmethoden:
+    Term *GetSingleObject ();
   public:
     virtual CAS::Type* GetType() const;
     virtual Term *Simplify();

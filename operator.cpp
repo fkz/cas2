@@ -150,6 +150,21 @@ void Operator::PseudoToString(std::stringstream& stream, const std::string& op) 
   stream << ")";
 }
 
+Term* Operator::GetSingleObject()
+{
+  std::multimap< Hash, Term* >::iterator it = children.begin();
+  ++it;
+  if (it == children.end())
+  {
+    Term *result = children.begin()->second;
+    children.clear();
+    delete this;
+    return result->Simplify();
+  }
+  return NULL;
+}
+
+
 
 Term* Add::Clone() const
 {
@@ -188,15 +203,9 @@ Term *Add::Simplify()
   }
   temporary_equality.clear();
   
-  std::multimap< Hash, Term* >::iterator iterator = children.begin();
-  ++iterator;
-  if (iterator == children.end())
-  {
-    Term *result = children.begin()->second;
-    children.clear();
-    delete this;
-    return result->Simplify();
-  }
+  Term *single = GetSingleObject();
+  if (single)
+    return single;
   
   return result;
 }
