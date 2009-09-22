@@ -140,7 +140,7 @@ Hash CAS::Operator::GetPseudoHashCode(hashes::Hashes hT1, uint32_t data) const
     result = result ^ it->first;
 }
  
-void Operator::PseudoToString(std::stringstream& stream, const std::string& op) const
+void Operator::PseudoToString(std::ostream& stream, const std::string& op) const
 {
   std::multimap< Hash, Term* >::const_iterator it = children.begin();
   stream << "(";
@@ -183,7 +183,7 @@ Hash Add::GetHashCode() const
   return GetPseudoHashCode (hashes::Add, 0);
 }
 
-void Add::ToString(std::stringstream& stream) const
+void Add::ToString(std::ostream& stream) const
 {
   PseudoToString(stream, "+");  
 }
@@ -276,7 +276,7 @@ Mul::Mul(const CAS::Mul& m)
 
 
 
-void Mul::ToString(std::stringstream& stream) const
+void Mul::ToString(std::ostream& stream) const
 {
   PseudoToString(stream, "*");
 }

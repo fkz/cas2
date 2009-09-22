@@ -37,7 +37,7 @@ class Operator : public CAS::Term
     Operator ();
     Operator (const std::multimap<Hash, CAS::Term *> &c);
     Hash GetPseudoHashCode (CAS::hashes::Hashes hT1, uint32_t data) const;
-    void PseudoToString (std::stringstream &stream, const std::string &op) const;
+    void PseudoToString (std::ostream &stream, const std::string &op) const;
     
     template<class C, class _It> 
     void Where (_It output_iterator, bool (Operator::*predicate) (C *))
@@ -85,7 +85,7 @@ class Add: public Operator
   public:
     virtual Term* Clone() const;
     virtual Hash GetHashCode() const;
-    virtual void ToString(std::stringstream& stream) const;
+    virtual void ToString(std::ostream& stream) const;
     virtual Term *Simplify();
     static Add *CreateTerm (Term *t1, Term *t2);
 };
@@ -100,7 +100,7 @@ class Mul: public Operator
   public:
     virtual Term* Clone() const;
     virtual Hash GetHashCode() const;
-    virtual void ToString(std::stringstream& stream) const;
+    virtual void ToString(std::ostream& stream) const;
     static Mul *CreateTerm (Term *t1, Term *t2);
     virtual Term* Simplify();
 };

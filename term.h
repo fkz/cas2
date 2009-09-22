@@ -41,10 +41,12 @@ class Term
     virtual Term *Clone () const = 0;
     virtual Type *GetType () const = 0;
     virtual bool Equals (const Term &t) const = 0;
-    virtual void ToString (std::stringstream &stream) const = 0;
+    virtual void ToString (std::ostream &stream) const = 0;
     virtual Hash GetHashCode () const = 0;
     virtual ~Term () {}
 };
+
+std::ostream &operator << (std::ostream &, const Term &); 
 
 }
 

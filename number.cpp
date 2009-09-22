@@ -45,7 +45,7 @@ bool Number::Equals(const CAS::Term& t) const
   return ct->zahl == zahl;
 }
 
-void Number::ToString(std::stringstream& stream) const
+void Number::ToString(std::ostream& stream) const
 {
   stream << zahl;
 }
@@ -103,7 +103,7 @@ Term *Frac::Simplify()
   return (t != 1) ? this : NULL;
 }
 
-void Frac::ToString(std::stringstream& stream) const
+void Frac::ToString(std::ostream& stream) const
 {
   stream << "(" << zaehler << "/" << nenner << ")";
 }
@@ -135,7 +135,7 @@ Term *Variable::Simplify()
   return NULL;
 }
 
-void Variable::ToString(std::stringstream& stream) const
+void Variable::ToString(std::ostream& stream) const
 {
   stream << "(Var:" << id << ")";
 }

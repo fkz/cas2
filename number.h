@@ -36,7 +36,7 @@ class Number : public CAS::Term
     virtual Term *Simplify();
     virtual Number *Clone() const;
     virtual bool Equals(const CAS::Term& t) const;
-    virtual void ToString(std::stringstream& stream) const;
+    virtual void ToString(std::ostream& stream) const;
     virtual Hash GetHashCode() const;
     static Number *CreateTerm (int number);
     
@@ -54,7 +54,7 @@ class Frac: public CAS::Term
     virtual Hash GetHashCode() const;
     virtual Type* GetType() const;
     virtual Term *Simplify();
-    virtual void ToString(std::stringstream& stream) const;
+    virtual void ToString(std::ostream& stream) const;
 };
 
 class Variable: public CAS::Term
@@ -68,7 +68,7 @@ class Variable: public CAS::Term
     virtual Hash GetHashCode() const;
     virtual Type* GetType() const;
     virtual Term *Simplify();
-    virtual void ToString(std::stringstream& stream) const;
+    virtual void ToString(std::ostream& stream) const;
     static Variable *CreateTerm (int id);
 };
 

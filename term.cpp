@@ -22,3 +22,9 @@
 
 using namespace CAS;
 
+
+std::ostream& CAS::operator<<(std::ostream &stream, const CAS::Term &term)
+{
+  term.ToString(stream);
+  return stream;
+}
