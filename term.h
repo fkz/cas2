@@ -29,6 +29,14 @@ namespace CAS {
 class Term
 {
   public:
+    /*
+      Vereinfacht den Term. Falls keine Vereinfachung stattgefunden hat, gibt NULL (0) zurück, sonst
+      das vereinfachte Objekt. Falls result != NULL && result != this ist this danach undefiniert!!!
+      Sicherer Code sollte also in etwa schreiben:
+	Term *temp = t->Simplify ();
+	if (temp)
+	  t = temp;
+    */
     virtual Term *Simplify () = 0;
     virtual Term *Clone () const = 0;
     virtual Type *GetType () const = 0;
