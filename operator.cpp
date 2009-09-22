@@ -21,6 +21,7 @@
 #include "operator.h"
 #include "number.h"
 #include <cassert>
+#include "exp.h"
 
 using namespace CAS;
 
