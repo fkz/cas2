@@ -39,10 +39,9 @@ class Operator : public CAS::Term
     Hash GetPseudoHashCode (CAS::hashes::Hashes hT1, uint32_t data) const;
     void PseudoToString (std::stringstream &stream, const std::string &op) const;
     
-    template<class C> 
-    std::vector<C *> *Where (bool (Operator::*predicate) (C *))
+    template<class C, class _It> 
+    void Where (bool (Operator::*predicate) (C *), _It output_iterator)
     {
-      std::vector<C *> *result = new std::vector<C *> ();
       for (std::multimap< Hash, Term* >::iterator it = children.begin(); it != children.end();)
       {
 	C *c = dynamic_cast<C *> (it->second);
@@ -53,13 +52,18 @@ class Operator : public CAS::Term
 	}
 	if (this->*predicate (c))
 	{
-	  result->push_back (c);
+	  *output_iterator++ = c;
 	  children.erase(it++);
 	  continue;
 	}
 	++it;
       }
-      return result;
+    }
+    
+    template<class C>
+    bool True (C *c)
+    {
+      return true;
     }
     
     //Vereinfachungsmethoden:

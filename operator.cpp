@@ -207,6 +207,8 @@ Term *Add::Simplify()
   if (single)
     return single;
   
+  
+  
   return result;
 }
 
