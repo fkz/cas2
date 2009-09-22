@@ -11,7 +11,9 @@ int main(int argc, char **argv) {
     }
     {
       std::stringstream stream;
-      term->Simplify();
+      CAS::Term* t = term->Simplify();
+      if (t)
+	term = t;
       term->ToString(stream);
       std::cout << "Nach Vereinfachung: " << stream.str() << std::endl;
     }

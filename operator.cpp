@@ -187,6 +187,17 @@ Term *Add::Simplify()
     children.insert (std::make_pair (mul->GetHashCode(), mul));
   }
   temporary_equality.clear();
+  
+  std::multimap< Hash, Term* >::iterator iterator = children.begin();
+  ++iterator;
+  if (iterator == children.end())
+  {
+    Term *result = children.begin()->second;
+    children.clear();
+    delete this;
+    return result->Simplify();
+  }
+  
   return result;
 }
 
