@@ -216,7 +216,7 @@ Term *Add::Simplify()
   
   std::vector< Number * > vect;
   std::back_insert_iterator< std::vector< Number * > > outputiterator (vect);
-  Where< Number > (&Operator::True, outputiterator);
+  Where< Number > (outputiterator, &Operator::True);
   if (vect.size() >= 2)
   {
     int res = 0;

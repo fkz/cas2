@@ -40,7 +40,7 @@ class Operator : public CAS::Term
     void PseudoToString (std::stringstream &stream, const std::string &op) const;
     
     template<class C, class _It> 
-    void Where (bool (Operator::*predicate) (C *), _It output_iterator)
+    void Where (_It output_iterator, bool (Operator::*predicate) (C *))
     {
       for (std::multimap< Hash, Term* >::iterator it = children.begin(); it != children.end();)
       {
