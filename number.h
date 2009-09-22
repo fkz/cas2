@@ -39,6 +39,8 @@ class Number : public CAS::Term
     virtual void ToString(std::stringstream& stream) const;
     virtual Hash GetHashCode() const;
     static Number *CreateTerm (int number);
+    
+    int GetNumber () const;
 };
 
 class Frac: public CAS::Term

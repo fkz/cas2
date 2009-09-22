@@ -145,3 +145,9 @@ Variable* Variable::CreateTerm(int id)
   return new Variable (id);
 }
 
+int Number::GetNumber() const
+{
+  return zahl;
+}
+
+
