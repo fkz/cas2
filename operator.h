@@ -50,7 +50,7 @@ class Operator : public CAS::Term
 	  ++it;
 	  continue;
 	}
-	if (this->*predicate (c))
+	if ((this->*predicate) (c))
 	{
 	  *output_iterator++ = c;
 	  children.erase(it++);
