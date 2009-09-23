@@ -23,6 +23,7 @@
 #include "type.h"
 #include <sstream>
 #include "hash.h"
+#include <cassert>
 
 namespace CAS {
 
@@ -44,6 +45,17 @@ class Term
     virtual void ToString (std::ostream &stream) const = 0;
     virtual Hash GetHashCode () const = 0;
     virtual ~Term () {}
+    template<class T>
+    static bool DoSimplify (T *&term)
+    {
+      Term *temp = term->Simplify();
+      if (temp)
+      {
+	term = dynamic_cast< T * > (temp);
+	assert (term);
+      }
+      return temp;
+    }
 };
 
 std::ostream &operator << (std::ostream &, const Term &); 

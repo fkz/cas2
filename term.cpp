@@ -29,6 +29,7 @@ std::ostream& CAS::operator<<(std::ostream &stream, const CAS::Term &term)
   return stream;
 }
 
+
 Term* SimpleTerm::Clone() const
 {
   return new SimpleTerm ();
