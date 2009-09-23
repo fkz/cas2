@@ -36,6 +36,10 @@ class Hash
     : hash (type ^ data)
     { }
     
+    Hash (hashes::Hashes type)
+    : hash (type)
+    { }
+    
     friend bool operator == (Hash, Hash);
     friend bool operator < (Hash, Hash);
     friend Hash operator ^ (Hash, Hash);

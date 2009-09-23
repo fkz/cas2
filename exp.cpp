@@ -23,14 +23,131 @@
 using namespace CAS;
 
 
+bool FunctionCall::Equals(const CAS::Term& t) const
+{
+  const FunctionCall *func = dynamic_cast< const FunctionCall * > (&t);
+  if (!func)
+    return false;
+  return parameter->Equals(*func->parameter);
+}
+
+FunctionCall::FunctionCall(Term* t)
+: parameter(t)
+{
+
+}
+
+Type* FunctionCall::GetType() const
+{
+  return Type::GetBuildInType(Type::Term);
+}
+
+Term *FunctionCall::Simplify()
+{
+  Term *result = NULL;
+  Term *temp = parameter->Simplify();
+  if (temp)
+  {
+    parameter = temp;
+    result = this;
+  }
+  
+  FunctionCall *f = dynamic_cast< FunctionCall * > (parameter);
+  if (f && f->IsSameFunction(*GetUmkehrFunktion()))
+  {
+    result = f->parameter;
+    f->parameter = NULL;
+    delete f;
+  }
+  
+  return result;
+}
+
+bool FunctionCall::IsSameFunction(const CAS::FunctionCall& cf) const
+{
+  FunctionCall &f = const_cast< FunctionCall &> (cf);
+  FunctionCall &th = const_cast< FunctionCall &> (*this);
+  Term* pth = th.parameter;
+  Term* pf = f.parameter;
+  f.parameter = SimpleTerm::obj ();
+  th.parameter = SimpleTerm::obj ();
+  bool result = Equals(f);
+  f.parameter = pf;
+  th.parameter = pth;
+  return result;
+}
+
+
+void FunctionCall::ToString(std::ostream& stream) const
+{
+  stream << GetFunctionName () << "(" << *parameter << ")";
+}
+
+
+std::string Exp::GetFunctionName() const
+{
+  return "exp";
+}
+
+FunctionCall* Exp::GetUmkehrFunktion() const
+{
+  static FunctionCall *result = Ln::CreateTerm (SimpleTerm::obj());
+  return result;
+}
+
+Exp::Exp(Term* t)
+: FunctionCall(t)
+{
+
+}
+
+Term* Exp::Clone() const
+{
+  return new Exp (parameter);
+}
+
+Hash Exp::GetHashCode() const
+{
+  return Hash (hashes::Exp) ^ parameter->GetHashCode();
+}
+
+Term* Ln::Clone() const
+{
+  return new Ln (parameter);
+}
+
+Ln::Ln(Term* t)
+: FunctionCall(t)
+{
+
+}
+
+Hash Ln::GetHashCode() const
+{
+  return Hash (hashes::Ln) ^ parameter->GetHashCode();
+}
+
+FunctionCall* Ln::GetUmkehrFunktion() const
+{
+  static FunctionCall *result = Exp::CreateTerm(SimpleTerm::obj());
+  return result;
+}
+
+
+
 CAS::Exp* CAS::Exp::CreateTerm(Term* exp)
 {
-  #warning implement me
+  return new Exp (exp);
+}
+
+std::string Ln::GetFunctionName() const
+{
+  return "ln";
 }
 
 
 Ln* Ln::CreateTerm(Term* t)
 {
-  #warning implement me
+  return new Ln (t);
 }
 

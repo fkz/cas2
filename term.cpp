@@ -28,3 +28,46 @@ std::ostream& CAS::operator<<(std::ostream &stream, const CAS::Term &term)
   term.ToString(stream);
   return stream;
 }
+
+Term* SimpleTerm::Clone() const
+{
+  return new SimpleTerm ();
+}
+
+bool SimpleTerm::Equals(const CAS::Term& t) const
+{
+  return dynamic_cast< const SimpleTerm * > (&t);
+}
+
+Hash SimpleTerm::GetHashCode() const
+{
+  return Hash (hashes::SimpleTerm, 0);
+}
+
+Type* SimpleTerm::GetType() const
+{
+  return Type::GetBuildInType(Type::Term);
+}
+
+Term* SimpleTerm::Simplify()
+{
+  return NULL;
+}
+
+
+SimpleTerm* SimpleTerm::obj()
+{
+  static SimpleTerm *result = new SimpleTerm();
+  return result;
+}
+
+void SimpleTerm::ToString(std::ostream& stream) const
+{
+  stream << "SIMPLE";
+}
+
+
+
+
+
+

@@ -24,16 +24,46 @@
 
 namespace CAS {
 
-class Exp: public Term
+
+class FunctionCall: public Term
 {
+  protected:
+    FunctionCall (Term *t);
+    Term *parameter;
+    virtual std::string GetFunctionName () const = 0;
+    bool IsSameFunction (const FunctionCall &f) const;
+    //Der Rückgabetyp wird nicht gelöscht
+    virtual FunctionCall *GetUmkehrFunktion () const = 0;
+  public:
+    virtual bool Equals(const CAS::Term& t) const;
+    virtual Type *GetType() const;
+    virtual Term *Simplify();
+    virtual void ToString(std::ostream& stream) const;
+};
+  
+  
+class Exp: public FunctionCall
+{
+  private:
+    virtual std::string GetFunctionName() const;
+    virtual FunctionCall* GetUmkehrFunktion() const;
+    Exp (Term *t);
   public:
     static Exp *CreateTerm (Term *exp);
+    virtual Term* Clone() const;
+    virtual Hash GetHashCode() const;
 };
 
-class Ln: public Term
+class Ln: public FunctionCall
 {
+  private:
+    virtual std::string GetFunctionName() const;
+    virtual FunctionCall* GetUmkehrFunktion() const;
+    Ln (Term *t);
   public:
     static Ln *CreateTerm (Term *t);
+    virtual Term* Clone() const;
+    virtual Hash GetHashCode() const;
 };
 
 }

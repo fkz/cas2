@@ -9,7 +9,10 @@ enum Hashes {
   Frac = 0xa1463187,
   Variable = 0x1367187,
   Add = 0x7129FF,
-  Mul = 0x000a1cb
+  Mul = 0x000a1cb,
+  SimpleTerm = 0x273,
+  Exp = 0x013,
+  Ln = 0x123AB
 };
 
   

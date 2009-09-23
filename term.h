@@ -48,6 +48,18 @@ class Term
 
 std::ostream &operator << (std::ostream &, const Term &); 
 
+class SimpleTerm: public Term
+{
+  public:
+    virtual Term* Clone() const;
+    virtual bool Equals(const CAS::Term& t) const;
+    virtual Hash GetHashCode() const;
+    virtual Type* GetType() const;
+    virtual Term* Simplify();
+    virtual void ToString(std::ostream& stream) const;
+    static SimpleTerm *obj ();
+};
+
 }
 
 #endif // CAS_TERM_H
