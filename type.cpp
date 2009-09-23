@@ -25,7 +25,7 @@ using namespace CAS;
 
 CAS::Type* CAS::Type::GetBuildInType(Type::BuildInTypes type)
 {
-  static Type *types[2] = { new Type (Boolean), new Type (Term) };
+  static Type *types[3] = { new Type (Boolean), new Type (Term), new Type (FunctionDefinition) };
   return types[type];
 }
 

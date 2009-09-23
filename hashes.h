@@ -12,7 +12,8 @@ enum Hashes {
   Mul = 0x000a1cb,
   SimpleTerm = 0x273,
   Exp = 0x013,
-  Ln = 0x123AB
+  Ln = 0x123AB,
+  FunctionDefinition = 0x2137
 };
 
   

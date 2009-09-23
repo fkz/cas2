@@ -1,6 +1,6 @@
 /*
     <one line to give the program's name and a brief idea of what it does.>
-    Copyright (C) 2009  Fabian Schmitthenner
+    Copyright (C) <year>  <name of author>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,35 +18,31 @@
 
 */
 
-#ifndef CAS_TYPE_H
-#define CAS_TYPE_H
+#ifndef CAS_FUNCTIONDEFINITION_H
+#define CAS_FUNCTIONDEFINITION_H
+
+#include <../../home/fabian/svn/trunk/c++/mathematics/cas2/term.h>
+#include "number.h"
+
 
 namespace CAS {
 
-class Type
+class FunctionDefinition : public CAS::Term
 {
-  public:
-    enum BuildInTypes
-    {
-      Boolean,
-      Term,
-      FunctionDefinition
-    };
-    
-    virtual bool IsBuildInType (BuildInTypes &type) const
-    {
-      type = this->type;
-      return true;
-    }
-    
-    static Type *GetBuildInType (BuildInTypes type);
-    
   private:
-    Type (BuildInTypes t);
-    
-    BuildInTypes type;
+    Term *term;
+    Variable *variable;
+    FunctionDefinition (Term *, Variable *);
+  public:
+    virtual CAS::Hash GetHashCode() const;
+    virtual void ToString(std::ostream& stream) const;
+    virtual bool Equals(const CAS::Term& t) const;
+    virtual CAS::Type* GetType() const;
+    virtual CAS::Term* Clone() const;
+    virtual CAS::Term* Simplify();
+    static FunctionDefinition *CreateTerm (Term *, Variable *);
 };
 
 }
 
-#endif // CAS_TYPE_H
+#endif // CAS_FUNCTIONDEFINITION_H
