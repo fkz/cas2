@@ -163,3 +163,39 @@ bool Ln::Equals(const CAS::Term& t) const
 }
 
 
+Term* NormalFunctionCall::Clone() const
+{
+  
+}
+
+bool NormalFunctionCall::Equals(const CAS::Term& t) const
+{
+  if (!CAS::FunctionCall::Equals(t))
+    return false;
+  const CAS::NormalFunctionCall* tt = dynamic_cast< const NormalFunctionCall * > (&t);
+  if (!tt)
+    return false;
+  return definition->Equals(*tt->definition);
+}
+
+std::string NormalFunctionCall::GetFunctionName() const
+{
+  std::stringstream stream;
+  stream << "(" << *definition << ")";
+  return stream.str();
+}
+
+Hash NormalFunctionCall::GetHashCode() const
+{
+  return Hash (hashes::NormalFunctionCall) ^ parameter->GetHashCode() ^ definition->GetHashCode();
+}
+
+FunctionCall* NormalFunctionCall::GetUmkehrFunktion() const
+{
+  //zunächst zu schwierig, Umkehrfunktion zu bilden
+  return NULL;
+}
+
+
+
+

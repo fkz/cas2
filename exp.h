@@ -21,6 +21,7 @@
 #ifndef CAS_EXP_H
 #define CAS_EXP_H
 #include "term.h"
+#include "functiondefinition.h"
 
 namespace CAS {
 
@@ -65,6 +66,18 @@ class Ln: public FunctionCall
     static Ln *CreateTerm (Term *t);
     virtual Term* Clone() const;
     virtual Hash GetHashCode() const;
+    virtual bool Equals(const CAS::Term& t) const;
+};
+
+class NormalFunctionCall: public FunctionCall
+{
+  private:
+    FunctionDefinition *definition;
+  public:
+    virtual Term* Clone() const;
+    virtual std::string GetFunctionName() const;
+    virtual Hash GetHashCode() const;
+    virtual FunctionCall* GetUmkehrFunktion() const;
     virtual bool Equals(const CAS::Term& t) const;
 };
 
