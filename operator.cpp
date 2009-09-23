@@ -318,6 +318,27 @@ Term* Mul::Simplify()
   }
   temporary_equality.clear();
   
+  std::vector< Number * > vect;
+  std::back_insert_iterator< std::vector< Number * > > outputiterator (vect);
+  Where< Number > (outputiterator, &Operator::True);
+  if (vect.size() >= 2)
+  {
+    int res = 1;
+    for (std::vector< Number* >::const_iterator it = vect.begin(); it != vect.end();)
+    {
+      Number *t = *it++;
+      res *= t->GetNumber();
+      delete t;
+    }
+    Number *number = Number::CreateTerm(res);
+    children.insert(std::make_pair(number->GetHashCode(), number));
+    assert (result == this || ! result );
+    result = this;
+  }
+  else
+    if (!vect.empty())
+      children.insert(std::make_pair (vect.front()->GetHashCode(), vect.front()));
+  
   Term *single = GetSingleObject();
   if (single)
     return single;
