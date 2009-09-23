@@ -111,6 +111,12 @@ Hash Exp::GetHashCode() const
   return Hash (hashes::Exp) ^ parameter->GetHashCode();
 }
 
+bool Exp::Equals(const CAS::Term& t) const
+{
+  return CAS::FunctionCall::Equals(t) && dynamic_cast< const CAS::Exp * > (&t);
+}
+
+
 Term* Ln::Clone() const
 {
   return new Ln (parameter);
@@ -150,4 +156,10 @@ Ln* Ln::CreateTerm(Term* t)
 {
   return new Ln (t);
 }
+
+bool Ln::Equals(const CAS::Term& t) const
+{
+  return CAS::FunctionCall::Equals(t) && dynamic_cast< const Ln * > (&t);
+}
+
 

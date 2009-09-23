@@ -52,6 +52,7 @@ class Exp: public FunctionCall
     static Exp *CreateTerm (Term *exp);
     virtual Term* Clone() const;
     virtual Hash GetHashCode() const;
+    virtual bool Equals(const CAS::Term& t) const;
 };
 
 class Ln: public FunctionCall
@@ -64,6 +65,7 @@ class Ln: public FunctionCall
     static Ln *CreateTerm (Term *t);
     virtual Term* Clone() const;
     virtual Hash GetHashCode() const;
+    virtual bool Equals(const CAS::Term& t) const;
 };
 
 }

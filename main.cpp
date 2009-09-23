@@ -1,20 +1,36 @@
 #include <iostream>
 #include "operator.h"
 #include "number.h"
+#include "exp.h"
 
-int main(int argc, char **argv) {
-    CAS::Term *term = CAS::Add::CreateTerm(CAS::Number::CreateTerm(2), CAS::Number::CreateTerm(1));
-    {
-      std::cout << "Anfang: " << *term << "\n";
-    }
-    {
-      for (int i = 1; i != 3; ++i)
-      {
-	CAS::Term* t = term->Simplify();
-	if (t)
-	  term = t;
-	std::cout << "Nach Vereinfachung " << i << ":" << *term << std::endl;
-      }
-    }
-    delete term;
+void test1 ();
+void test2 ();
+
+int main (int argc, char **argv)
+{
+  test1();
+  test2();
+}
+
+void Output (CAS::Term *t)
+{
+  std::cout << "Term(Hash:" << t->GetHashCode() << "): " << *t << std::endl;
+  CAS::Term* temp = t->Simplify();
+  if (temp)
+  {
+    std::cout << "Vereinfacht: " << *temp << std::endl;
+    t = temp;
+  }
+  delete t;
+}
+
+void test1() {
+    Output (CAS::Add::CreateTerm(CAS::Number::CreateTerm(2), CAS::Number::CreateTerm(1)));
+}
+
+void test2 ()
+{
+  Output(CAS::Ln::CreateTerm(CAS::Ln::CreateTerm(CAS::Number::CreateTerm(1))));
+  Output(CAS::Ln::CreateTerm(CAS::Exp::CreateTerm(CAS::Variable::CreateTerm(1))));
+  Output (CAS::Mul::CreateTerm(CAS::Variable::CreateTerm(2), CAS::Variable::CreateTerm(2)));
 }

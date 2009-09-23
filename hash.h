@@ -23,6 +23,7 @@
 #include <stdint.h>
 
 #include "hashes.h"
+#include <ostream>
 
 namespace CAS {
 
@@ -43,6 +44,7 @@ class Hash
     friend bool operator == (Hash, Hash);
     friend bool operator < (Hash, Hash);
     friend Hash operator ^ (Hash, Hash);
+    friend std::ostream &operator << (std::ostream &, Hash);
 };
 
 inline bool operator == (Hash h1, Hash h2)
@@ -63,6 +65,12 @@ inline bool operator < (Hash h1, Hash h2)
 inline Hash operator ^ (Hash h1, Hash h2)
 {
   return Hash (h1.hash ^ h2.hash);
+}
+
+inline std::ostream &operator << (std::ostream &o, Hash h)
+{
+  o << h.hash;
+  return o;
 }
 
 };
