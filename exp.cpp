@@ -63,6 +63,12 @@ Term *FunctionCall::Simplify()
   return result;
 }
 
+FunctionCall::~FunctionCall()
+{
+  delete parameter;
+}
+
+
 bool FunctionCall::IsSameFunction(const CAS::FunctionCall& cf) const
 {
   FunctionCall &f = const_cast< FunctionCall &> (cf);
@@ -103,7 +109,7 @@ Exp::Exp(Term* t)
 
 Term* Exp::Clone() const
 {
-  return new Exp (parameter);
+  return new Exp (parameter->Clone());
 }
 
 Hash Exp::GetHashCode() const
@@ -119,7 +125,7 @@ bool Exp::Equals(const CAS::Term& t) const
 
 Term* Ln::Clone() const
 {
-  return new Ln (parameter);
+  return new Ln (parameter->Clone());
 }
 
 Ln::Ln(Term* t)
@@ -165,7 +171,7 @@ bool Ln::Equals(const CAS::Term& t) const
 
 Term* NormalFunctionCall::Clone() const
 {
-  
+  return new NormalFunctionCall (parameter->Clone(), /*soll es wirklich geklont werden ?*/(FunctionDefinition *)definition->Clone());
 }
 
 bool NormalFunctionCall::Equals(const CAS::Term& t) const
@@ -195,6 +201,19 @@ FunctionCall* NormalFunctionCall::GetUmkehrFunktion() const
   //zunächst zu schwierig, Umkehrfunktion zu bilden
   return NULL;
 }
+
+NormalFunctionCall::NormalFunctionCall(Term* param, FunctionDefinition* fd)
+: FunctionCall(param), definition(fd)
+{
+  
+}
+
+NormalFunctionCall::~NormalFunctionCall()
+{
+  delete definition;
+  //TODO: muss parent aufgerufen werden??
+}
+
 
 
 

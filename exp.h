@@ -40,6 +40,7 @@ class FunctionCall: public Term
     virtual Type *GetType() const;
     virtual Term *Simplify();
     virtual void ToString(std::ostream& stream) const;
+    ~FunctionCall ();
 };
   
   
@@ -73,12 +74,14 @@ class NormalFunctionCall: public FunctionCall
 {
   private:
     FunctionDefinition *definition;
+    NormalFunctionCall(Term* param, FunctionDefinition *fd);
   public:
     virtual Term* Clone() const;
     virtual std::string GetFunctionName() const;
     virtual Hash GetHashCode() const;
     virtual FunctionCall* GetUmkehrFunktion() const;
     virtual bool Equals(const CAS::Term& t) const;
+    virtual ~NormalFunctionCall();
 };
 
 }
