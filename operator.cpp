@@ -210,10 +210,6 @@ Term *Add::Simplify()
   }
   temporary_equality.clear();
   
-  Term *single = GetSingleObject();
-  if (single)
-    return single;
-  
   std::vector< Number * > vect;
   std::back_insert_iterator< std::vector< Number * > > outputiterator (vect);
   Where< Number > (outputiterator, &Operator::True);
@@ -234,6 +230,11 @@ Term *Add::Simplify()
   else
     if (!vect.empty())
       children.insert(std::make_pair (vect.front()->GetHashCode(), vect.front()));
+  
+  
+  Term *single = GetSingleObject();
+  if (single)
+    return single;
   
   return result;
 }
