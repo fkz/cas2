@@ -11,9 +11,9 @@ namespace Transforms
   const TransformType Simplify = 0;
   
   //Term
-  const TransformType Ableitung = 1;
   
-  //FunctionDefinition
+  //FunctionDefinition  
+  const TransformType Ableitung = 1;
   const TransformType UmkehrFunktion = 2;
 
 };
