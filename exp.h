@@ -21,9 +21,9 @@
 #ifndef CAS_EXP_H
 #define CAS_EXP_H
 #include "term.h"
-#include "functiondefinition.h"
 
 namespace CAS {
+class FunctionDefinition;
 
 
 class FunctionCall: public Term
@@ -34,7 +34,10 @@ class FunctionCall: public Term
     virtual std::string GetFunctionName () const = 0;
     bool IsSameFunction (const FunctionCall &f) const;
     //Der Rückgabetyp wird nicht gelöscht
-    virtual FunctionCall *GetUmkehrFunktion () const = 0;
+    //gibt ein Term mit Typ "FunctionDefinition" zurück
+    //GetFunction() gibt ein Objekt zurück, dass bis zur Destruktion von FunctionCall existiert und
+    //nicht vom Aufrufer zerstört werden sollte
+    virtual const Term *GetFunction () const = 0;
   public:
     virtual bool Equals(const CAS::Term& t) const;
     virtual Type *GetType() const;
@@ -43,38 +46,33 @@ class FunctionCall: public Term
     ~FunctionCall ();
 };
   
+class BuildInFunction: public FunctionCall
+{
+  public:
+    enum Function
+    {
+      Ln,
+      Exp
+    };
+  private:
+    virtual std::string GetFunctionName() const;
+    BuildInFunction(Function f, Term *t);
+    virtual const CAS::Term* GetFunction() const;
+    Function func;
+  public:
+    static BuildInFunction *CreateTerm (Function f, Term *t);
+    virtual Term* Clone() const;
+    virtual Hash GetHashCode() const;
+    static void GetFunctionNameEx(std::ostream&, CAS::BuildInFunction::Function);
+};
   
-class Exp: public FunctionCall
-{
-  private:
-    virtual std::string GetFunctionName() const;
-    virtual FunctionCall* GetUmkehrFunktion() const;
-    Exp (Term *t);
-  public:
-    static Exp *CreateTerm (Term *exp);
-    virtual Term* Clone() const;
-    virtual Hash GetHashCode() const;
-    virtual bool Equals(const CAS::Term& t) const;
-};
-
-class Ln: public FunctionCall
-{
-  private:
-    virtual std::string GetFunctionName() const;
-    virtual FunctionCall* GetUmkehrFunktion() const;
-    Ln (Term *t);
-  public:
-    static Ln *CreateTerm (Term *t);
-    virtual Term* Clone() const;
-    virtual Hash GetHashCode() const;
-    virtual bool Equals(const CAS::Term& t) const;
-};
-
+  
 class NormalFunctionCall: public FunctionCall
 {
   private:
     FunctionDefinition *definition;
     NormalFunctionCall(Term* param, FunctionDefinition *fd);
+    virtual const CAS::Term* GetFunction() const;
   public:
     virtual Term* Clone() const;
     virtual std::string GetFunctionName() const;

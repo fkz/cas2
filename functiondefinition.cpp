@@ -69,4 +69,64 @@ FunctionDefinition::FunctionDefinition(Term* t, Variable* v)
 
 }
 
+BuildInFunctionDefinition::BuildInFunctionDefinition(CAS::BuildInFunction::Function f)
+: func(f)
+{
 
+}
+
+Term* BuildInFunctionDefinition::Clone() const
+{
+  return new BuildInFunctionDefinition (func);
+}
+
+bool BuildInFunctionDefinition::Equals(const CAS::Term& t) const
+{
+  const BuildInFunctionDefinition *tt = dynamic_cast< const BuildInFunctionDefinition * > (&t);
+  if (!tt)
+    return NULL;
+  return func == tt->func;
+}
+
+Hash BuildInFunctionDefinition::GetHashCode() const
+{
+  return Hash (hashes::BuildInFunctionDefinition, func);
+}
+
+BuildInFunctionDefinition* BuildInFunctionDefinition::GetStandardFunction(BuildInFunction::Function f)
+{
+  static BuildInFunctionDefinition *funcs[2] = { new BuildInFunctionDefinition (BuildInFunction::Ln), new BuildInFunctionDefinition (BuildInFunction::Exp) };
+  return funcs[f];
+}
+
+Type* BuildInFunctionDefinition::GetType() const
+{
+  return Type::GetBuildInType(Type::FunctionDefinition);
+}
+
+Term* BuildInFunctionDefinition::Simplify()
+{
+  return NULL;
+}
+
+void BuildInFunctionDefinition::ToString(std::ostream& stream) const
+{
+  return BuildInFunction::GetFunctionNameEx(stream, func);
+}
+
+CAS::Term* CAS::BuildInFunctionDefinition::Transform(TransformType t) const
+{
+  if (t == Transforms::UmkehrFunktion)
+  {
+    switch (func)
+    {
+      case BuildInFunction::Ln:
+	return GetStandardFunction (BuildInFunction::Exp);
+      case BuildInFunction::Exp:
+	return GetStandardFunction (BuildInFunction::Ln);
+      default:
+	assert (0);
+    }
+  }
+  return CAS::Term::Transform(t);
+}

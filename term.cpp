@@ -67,6 +67,20 @@ void SimpleTerm::ToString(std::ostream& stream) const
   stream << "SIMPLE";
 }
 
+Term* Term::Transform(TransformType t) const
+{
+  if (t == Transforms::Simplify)
+  {
+    Term *result = Clone();
+    Term *ret = result->Simplify();
+    if (ret)
+      return ret;
+    else
+      return result;
+  }
+  return NULL;
+}
+
 
 
 

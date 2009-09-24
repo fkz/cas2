@@ -14,7 +14,8 @@ enum Hashes {
   Exp = 0x013,
   Ln = 0x123AB,
   FunctionDefinition = 0x2137,
-  NormalFunctionCall = 0x4619
+  NormalFunctionCall = 0x4619,
+  BuildInFunctionDefinition = 0x634781
 };
 
   

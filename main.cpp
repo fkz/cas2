@@ -30,7 +30,7 @@ void test1() {
 
 void test2 ()
 {
-  Output(CAS::Ln::CreateTerm(CAS::Ln::CreateTerm(CAS::Number::CreateTerm(1))));
-  Output(CAS::Ln::CreateTerm(CAS::Exp::CreateTerm(CAS::Variable::CreateTerm(1))));
+  //Output(CAS::Ln::CreateTerm(CAS::Ln::CreateTerm(CAS::Number::CreateTerm(1))));
+  //Output(CAS::Ln::CreateTerm(CAS::Exp::CreateTerm(CAS::Variable::CreateTerm(1))));
   Output (CAS::Mul::CreateTerm(CAS::Variable::CreateTerm(2), CAS::Variable::CreateTerm(2)));
 }

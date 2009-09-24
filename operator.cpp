@@ -311,9 +311,9 @@ Term* Mul::Simplify()
   result = (result || !temporary_equality.empty()) ? this : NULL;
   for (std::vector< std::pair< Term*, int > >::const_iterator it = temporary_equality.begin(); it != temporary_equality.end(); ++it)
   {
-    Ln *ln = Ln::CreateTerm (Number::CreateTerm(it->second));
+    FunctionCall *ln = BuildInFunction::CreateTerm (BuildInFunction::Ln, Number::CreateTerm(it->second));
     Mul *mul = Mul::CreateTerm(ln, it->first);
-    Exp *exp = Exp::CreateTerm (mul);
+    FunctionCall *exp = BuildInFunction::CreateTerm (BuildInFunction::Exp, mul);
     children.insert (std::make_pair(exp->GetHashCode (), exp));
   }
   temporary_equality.clear();

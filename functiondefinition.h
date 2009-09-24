@@ -23,6 +23,7 @@
 
 #include <../../home/fabian/svn/trunk/c++/mathematics/cas2/term.h>
 #include "number.h"
+#include "exp.h"
 
 
 namespace CAS {
@@ -41,6 +42,23 @@ class FunctionDefinition : public CAS::Term
     virtual CAS::Term* Clone() const;
     virtual CAS::Term* Simplify();
     static FunctionDefinition *CreateTerm (Term *, Variable *);
+};
+
+class BuildInFunctionDefinition: public Term
+{
+  private:
+    BuildInFunction::Function func;
+    BuildInFunctionDefinition (BuildInFunction::Function f);
+  public:
+    virtual Term* Clone() const;
+    virtual bool Equals(const CAS::Term& t) const;
+    virtual Hash GetHashCode() const;
+    virtual Type* GetType() const;
+    virtual Term* Simplify();
+    virtual void ToString(std::ostream& stream) const;
+    virtual Term* Transform(TransformType t) const;
+    static BuildInFunctionDefinition *GetStandardFunction (BuildInFunction::Function f);
+    
 };
 
 }

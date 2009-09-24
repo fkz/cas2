@@ -19,6 +19,7 @@
 */
 
 #include "exp.h"
+#include "functiondefinition.h"
 
 using namespace CAS;
 
@@ -53,11 +54,18 @@ Term *FunctionCall::Simplify()
   }
   
   FunctionCall *f = dynamic_cast< FunctionCall * > (parameter);
-  if (f && f->IsSameFunction(*GetUmkehrFunktion()))
+  if (f)
   {
-    result = f->parameter;
-    f->parameter = NULL;
-    delete f;
+    const Term *t1 = f->GetFunction();
+    const Term *t2 = GetFunction();
+    Term* t1_ = t1->Transform(Transforms::UmkehrFunktion);
+    if (t1_->Equals(*t2))
+    {
+      result = f->parameter;
+      f->parameter = NULL;
+      delete f;
+    }
+    delete t1_;
   }
   
   return result;
@@ -71,16 +79,7 @@ FunctionCall::~FunctionCall()
 
 bool FunctionCall::IsSameFunction(const CAS::FunctionCall& cf) const
 {
-  FunctionCall &f = const_cast< FunctionCall &> (cf);
-  FunctionCall &th = const_cast< FunctionCall &> (*this);
-  Term* pth = th.parameter;
-  Term* pf = f.parameter;
-  f.parameter = SimpleTerm::obj ();
-  th.parameter = SimpleTerm::obj ();
-  bool result = Equals(f);
-  f.parameter = pf;
-  th.parameter = pth;
-  return result;
+  return GetFunction()->Equals(*cf.GetFunction());
 }
 
 
@@ -90,83 +89,6 @@ void FunctionCall::ToString(std::ostream& stream) const
 }
 
 
-std::string Exp::GetFunctionName() const
-{
-  return "exp";
-}
-
-FunctionCall* Exp::GetUmkehrFunktion() const
-{
-  static FunctionCall *result = Ln::CreateTerm (SimpleTerm::obj());
-  return result;
-}
-
-Exp::Exp(Term* t)
-: FunctionCall(t)
-{
-
-}
-
-Term* Exp::Clone() const
-{
-  return new Exp (parameter->Clone());
-}
-
-Hash Exp::GetHashCode() const
-{
-  return Hash (hashes::Exp) ^ parameter->GetHashCode();
-}
-
-bool Exp::Equals(const CAS::Term& t) const
-{
-  return CAS::FunctionCall::Equals(t) && dynamic_cast< const CAS::Exp * > (&t);
-}
-
-
-Term* Ln::Clone() const
-{
-  return new Ln (parameter->Clone());
-}
-
-Ln::Ln(Term* t)
-: FunctionCall(t)
-{
-
-}
-
-Hash Ln::GetHashCode() const
-{
-  return Hash (hashes::Ln) ^ parameter->GetHashCode();
-}
-
-FunctionCall* Ln::GetUmkehrFunktion() const
-{
-  static FunctionCall *result = Exp::CreateTerm(SimpleTerm::obj());
-  return result;
-}
-
-
-
-CAS::Exp* CAS::Exp::CreateTerm(Term* exp)
-{
-  return new Exp (exp);
-}
-
-std::string Ln::GetFunctionName() const
-{
-  return "ln";
-}
-
-
-Ln* Ln::CreateTerm(Term* t)
-{
-  return new Ln (t);
-}
-
-bool Ln::Equals(const CAS::Term& t) const
-{
-  return CAS::FunctionCall::Equals(t) && dynamic_cast< const Ln * > (&t);
-}
 
 
 Term* NormalFunctionCall::Clone() const
@@ -213,6 +135,58 @@ NormalFunctionCall::~NormalFunctionCall()
   delete definition;
   //TODO: muss parent aufgerufen werden??
 }
+
+const CAS::Term* NormalFunctionCall::GetFunction() const
+{
+  return definition;
+}
+
+BuildInFunction::BuildInFunction(BuildInFunction::Function f, Term* t)
+: FunctionCall(t), func(f)
+{
+
+}
+
+Term* BuildInFunction::Clone() const
+{
+  return new BuildInFunction (func, parameter);
+}
+
+BuildInFunction* BuildInFunction::CreateTerm(BuildInFunction::Function f, Term* t)
+{
+  return new BuildInFunction (f, t);
+}
+
+const CAS::Term* BuildInFunction::GetFunction() const
+{
+  return BuildInFunctionDefinition::GetStandardFunction(func);
+}
+
+std::string BuildInFunction::GetFunctionName() const
+{
+  std::stringstream s;
+  GetFunctionNameEx (s, func);
+  return s.str();
+}
+
+Hash BuildInFunction::GetHashCode() const
+{
+  return Hash (hashes::Exp, func) ^ parameter->GetHashCode();
+}
+
+void BuildInFunction::GetFunctionNameEx(std::ostream &stream, BuildInFunction::Function arg1)
+{
+  switch (arg1)
+  {
+    case Ln:
+      stream << "ln";
+      break;
+    case Exp:
+      stream << "exp";
+      break;
+  }
+}
+
 
 
 

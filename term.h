@@ -24,6 +24,7 @@
 #include <sstream>
 #include "hash.h"
 #include <cassert>
+#include "transformtypes.h"
 
 namespace CAS {
 
@@ -56,6 +57,9 @@ class Term
       }
       return temp;
     }
+    //gibt einen transformierten Term, wie z. B. die Ableitung, Umkehrfunktion o. a. zurück
+    //oder NULL (bei falschem Gebrauch oder Nichtexistenz)
+    virtual Term *Transform (TransformType t) const;
 };
 
 std::ostream &operator << (std::ostream &, const Term &); 
