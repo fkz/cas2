@@ -19,6 +19,7 @@
 */
 
 #include "type.h"
+#include <typeinfo>
 
 using namespace CAS;
 
@@ -34,3 +35,11 @@ CAS::Type::Type(Type::BuildInTypes t)
 : type(t)
 {
 }
+
+bool Type::Equals(const CAS::Type& t) const
+{
+  if (typeid(t) != typeid(Type))
+    return false;
+  return t.type == type;
+}
+

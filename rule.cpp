@@ -1,6 +1,6 @@
 /*
     <one line to give the program's name and a brief idea of what it does.>
-    Copyright (C) 2009  Fabian Schmitthenner
+    Copyright (C) <year>  <name of author>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,36 +18,6 @@
 
 */
 
-#ifndef CAS_TYPE_H
-#define CAS_TYPE_H
+#include "rule.h"
 
-namespace CAS {
-
-class Type
-{
-  public:
-    enum BuildInTypes
-    {
-      Boolean,
-      Term,
-      FunctionDefinition
-    };
-    
-    virtual bool IsBuildInType (BuildInTypes &type) const
-    {
-      type = this->type;
-      return true;
-    }
-    
-    static Type *GetBuildInType (BuildInTypes type);
-    virtual bool Equals (const Type &t) const;
-    
-  private:
-    Type (BuildInTypes t);
-    
-    BuildInTypes type;
-};
-
-}
-
-#endif // CAS_TYPE_H
+using namespace CAS;
