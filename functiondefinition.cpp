@@ -121,9 +121,9 @@ CAS::Term* CAS::BuildInFunctionDefinition::Transform(TransformType t) const
     switch (func)
     {
       case BuildInFunction::Ln:
-	return GetStandardFunction (BuildInFunction::Exp);
+	return GetStandardFunction (BuildInFunction::Exp)->Clone();
       case BuildInFunction::Exp:
-	return GetStandardFunction (BuildInFunction::Ln);
+	return GetStandardFunction (BuildInFunction::Ln)->Clone();
       default:
 	assert (0);
     }
