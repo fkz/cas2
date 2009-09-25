@@ -222,15 +222,24 @@ Term *Add::Simplify()
       res += t->GetNumber ();
       delete t;
     }
-    Number *number = Number::CreateTerm(res);
-    children.insert(std::make_pair(number->GetHashCode(), number));
+    if (res != 0)
+    {
+      Number *number = Number::CreateTerm(res);
+      children.insert(std::make_pair(number->GetHashCode(), number));
+    }
     assert (result == this || ! result );
     result = this;
   }
   else
     if (!vect.empty())
-      children.insert(std::make_pair (vect.front()->GetHashCode(), vect.front()));
-  
+      if (vect.front()->GetNumber() != 0)
+	children.insert(std::make_pair (vect.front()->GetHashCode(), vect.front()));
+      else
+      {
+	assert (result == this || ! result);
+	result = this;
+      }
+    
   
   Term *single = GetSingleObject();
   if (single)
@@ -330,14 +339,23 @@ Term* Mul::Simplify()
       res *= t->GetNumber();
       delete t;
     }
-    Number *number = Number::CreateTerm(res);
-    children.insert(std::make_pair(number->GetHashCode(), number));
+    if (res != 1)
+    {
+      Number *number = Number::CreateTerm(res);
+      children.insert(std::make_pair(number->GetHashCode(), number));
+    }
     assert (result == this || ! result );
     result = this;
   }
   else
     if (!vect.empty())
-      children.insert(std::make_pair (vect.front()->GetHashCode(), vect.front()));
+      if (vect.front()->GetNumber() != 1)
+	children.insert(std::make_pair (vect.front()->GetHashCode(), vect.front()));
+      else
+      {
+	assert (result == this || ! result);
+	result = this;
+      }
   
   Term *single = GetSingleObject();
   if (single)

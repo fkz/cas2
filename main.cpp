@@ -5,11 +5,13 @@
 
 void test1 ();
 void test2 ();
+void test3 ();
 
 int main (int argc, char **argv)
 {
   test1();
   test2();
+  test3();
 }
 
 void Output (CAS::Term *t)
@@ -33,4 +35,9 @@ void test2 ()
   Output(CAS::BuildInFunction::CreateTerm(CAS::BuildInFunction::Ln, CAS::BuildInFunction::CreateTerm(CAS::BuildInFunction::Ln, CAS::Number::CreateTerm(1))));
   Output(CAS::BuildInFunction::CreateTerm(CAS::BuildInFunction::Ln, CAS::BuildInFunction::CreateTerm(CAS::BuildInFunction::Exp, CAS::Variable::CreateTerm(1))));
   Output (CAS::Mul::CreateTerm(CAS::Variable::CreateTerm(2), CAS::Variable::CreateTerm(2)));
+}
+
+void test3 ()
+{
+  Output (CAS::Add::CreateTerm(CAS::Number::CreateTerm(0), CAS::Variable::CreateTerm(1)));
 }
