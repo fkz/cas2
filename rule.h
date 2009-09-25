@@ -21,6 +21,7 @@
 #ifndef CAS_RULE_H
 #define CAS_RULE_H
 #include "type.h"
+#include <vector>
 
 namespace CAS {
 class Term;
@@ -28,9 +29,27 @@ class Term;
 class Rule
 {
   public:
-    virtual Type *GetCorrespondingType () = 0;
+    virtual Type *GetCorrespondingType () const = 0;
     //gibt NULL zurück, falls die Regel nicht angewandt werden konnte; sonst gibt es ein (weiteres) Term * zurück
-    virtual Term *UseRule (Term *) = 0;
+    virtual Term *UseRule (const Term *) const = 0;
+};
+
+class SubRule: public Rule
+{
+  private:
+    size_t parameterCount;
+  public:
+    virtual Term *MatchRule (const Term *t, std::vector< Term * >::iterator params, int count) const = 0;
+    virtual Term* UseRule(const Term *t) const;
+};
+
+class OperatorRule: public SubRule
+{
+  private:
+    std::vector< SubRule * > children;
+  public:
+    virtual Type* GetCorrespondingType() const;
+    virtual Term* MatchRule(const CAS::Term* t, std::vector< CAS::Term* >::iterator params, int count) const;    
 };
 
 }

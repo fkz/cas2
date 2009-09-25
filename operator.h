@@ -73,6 +73,8 @@ class Operator : public CAS::Term
     virtual Term *Simplify();
     virtual ~Operator();
     virtual bool Equals(const CAS::Term& t) const;
+    
+    friend Term* OperatorRule::MatchRule(const Term* t, std::vector< Term* >::iterator params, int count) const;
 };
 
 class Add: public Operator
