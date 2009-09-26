@@ -48,6 +48,7 @@ class Term
     virtual bool Equals (const Term &t) const = 0;
     virtual void ToString (std::ostream &stream) const = 0;
     virtual Hash GetHashCode () const = 0;
+    virtual Term *GetChildren (void *&param) const = 0;
     virtual ~Term () {}
     template<class T>
     static bool DoSimplify (T *&term)
