@@ -23,7 +23,7 @@
 
 using namespace CAS;
 
-std::multimap< Hash, Term* >::const_iterator TermCollection::find(const Term* t) const
+TermCollection::const_iterator TermCollection::find(const Term* t) const
 {
   Hash hash = t->GetHashCode();
   std::pair< const_iterator, const_iterator > range = equal_range(hash);
@@ -35,7 +35,7 @@ std::multimap< Hash, Term* >::const_iterator TermCollection::find(const Term* t)
   return end();
 }
 
-std::multimap< Hash, Term* >::iterator TermCollection::find(const CAS::Term* t)
+TermCollection::iterator TermCollection::find(const CAS::Term* t)
 {
   Hash hash = t->GetHashCode();
   std::pair< iterator, iterator > range = equal_range(hash);

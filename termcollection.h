@@ -32,9 +32,9 @@ class TermCollection: public std::multimap< Hash, std::pair< Term *, uint8_t > >
   private:
     uint8_t DefaultFlag;
   public:
-    const int Flag_Newly_Added = 0;
-    const int Flag_Processed = 1;
-    const int Flag_Simplified = 2;
+    static const int Flag_Newly_Added = 0;
+    static const int Flag_Processed = 1;
+    static const int Flag_Simplified = 2;
     TermCollection();
     bool push_back (Term *t);
     const_iterator find (const CAS::Term* t) const;
