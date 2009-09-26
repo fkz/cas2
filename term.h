@@ -67,14 +67,6 @@ class Term
     //gibt einen transformierten Term, wie z. B. die Ableitung, Umkehrfunktion o. a. zurück
     //oder NULL (bei falschem Gebrauch oder Nichtexistenz)
     virtual Term *Transform (TransformType t) const;
-  private:
-    struct Data
-    {
-      Term *term;
-      enum { NotProcessed, Processed, Simplified } flag;
-      Data (Term *t) : term(t), flag (NotProcessed) { }
-    };
-  public:
     //berechne alle möglichen Terme, die nicht weiter "vereinfacht" werden können (durch Regeln)
     //setzt voraus, dass vorher Simplify aufgerufen wurde!
     template<class _It, class _outIt>
