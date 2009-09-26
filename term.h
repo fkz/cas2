@@ -29,6 +29,7 @@
 #include <vector>
 #include "rule.h"
 #include "termcollection.h"
+#include <list>
 
 namespace CAS {
 
@@ -143,54 +144,74 @@ class Term
     template<class _It, class _outIt>    
     void SimplifyChildsWithRules (_It rule_begin, _It rule_end, _outIt output)
     {
-      std::vector< Term * > children;
-      void *var = NULL;
-      Term *term;
-      while (term = GetChildren(var))
-	children.push_back(term);
+      TermCollection objects_all;
+      objects_all.push_back(this);
       
-      size_t paramcount = children.size();
-      std::vector< Term * > *data = new std::vector< Term * > [ paramcount ] ;
-      std::vector< Term* > *datait = data;
-      for (std::vector< Term* >::const_iterator it = children.begin(); it != children.end(); ++it,++datait)
-      {
-	(*it)->SimplifyChildsWithRules(rule_begin, rule_end, std::back_insert_iterator< std::vector< Term * > > (*datait));
-      }
-      
-      //erzeuge Objekte für alle Terme
       TermCollection objects;
-      std::vector< Term * >::iterator *iterators = new std::vector< Term * >::iterator[paramcount];
-      iterators[0] = data[0].begin();
-      Term **dataArray = new Term * [ paramcount ];
-      for (int index = 0;;index != -1)
+      for (TermCollection::iterator all_it = objects_all.begin(); all_it != objects_all.end(); ++all_it)
       {
-	while (index + 1 != paramcount)
-	{
-	  ++index;
-	  iterators[index] = data[index].begin();
-	}
-	for (int i = 0; i < paramcount; ++i)
-	  dataArray[i] = (*iterators[i])->Clone();
-	Term *tTerm = CreateTerm (dataArray);
-	objects.push_back (tTerm);
+	if (all_it->second.second != TermCollection::Flag_Newly_Added)
+	  continue;
+	all_it->second.second = TermCollection::Flag_Processed;
+	std::vector< Term * > children;
+	void *var = NULL;
+	Term *term;
+	while (term = all_it->second.first->GetChildren(var))
+	  children.push_back(term);
 	
-	while (++iterators[index] == data[index].end())
+	size_t paramcount = children.size();
+	std::vector< Term * > *data = new std::vector< Term * > [ paramcount ] ;
+	std::vector< Term* > *datait = data;
+	for (std::vector< Term* >::const_iterator it = children.begin(); it != children.end(); ++it,++datait)
 	{
-	  if (--index == -1)
-	    break;
+	  (*it)->SimplifyChildsWithRules(rule_begin, rule_end, std::back_insert_iterator< std::vector< Term * > > (*datait));
 	}
+	
+	//erzeuge Objekte für alle Terme
+	objects.SetDefaultFlag(TermCollection::Flag_Processed);
+	std::vector< Term * >::iterator *iterators = new std::vector< Term * >::iterator[paramcount];
+	iterators[0] = data[0].begin();
+	Term **dataArray = new Term * [ paramcount ];
+	for (int index = 0;;index != -1)
+	{
+	  while (index + 1 != paramcount)
+	  {
+	    ++index;
+	    iterators[index] = data[index].begin();
+	  }
+	  for (int i = 0; i < paramcount; ++i)
+	    dataArray[i] = (*iterators[i])->Clone();
+	  Term *tTerm = all_it->second.first->CreateTerm (dataArray);
+	  objects.push_back (tTerm);
+	  
+	  while (++iterators[index] == data[index].end())
+	  {
+	    if (--index == -1)
+	      break;
+	  }
+	}
+	delete [] dataArray;
+	delete [] iterators;
+	delete [] data;
+      
+	std::vector< Term * > terme;
+	std::back_insert_iterator< std::vector< Term* > > insert_iterator = std::back_insert_iterator< std::vector< Term * > > (terme);
+	for (TermCollection::iterator it = objects.begin(); it != objects.end(); ++it)
+	{
+	  size_t size = terme.size();
+	  it->second.first->SimplifyWithRules(rule_begin, rule_end, insert_iterator);
+	  if (terme.size() != size)
+	    it->second.second = TermCollection::Flag_Simplified;
+	}
+	if (!terme.empty())
+	{
+	  all_it->second.second = TermCollection::Flag_Simplified;
+	}
+	objects.SetDefaultFlag(TermCollection::Flag_Newly_Added);
+	for (std::vector< Term* >::const_iterator it = terme.begin(); it != terme.end(); ++it)
+	  objects.push_back(*it);
       }
-      delete [] dataArray;
-      delete [] iterators;
-      delete [] data;
-      
-      //wende die Regeln auf alle Terme an
-      TermCollection terme;
-      std::back_insert_iterator< TermCollection > insert_iterator (terme);
-      for (TermCollection::iterator it = objects.begin(); it != objects.end(); ++it)
-	it->second.first->SimplifyWithRules(rule_begin, rule_end, insert_iterator);
-      //TODO: Implementierung beenden
-      
+      //TODO: Implementierung beenden (verbessern ??)
     }
 };
 
