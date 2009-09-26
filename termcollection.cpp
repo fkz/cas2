@@ -29,7 +29,7 @@ std::multimap< Hash, Term* >::const_iterator TermCollection::find(const Term* t)
   std::pair< const_iterator, const_iterator > range = equal_range(hash);
   for (; range.first != range.second; ++range.first)
   {
-    if (range.first->second->Equals(*t))
+    if (range.first->second.first->Equals(*t))
       return range.first;
   }
   return end();
@@ -41,7 +41,7 @@ std::multimap< Hash, Term* >::iterator TermCollection::find(const CAS::Term* t)
   std::pair< iterator, iterator > range = equal_range(hash);
   for (; range.first != range.second; ++range.first)
   {
-    if (range.first->second->Equals(*t))
+    if (range.first->second.first->Equals(*t))
       return range.first;
   }
   return end();
@@ -55,9 +55,16 @@ bool CAS::TermCollection::push_back(Term* t)
   std::pair< iterator, iterator > range = equal_range(hash);
   for (; range.first != range.second; ++range.first)
   {
-    if (range.first->second->Equals(*t))
+    if (range.first->second.first->Equals(*t))
       return false;
   }
-  insert (range.first, std::make_pair(hash, t));
+  insert (range.first, std::make_pair(hash, std::make_pair(t, DefaultFlag)));
   return true;
 }
+
+TermCollection::TermCollection()
+: DefaultFlag(0)
+{
+
+}
+
