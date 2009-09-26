@@ -79,22 +79,22 @@ class Term
     template<class _It, class _outIt>
     void SimplifyWithRules (_It rule_begin, _It rule_end, _outIt output)
     {
-      std::multimap< Hash, Data > data;
+      TermCollection data;
       assert (Simplify() == NULL);
-      data.insert(std::make_pair(GetHashCode(), Data (this)));
+      data.push_back(this);
       
       bool finnish = false;
-      std::vector< std::pair <Term *, Hash> > NewTerms;
+      std::vector< Term * > NewTerms;
       while (!finnish)
       {
 	NewTerms.clear();
 	finnish = true;
-	for (std::multimap< Hash, Data >::const_iterator it = data.begin(); it != data.end(); ++it)
+	for (TermCollection::const_iterator it = data.begin(); it != data.end(); ++it)
 	{
-	  if (it->second.flag == Data::NotProcessed)
+	  if (it->second.second == TermCollection::Flag_Newly_Added)
 	  {
-	    it->second.flag = Data::Processed;
-	    Term *term = it->second.term;
+	    it->second.first = TermCollection::Flag_Processed;
+	    Term *term = it->second.second;
 	    Type *type = term->GetType();
 	    for (_It rit = rule_begin; rit != rule_end; ++rit)
 	    {
@@ -104,48 +104,37 @@ class Term
 	      Term *termRule = rule->UseRule(term);
 	      if (termRule)
 	      {
-		it->second.flag = Data::Simplified;
+		it->second.second = TermCollection::Flag_Simplified;
 		DoSimplify(termRule);
-		Hash hash = termRule->GetHashCode();
-		std::pair< std::multimap< Hash, Data >::const_iterator, std::multimap< Hash, Data >::const_iterator > eqHs = data.equal_range(hash);
-		bool equal = false;
-		for (std::multimap< Hash, Data >::const_iterator eqHsIt = eqHs.first; eqHsIt != eqHs.second; ++eqHsIt)
-		{
-		  if (eqHsIt->second.term->Equals (*termRule))
-		  {
-		    equal = true;
-		    break;
-		  }
-		}
-		if (equal)
+		if (data.contains(termRule))
 		{
 		  delete termRule;
 		}
 		else
 		{
-		  NewTerms.push_back(std::make_pair (termRule, hash));
+		  NewTerms.push_back(termRule);
 		  finnish = false;
 		}
 	      }
 	    }
 	  }
 	}
-	for (std::vector< std::pair< Term*, Hash > >::const_iterator it = NewTerms.begin(); it != NewTerms.end(); ++it)
+	for (std::vector< Term* >::const_iterator it = NewTerms.begin(); it != NewTerms.end(); ++it)
 	{
-	  data.insert (std::make_pair (it->second, Data (it->first)));
+	  data.push_back (*it);
 	}
       }
-      for (std::multimap< Hash, Data >::iterator it = data.begin(); it != data.end(); ++it)
+      for (TermCollection::iterator it = data.begin(); it != data.end(); ++it)
       {
-	assert (it->second.flag != Data::NotProcessed);
-	if (it->second.flag == Data::Simplified)
+	assert (it->second.second != TermCollection::Flag_Newly_Added);
+	if (it->second.second == TermCollection::Flag_Simplified)
 	{
-	  if (it->second.term != this)
-	    delete it->second.term;
+	  if (it->second.first != this)
+	    delete it->second.first;
 	}
 	else //if (it->second.flag == Data::Processed)
 	{
-	  *output++ = it->second.term;
+	  *output++ = it->second.first;
 	}
       }
     }

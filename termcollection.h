@@ -37,6 +37,7 @@ class TermCollection: public std::multimap< Hash, std::pair< Term *, uint8_t > >
     static const int Flag_Simplified = 2;
     TermCollection();
     bool push_back (Term *t);
+    bool push_back (Term *t, uint8_t flag);
     const_iterator find (const CAS::Term* t) const;
     iterator find (const CAS::Term *t);
     bool contains (Term *t)

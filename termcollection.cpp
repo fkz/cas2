@@ -62,6 +62,21 @@ bool CAS::TermCollection::push_back(Term* t)
   return true;
 }
 
+bool TermCollection::push_back(Term* t, uint8_t flag)
+{
+  Hash hash = t->GetHashCode();
+  std::pair< iterator, iterator > range = equal_range(hash);
+  for (; range.first != range.second; ++range.first)
+  {
+    if (range.first->second.first->Equals(*t))
+      return false;
+  }
+  insert (range.first, std::make_pair(hash, std::make_pair(t, flag)));
+  return true;
+
+}
+
+
 TermCollection::TermCollection()
 : DefaultFlag(0)
 {
