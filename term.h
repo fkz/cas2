@@ -77,11 +77,11 @@ class Term
       data.push_back(this);
       
       bool finnish = false;
-      std::vector< Term * > NewTerms;
       while (!finnish)
       {
-	NewTerms.clear();
+	data.ClearStatus();
 	finnish = true;
+	data.StartIteration();
 	for (TermCollection::const_iterator it = data.begin(); it != data.end(); ++it)
 	{
 	  if (it->second.second == TermCollection::Flag_Newly_Added)
@@ -99,23 +99,13 @@ class Term
 	      {
 		it->second.second = TermCollection::Flag_Simplified;
 		DoSimplify(termRule);
-		if (data.contains(termRule))
-		{
+		if (!data.push_back (termRule))
 		  delete termRule;
-		}
-		else
-		{
-		  NewTerms.push_back(termRule);
-		  finnish = false;
-		}
 	      }
 	    }
 	  }
 	}
-	for (std::vector< Term* >::const_iterator it = NewTerms.begin(); it != NewTerms.end(); ++it)
-	{
-	  data.push_back (*it);
-	}
+	data.EndIteration();
       }
       for (TermCollection::iterator it = data.begin(); it != data.end(); ++it)
       {
