@@ -44,7 +44,7 @@ class TermCollection: public std::multimap< Hash, std::pair< Term *, uint8_t > >
     iterator find (const CAS::Term *t);
     bool contains (Term *t)
     {
-      return find (t) != end() && insertCollection.find(t) != insertCollection.end();
+      return find (t) != end() && (!insertCollection || insertCollection->find(t) != insertCollection->end());
     }
     void SetDefaultFlag (uint8_t flag)
     {
@@ -58,9 +58,10 @@ class TermCollection: public std::multimap< Hash, std::pair< Term *, uint8_t > >
     }
     void EndIteration()
     {
+      assert(iterating);
       iterating = false;
-      insert (insertCollection.begin(); insertCollection.end());
-      insertCollection.clear();
+      insert (insertCollection->begin(), insertCollection->end());
+      insertCollection->clear();
     }
     void ClearStatus ()
     {
