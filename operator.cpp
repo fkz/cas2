@@ -102,6 +102,14 @@ Operator::Operator(const std::multimap< Hash, Term* >& c)
 
 }
 
+
+Operator::Operator(Term** t, size_t anzahl)
+{
+  for (int i = 0; i < anzahl; ++i)
+    children.insert(std::make_pair(t[i]->GetHashCode(),  t[i]));
+}
+
+
 Operator::Operator()
 {
 
@@ -171,6 +179,23 @@ Term* Operator::GetSingleObject()
   return NULL;
 }
 
+Term* Operator::GetChildren(void*& param) const
+{
+  std::multimap< Hash, Term * >::const_iterator *it;
+  if (!param)
+    param = it = new std::multimap< Hash, Term * >::const_iterator (children.begin());
+  else
+    it = (std::multimap< Hash, Term * >::const_iterator *)param;
+  if (*it != children.end())
+    return ((*it)++)->second;
+  else
+  {
+    delete it;
+    return NULL;
+  }
+}
+
+
 
 
 Term* Add::Clone() const
@@ -194,6 +219,10 @@ Add::Add(const CAS::Add& a)
 
 }
 
+Term* Add::CreateTerm(Term** children) const
+{
+  return new Add (children, this->children.size());
+}
 
 
 Term *Add::Simplify()
@@ -261,6 +290,13 @@ Add::Add ()
   
 }
 
+Add::Add(Term** t, size_t anz)
+: Operator(t, anz)
+{
+  
+}
+
+
 
 void Add::EqualRoutine(Term* t, int anzahl)
 {
@@ -284,6 +320,12 @@ Mul::Mul(const CAS::Mul& m)
 
 }
 
+Mul::Mul(Term** t, size_t anz)
+: Operator(t, anz)
+{
+
+}
+
 
 
 void Mul::ToString(std::ostream& stream) const
@@ -299,6 +341,12 @@ Mul *Mul::CreateTerm(Term* t1, Term* t2)
   result->children.insert (std::make_pair(t2->GetHashCode(), t2));
   return result;
 }
+
+Term* Mul::CreateTerm(Term** children) const
+{
+  return new Mul (children, this->children.size());
+}
+
 
 
 CAS::Mul::Mul()

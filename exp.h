@@ -43,6 +43,7 @@ class FunctionCall: public Term
     virtual Type *GetType() const;
     virtual Term *Simplify();
     virtual void ToString(std::ostream& stream) const;
+    virtual Term* GetChildren(void*& param) const;
     ~FunctionCall ();
 };
   
@@ -63,6 +64,7 @@ class BuildInFunction: public FunctionCall
     static BuildInFunction *CreateTerm (Function f, Term *t);
     virtual Term* Clone() const;
     virtual Hash GetHashCode() const;
+    virtual Term* CreateTerm(Term** children) const;
     static void GetFunctionNameEx(std::ostream&, CAS::BuildInFunction::Function);
 };
   
@@ -79,6 +81,7 @@ class NormalFunctionCall: public FunctionCall
     virtual Hash GetHashCode() const;
     virtual FunctionCall* GetUmkehrFunktion() const;
     virtual bool Equals(const CAS::Term& t) const;
+    virtual Term* CreateTerm(Term** children) const;
     virtual ~NormalFunctionCall();
 };
 

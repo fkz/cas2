@@ -51,7 +51,7 @@ class Term
     virtual void ToString (std::ostream &stream) const = 0;
     virtual Hash GetHashCode () const = 0;
     virtual Term *GetChildren (void *&param) const = 0;
-    virtual void CreateTerm(Term** children) const = 0;
+    virtual Term *CreateTerm(Term** children) const = 0;
     virtual ~Term () {}
     template<class T>
     static bool DoSimplify (T *&term)
@@ -231,6 +231,8 @@ class SimpleTerm: public Term
     virtual Type* GetType() const;
     virtual Term* Simplify();
     virtual void ToString(std::ostream& stream) const;
+    virtual Term* CreateTerm(Term** children) const;
+    virtual Term* GetChildren(void*& param) const;
     static SimpleTerm *obj ();
 };
 

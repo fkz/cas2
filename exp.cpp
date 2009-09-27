@@ -88,6 +88,17 @@ void FunctionCall::ToString(std::ostream& stream) const
   stream << GetFunctionName () << "(" << *parameter << ")";
 }
 
+Term* FunctionCall::GetChildren(void*& param) const
+{
+  if (!param)
+  {
+    param = (void *) 1;
+    return parameter;
+  }
+  return NULL;
+}
+
+
 
 
 
@@ -187,7 +198,16 @@ void BuildInFunction::GetFunctionNameEx(std::ostream &stream, BuildInFunction::F
   }
 }
 
+Term* BuildInFunction::CreateTerm(Term** children) const
+{
+  return new BuildInFunction (func, children[0]);
+}
 
+
+Term* NormalFunctionCall::CreateTerm(Term** children) const
+{
+  return new NormalFunctionCall (children[0], definition);
+}
 
 
 

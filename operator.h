@@ -36,6 +36,7 @@ class Operator : public CAS::Term
     void FindEquals (void (Operator::*) (CAS::Term*, int));
     Operator ();
     Operator (const std::multimap<Hash, CAS::Term *> &c);
+    Operator (Term **t, size_t anzahl);
     Hash GetPseudoHashCode (CAS::hashes::Hashes hT1, uint32_t data) const;
     void PseudoToString (std::ostream &stream, const std::string &op) const;
     
@@ -73,6 +74,7 @@ class Operator : public CAS::Term
     virtual Term *Simplify();
     virtual ~Operator();
     virtual bool Equals(const CAS::Term& t) const;
+    virtual Term* GetChildren(void*& param) const;
     
     friend Term* OperatorRule::MatchRule(const Term* t, std::vector< Term* >::iterator params, int count) const;
 };
@@ -82,6 +84,7 @@ class Add: public Operator
   private:
     Add ();
     Add (const Add &a);
+    Add (Term **t, size_t anz);
     std::vector<std::pair< Term *, int> > temporary_equality;
     void EqualRoutine (Term *t, int anzahl);
   public:
@@ -89,6 +92,7 @@ class Add: public Operator
     virtual Hash GetHashCode() const;
     virtual void ToString(std::ostream& stream) const;
     virtual Term *Simplify();
+    virtual Term* CreateTerm(Term** children) const;
     static Add *CreateTerm (Term *t1, Term *t2);
 };
 
@@ -97,6 +101,7 @@ class Mul: public Operator
   private:
     Mul (const Mul &m);
     Mul ();
+    Mul (Term **t, size_t anz);
     void EqualRoutine (Term *t, int anzahl);
     std::vector< std::pair< Term*, int > > temporary_equality;
   public:
@@ -104,6 +109,7 @@ class Mul: public Operator
     virtual Hash GetHashCode() const;
     virtual void ToString(std::ostream& stream) const;
     static Mul *CreateTerm (Term *t1, Term *t2);
+    virtual Term* CreateTerm(Term** children) const;
     virtual Term* Simplify();
 };
 

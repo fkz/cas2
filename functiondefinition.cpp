@@ -69,6 +69,23 @@ FunctionDefinition::FunctionDefinition(Term* t, Variable* v)
 
 }
 
+Term* FunctionDefinition::CreateTerm(Term** children) const
+{
+  return new FunctionDefinition (children[0], variable);
+}
+
+Term* FunctionDefinition::GetChildren(void*& param) const
+{
+  if (!param)
+  {
+    param = (void *)1;
+    return term;
+  }
+  return NULL;
+}
+
+
+
 BuildInFunctionDefinition::BuildInFunctionDefinition(CAS::BuildInFunction::Function f)
 : func(f)
 {
@@ -130,3 +147,15 @@ CAS::Term* CAS::BuildInFunctionDefinition::Transform(TransformType t) const
   }
   return CAS::Term::Transform(t);
 }
+
+Term* BuildInFunctionDefinition::CreateTerm(Term** children) const
+{
+  return new BuildInFunctionDefinition (func);
+}
+
+Term* BuildInFunctionDefinition::GetChildren(void*& param) const
+{
+  return NULL;
+}
+
+

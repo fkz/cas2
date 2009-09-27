@@ -81,6 +81,17 @@ Term* Term::Transform(TransformType t) const
   return NULL;
 }
 
+Term* SimpleTerm::CreateTerm(Term** children) const
+{
+  return new SimpleTerm ();
+}
+
+Term* SimpleTerm::GetChildren(void*& param) const
+{
+  return NULL;
+}
+
+
 
 
 

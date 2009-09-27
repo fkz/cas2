@@ -41,6 +41,8 @@ class FunctionDefinition : public CAS::Term
     virtual CAS::Type* GetType() const;
     virtual CAS::Term* Clone() const;
     virtual CAS::Term* Simplify();
+    virtual Term* CreateTerm(Term** children) const;
+    virtual Term* GetChildren(void*& param) const;
     static FunctionDefinition *CreateTerm (Term *, Variable *);
 };
 
@@ -57,6 +59,8 @@ class BuildInFunctionDefinition: public Term
     virtual Term* Simplify();
     virtual void ToString(std::ostream& stream) const;
     virtual Term* Transform(TransformType t) const;
+    virtual Term* CreateTerm(Term** children) const;
+    virtual Term* GetChildren(void*& param) const;
     static BuildInFunctionDefinition *GetStandardFunction (BuildInFunction::Function f);
     
 };

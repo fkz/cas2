@@ -44,6 +44,7 @@ class Hash
     friend bool operator == (Hash, Hash);
     friend bool operator < (Hash, Hash);
     friend Hash operator ^ (Hash, Hash);
+    friend Hash operator ~ (Hash);
     friend std::ostream &operator << (std::ostream &, Hash);
 };
 
@@ -71,6 +72,11 @@ inline std::ostream &operator << (std::ostream &o, Hash h)
 {
   o << h.hash;
   return o;
+}
+
+inline Hash operator ~ (Hash h)
+{
+  return ~h.hash;
 }
 
 };

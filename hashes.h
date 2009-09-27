@@ -15,7 +15,9 @@ enum Hashes {
   Ln = 0x123AB,
   FunctionDefinition = 0x2137,
   NormalFunctionCall = 0x4619,
-  BuildInFunctionDefinition = 0x634781
+  BuildInFunctionDefinition = 0x634781,
+  Relation = 0x01639F,
+  Boolean = 0x64178
 };
 
   
