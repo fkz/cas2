@@ -25,6 +25,7 @@ using namespace CAS;
 
 TermCollection::const_iterator TermCollection::find(const Term* t) const
 {
+  assert (!iterating);
   Hash hash = t->GetHashCode();
   std::pair< const_iterator, const_iterator > range = equal_range(hash);
   for (; range.first != range.second; ++range.first)
@@ -37,6 +38,7 @@ TermCollection::const_iterator TermCollection::find(const Term* t) const
 
 TermCollection::iterator TermCollection::find(const CAS::Term* t)
 {
+  assert (!iterating);
   Hash hash = t->GetHashCode();
   std::pair< iterator, iterator > range = equal_range(hash);
   for (; range.first != range.second; ++range.first)
@@ -49,8 +51,9 @@ TermCollection::iterator TermCollection::find(const CAS::Term* t)
 
 
 
-bool CAS::TermCollection::push_back(Term* t)
+bool CAS::TermCollection::push_back(Term* t, uint8_t flag)
 {
+  push_back_called = true;
   Hash hash = t->GetHashCode();
   std::pair< iterator, iterator > range = equal_range(hash);
   for (; range.first != range.second; ++range.first)
@@ -58,27 +61,24 @@ bool CAS::TermCollection::push_back(Term* t)
     if (range.first->second.first->Equals(*t))
       return false;
   }
-  insert (range.first, std::make_pair(hash, std::make_pair(t, DefaultFlag)));
-  return true;
-}
-
-bool TermCollection::push_back(Term* t, uint8_t flag)
-{
-  Hash hash = t->GetHashCode();
-  std::pair< iterator, iterator > range = equal_range(hash);
-  for (; range.first != range.second; ++range.first)
+  if (!iterating)
   {
-    if (range.first->second.first->Equals(*t))
-      return false;
+    insert (range.first, std::make_pair(hash, std::make_pair(t, flag == 0xFF ? DefaultFlag : flag)));
   }
-  insert (range.first, std::make_pair(hash, std::make_pair(t, flag)));
+  else
+  {
+    std::pair< iterator, iterator > range = insertCollection.equal_range(hash);
+    for (; range.first->second.first->Equals(*t))
+      return false;
+    insertCollection.insert(range.first, std::make_pair(hash, std::make_pair(t, flag == 0xFF ? DefaultFlag : flag)));
+  }
+  inserted = true;
   return true;
-
 }
 
 
 TermCollection::TermCollection()
-: DefaultFlag(0)
+: DefaultFlag(0), iterating(false), inserted(false), push_back_called(false)
 {
 
 }

@@ -31,22 +31,46 @@ class TermCollection: public std::multimap< Hash, std::pair< Term *, uint8_t > >
 {
   private:
     uint8_t DefaultFlag;
+    bool iterating, inserted, push_back_called;
+    std::multimap< Hash, std::pair< Term *, uint8_t > > insertCollection;
   public:
     static const int Flag_Newly_Added = 0;
     static const int Flag_Processed = 1;
     static const int Flag_Simplified = 2;
     TermCollection();
-    bool push_back (Term *t);
-    bool push_back (Term *t, uint8_t flag);
+    bool push_back (Term *t, uint8_t flag = 0xFF);
     const_iterator find (const CAS::Term* t) const;
     iterator find (const CAS::Term *t);
     bool contains (Term *t)
     {
-      return find (t) != end();
+      return find (t) != end() && insertCollection.find(t) != insertCollection.end();
     }
     void SetDefaultFlag (uint8_t flag)
     {
       DefaultFlag = flag;
+    }
+    void StartIteration()
+    {
+      iterating = true;
+    }
+    void EndIteration()
+    {
+      iterating = false;
+      insert (insertCollection.begin(); insertCollection.end());
+      insertCollection.clear();
+    }
+    void ClearStatus ()
+    {
+      inserted = false;
+      push_back_called = false;
+    }
+    bool GetInserted()
+    {
+      return inserted;
+    }
+    bool GetPushBackCalled()
+    {
+      return push_back_called;
     }
 };
 
