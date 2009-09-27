@@ -21,6 +21,7 @@
 #ifndef CAS_TERMCOLLECTION_H
 #define CAS_TERMCOLLECTION_H
 #include <map>
+#include <cassert>
 #include "hash.h"
 
 namespace CAS {
@@ -32,7 +33,7 @@ class TermCollection: public std::multimap< Hash, std::pair< Term *, uint8_t > >
   private:
     uint8_t DefaultFlag;
     bool iterating, inserted, push_back_called;
-    std::multimap< Hash, std::pair< Term *, uint8_t > > insertCollection;
+    TermCollection *insertCollection;
   public:
     static const int Flag_Newly_Added = 0;
     static const int Flag_Processed = 1;
@@ -52,6 +53,8 @@ class TermCollection: public std::multimap< Hash, std::pair< Term *, uint8_t > >
     void StartIteration()
     {
       iterating = true;
+      if (!insertCollection)
+	insertCollection = new TermCollection ();
     }
     void EndIteration()
     {
@@ -71,6 +74,12 @@ class TermCollection: public std::multimap< Hash, std::pair< Term *, uint8_t > >
     bool GetPushBackCalled()
     {
       return push_back_called;
+    }
+    ~TermCollection();
+    TermCollection &GetInsertCollection ()
+    {
+      assert (inserted);
+      return *insertCollection;
     }
 };
 

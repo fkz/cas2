@@ -67,10 +67,13 @@ bool CAS::TermCollection::push_back(Term* t, uint8_t flag)
   }
   else
   {
-    std::pair< iterator, iterator > range = insertCollection.equal_range(hash);
-    for (; range.first->second.first->Equals(*t))
+    if (insertCollection->push_back(t, flag))
+    {
+      inserted = true;
+      return true;
+    }
+    else
       return false;
-    insertCollection.insert(range.first, std::make_pair(hash, std::make_pair(t, flag == 0xFF ? DefaultFlag : flag)));
   }
   inserted = true;
   return true;
@@ -78,8 +81,14 @@ bool CAS::TermCollection::push_back(Term* t, uint8_t flag)
 
 
 TermCollection::TermCollection()
-: DefaultFlag(0), iterating(false), inserted(false), push_back_called(false)
+: DefaultFlag(0), iterating(false), inserted(false), push_back_called(false), insertCollection(NULL)
 {
 
 }
+
+TermCollection::~TermCollection()
+{
+  delete insertCollection;
+}
+
 
