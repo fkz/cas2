@@ -83,12 +83,12 @@ class Term
 	data.ClearStatus();
 	finnish = true;
 	data.StartIteration();
-	for (TermCollection::const_iterator it = data.begin(); it != data.end(); ++it)
+	for (TermCollection::iterator it = data.begin(); it != data.end(); ++it)
 	{
 	  if (it->second.second == TermCollection::Flag_Newly_Added)
 	  {
-	    it->second.first = TermCollection::Flag_Processed;
-	    Term *term = it->second.second;
+	    it->second.second = TermCollection::Flag_Processed;
+	    Term *term = it->second.first;
 	    Type *type = term->GetType();
 	    for (_It rit = rule_begin; rit != rule_end; ++rit)
 	    {
@@ -189,7 +189,7 @@ class Term
 	delete [] data;
 	
 	TermCollection &terme = objects_all.GetInsertCollection();
-	std::back_insert_iterator< TermCollection > insert_iterator = std::back_insert_iterator< std::vector< Term * > > (objects_all);
+	std::back_insert_iterator< TermCollection > insert_iterator (objects_all);
 	terme.StartIteration();
 	for (TermCollection::iterator it = terme.begin(); it != terme.end(); ++it)
 	{

@@ -35,6 +35,9 @@ class TermCollection: public std::multimap< Hash, std::pair< Term *, uint8_t > >
     bool iterating, inserted, push_back_called;
     TermCollection *insertCollection;
   public:
+    typedef Term *&reference;
+    typedef reference const_reference;
+    typedef Term *value_type;
     static const int Flag_Newly_Added = 0;
     static const int Flag_Processed = 1;
     static const int Flag_Simplified = 2;

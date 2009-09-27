@@ -2,6 +2,7 @@
 #include "operator.h"
 #include "number.h"
 #include "exp.h"
+#include "expandrule.h"
 
 void test1 ();
 void test2 ();
@@ -47,8 +48,15 @@ void test3 ()
 void test4 ()
 {
   CAS::Term *term = CAS::Mul::CreateTerm (CAS::Add::CreateTerm (CAS::Variable::CreateTerm (0), CAS::Variable::CreateTerm (1)),
-					  CAS::Add::CreateTerm (CAS::Variable::CreateTerm (0), CAS::Variable::CreateTerm (1)));
+					  CAS::Add::CreateTerm (CAS::Variable::CreateTerm (0), CAS::Variable::CreateTerm (2)));
   std::cout << "Term: " << *term << std::endl;
   CAS::Term::DoSimplify(term);
   std::cout << "Vereinfacht: " << *term << std::endl;
+  CAS::Rule *rule = new CAS::ExpandRule ();
+  std::vector< CAS::Term * > its;
+  term->SimplifyChildsWithRules(&rule, (&rule)+1, std::back_insert_iterator< std::vector< CAS::Term * > > (its));
+  for (std::vector< CAS::Term* >::iterator it = its.begin(); it != its.end(); ++it)
+  {
+    std::cout << **it << std::endl;
+  }
 }
