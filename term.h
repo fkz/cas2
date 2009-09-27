@@ -164,24 +164,28 @@ class Term
 	
 	//erzeuge Objekte für alle Terme
 	std::vector< Term * >::iterator *iterators = new std::vector< Term * >::iterator[paramcount];
-	iterators[0] = data[0].begin();
 	Term **dataArray = new Term * [ paramcount ];
-	for (int index = 0;;index != -1)
+	if (paramcount != 0)
 	{
-	  while (index + 1 != paramcount)
+	  iterators[0] = data[0].begin();
+	  for (int index = 0;index != -1;)
 	  {
-	    ++index;
-	    iterators[index] = data[index].begin();
-	  }
-	  for (int i = 0; i < paramcount; ++i)
-	    dataArray[i] = (*iterators[i])->Clone();
-	  Term *tTerm = all_it->second.first->CreateTerm (dataArray);
-	  objects_all.push_back (tTerm);
-	  
-	  while (++iterators[index] == data[index].end())
-	  {
-	    if (--index == -1)
-	      break;
+	    while (index + 1 != paramcount)
+	    {
+	      ++index;
+	      iterators[index] = data[index].begin();
+	    }
+	    for (int i = 0; i < paramcount; ++i)
+	      dataArray[i] = (*iterators[i])->Clone();
+	    Term *tTerm = all_it->second.first->CreateTerm (dataArray);
+	    if (!objects_all.push_back (tTerm))
+	      delete tTerm;
+	    
+	    while (++iterators[index] == data[index].end())
+	    {
+	      if (--index == -1)
+		break;
+	    }
 	  }
 	}
 	delete [] dataArray;
@@ -211,7 +215,7 @@ class Term
       for (TermCollection::iterator all_it = objects_all.begin(); all_it != objects_all.end(); ++all_it)
       {
 	assert (all_it->second.second != TermCollection::Flag_Newly_Added);
-	if (all_it->second.second == TermCollection::Flag_Processed)
+	if (all_it->second.second == TermCollection::Flag_Simplified)
 	  delete all_it->second.first;
 	else
 	  *output++ = all_it->second.first;
