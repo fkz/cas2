@@ -146,6 +146,7 @@ Hash CAS::Operator::GetPseudoHashCode(hashes::Hashes hT1, uint32_t data) const
   Hash result (hT1, data);
   for (std::multimap< Hash, Term* >::const_iterator it = children.begin(); it != children.end(); ++it)
     result = result ^ it->first;
+  return result;
 }
  
 void Operator::PseudoToString(std::ostream& stream, const std::string& op) const
