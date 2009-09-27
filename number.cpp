@@ -61,6 +61,18 @@ Hash Number::GetHashCode() const
   return Hash (hashes::Number, zahl);
 }
 
+Term* Number::CreateTerm(Term** children) const
+{
+  return new Number (zahl);
+}
+
+Term* Number::GetChildren(void*& param) const
+{
+  return NULL;
+}
+
+
+
 
 Term* Frac::Clone() const
 {
@@ -108,6 +120,18 @@ void Frac::ToString(std::ostream& stream) const
   stream << "(" << zaehler << "/" << nenner << ")";
 }
 
+Term* Frac::CreateTerm(Term** children) const
+{
+  return new Frac (zaehler, nenner);
+}
+
+Term* Frac::GetChildren(void*& param) const
+{
+  return NULL;
+}
+
+
+
 Term* Variable::Clone() const
 {
   return new Variable (id);
@@ -144,6 +168,17 @@ Variable* Variable::CreateTerm(int id)
 {
   return new Variable (id);
 }
+
+Term* Variable::CreateTerm(Term** children) const
+{
+  return new Variable (id);
+}
+
+Term* Variable::GetChildren(void*& param) const
+{
+  return NULL;
+}
+
 
 int Number::GetNumber() const
 {
