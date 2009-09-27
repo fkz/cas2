@@ -6,12 +6,14 @@
 void test1 ();
 void test2 ();
 void test3 ();
+void test4 ();
 
 int main (int argc, char **argv)
 {
   test1();
   test2();
   test3();
+  test4();
 }
 
 void Output (CAS::Term *t)
@@ -40,4 +42,13 @@ void test2 ()
 void test3 ()
 {
   Output (CAS::Add::CreateTerm(CAS::Number::CreateTerm(0), CAS::Variable::CreateTerm(1)));
+}
+
+void test4 ()
+{
+  CAS::Term *term = CAS::Mul::CreateTerm (CAS::Add::CreateTerm (CAS::Variable::CreateTerm (0), CAS::Variable::CreateTerm (1)),
+					  CAS::Add::CreateTerm (CAS::Variable::CreateTerm (0), CAS::Variable::CreateTerm (1)));
+  std::cout << "Term: " << *term << std::endl;
+  CAS::Term::DoSimplify(term);
+  std::cout << "Vereinfacht: " << *term << std::endl;
 }
