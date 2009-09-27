@@ -70,8 +70,9 @@ class Term
     //berechne alle möglichen Terme, die nicht weiter "vereinfacht" werden können (durch Regeln)
     //setzt voraus, dass vorher Simplify aufgerufen wurde!
     template<class _It, class _outIt>
-    void SimplifyWithRules (_It rule_begin, _It rule_end, _outIt output)
+    bool SimplifyWithRules (_It rule_begin, _It rule_end, _outIt output)
     {
+      bool result = false;
       TermCollection data;
       assert (Simplify() == NULL);
       data.push_back(this);
@@ -97,6 +98,7 @@ class Term
 	      Term *termRule = rule->UseRule(term);
 	      if (termRule)
 	      {
+		result = true;
 		it->second.second = TermCollection::Flag_Simplified;
 		DoSimplify(termRule);
 		if (!data.push_back (termRule))
@@ -120,20 +122,27 @@ class Term
 	  *output++ = it->second.first;
 	}
       }
+      return result;
     }
     
     //Vereinfache den Term und alle seine Kinder
     template<class _It, class _outIt>    
-    void SimplifyChildsWithRules (_It rule_begin, _It rule_end, _outIt output)
+    bool SimplifyChildsWithRules (_It rule_begin, _It rule_end, _outIt output)
     {
+      bool result = false;
       TermCollection objects_all;
       objects_all.push_back(this);
       
-      TermCollection objects;
+      bool finnished = false;
+      while (!finnished)
+      {
+	finnished = true;
+      objects_all.StartIteration();
       for (TermCollection::iterator all_it = objects_all.begin(); all_it != objects_all.end(); ++all_it)
       {
 	if (all_it->second.second != TermCollection::Flag_Newly_Added)
 	  continue;
+	finnished = false;
 	all_it->second.second = TermCollection::Flag_Processed;
 	std::vector< Term * > children;
 	void *var = NULL;
@@ -146,11 +155,14 @@ class Term
 	std::vector< Term* > *datait = data;
 	for (std::vector< Term* >::const_iterator it = children.begin(); it != children.end(); ++it,++datait)
 	{
-	  (*it)->SimplifyChildsWithRules(rule_begin, rule_end, std::back_insert_iterator< std::vector< Term * > > (*datait));
+	  if ((*it)->SimplifyChildsWithRules(rule_begin, rule_end, std::back_insert_iterator< std::vector< Term * > > (*datait)))
+	  {
+	    all_it->second.second = TermCollection::Flag_Simplified;
+	    result = true;
+	  }
 	}
 	
 	//erzeuge Objekte für alle Terme
-	objects.SetDefaultFlag(TermCollection::Flag_Processed);
 	std::vector< Term * >::iterator *iterators = new std::vector< Term * >::iterator[paramcount];
 	iterators[0] = data[0].begin();
 	Term **dataArray = new Term * [ paramcount ];
@@ -164,7 +176,7 @@ class Term
 	  for (int i = 0; i < paramcount; ++i)
 	    dataArray[i] = (*iterators[i])->Clone();
 	  Term *tTerm = all_it->second.first->CreateTerm (dataArray);
-	  objects.push_back (tTerm);
+	  objects_all.push_back (tTerm);
 	  
 	  while (++iterators[index] == data[index].end())
 	  {
@@ -175,25 +187,36 @@ class Term
 	delete [] dataArray;
 	delete [] iterators;
 	delete [] data;
-      
-	std::vector< Term * > terme;
-	std::back_insert_iterator< std::vector< Term* > > insert_iterator = std::back_insert_iterator< std::vector< Term * > > (terme);
-	for (TermCollection::iterator it = objects.begin(); it != objects.end(); ++it)
+	
+	TermCollection &terme = objects_all.GetInsertCollection();
+	std::back_insert_iterator< TermCollection > insert_iterator = std::back_insert_iterator< std::vector< Term * > > (objects_all);
+	terme.StartIteration();
+	for (TermCollection::iterator it = terme.begin(); it != terme.end(); ++it)
 	{
 	  size_t size = terme.size();
-	  it->second.first->SimplifyWithRules(rule_begin, rule_end, insert_iterator);
-	  if (terme.size() != size)
+	  if (it->second.first->SimplifyWithRules(rule_begin, rule_end, insert_iterator))
+	  {
 	    it->second.second = TermCollection::Flag_Simplified;
+	    result = true;
+	  }
+	  else
+	    it->second.second = TermCollection::Flag_Processed;
 	}
-	if (!terme.empty())
-	{
+	if (all_it->second.first->SimplifyWithRules(rule_begin, rule_end, insert_iterator))
 	  all_it->second.second = TermCollection::Flag_Simplified;
-	}
-	objects.SetDefaultFlag(TermCollection::Flag_Newly_Added);
-	for (std::vector< Term* >::const_iterator it = terme.begin(); it != terme.end(); ++it)
-	  objects.push_back(*it);
+	terme.EndIteration();
       }
-      //TODO: Implementierung beenden (verbessern ??)
+      objects_all.EndIteration();
+      }
+      for (TermCollection::iterator all_it = objects_all.begin(); all_it != objects_all.end(); ++all_it)
+      {
+	assert (all_it->second.second != TermCollection::Flag_Newly_Added);
+	if (all_it->second.second == TermCollection::Flag_Processed)
+	  delete all_it->second.first;
+	else
+	  *output++ = all_it->second.first;
+      }
+      return result;
     }
 };
 
