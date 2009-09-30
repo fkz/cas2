@@ -36,13 +36,13 @@ class TermCollection: public std::multimap< Hash, std::pair< Term *, uint8_t > >
     TermCollection *insertCollection;
   public:
     typedef Term *&reference;
-    typedef reference const_reference;
+    typedef const reference const_reference;
     typedef Term *value_type;
     static const int Flag_Newly_Added = 0;
     static const int Flag_Processed = 1;
     static const int Flag_Simplified = 2;
     TermCollection();
-    bool push_back (Term *t, uint8_t flag = 0xFF);
+    bool push_back (CAS::Term*const& t, uint8_t flag = 0xFF);
     const_iterator find (const CAS::Term* t) const;
     iterator find (const CAS::Term *t);
     bool contains (Term *t)

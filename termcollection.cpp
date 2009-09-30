@@ -51,7 +51,7 @@ TermCollection::iterator TermCollection::find(const CAS::Term* t)
 
 
 
-bool CAS::TermCollection::push_back(Term* t, uint8_t flag)
+bool CAS::TermCollection::push_back(CAS::Term* const & t, uint8_t flag)
 {
   push_back_called = true;
   Hash hash = t->GetHashCode();
