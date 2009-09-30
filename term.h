@@ -35,7 +35,10 @@ namespace CAS {
 
 class Term
 {
+  private:
+    size_t references;
   public:
+    Term ();
     /*
       Vereinfacht den Term. Falls keine Vereinfachung stattgefunden hat, gibt NULL (0) zurück, sonst
       das vereinfachte Objekt. Falls result != NULL && result != this ist this danach undefiniert!!!
@@ -76,6 +79,7 @@ class Term
     template<class _It, class _outIt>    
     bool SimplifyChildsWithRules (_It rule_begin, _It rule_end, _outIt output);
     
+    friend class TermReference;
 };
 
 std::ostream &operator << (std::ostream &, const Term &); 

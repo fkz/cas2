@@ -29,6 +29,12 @@ std::ostream& CAS::operator<<(std::ostream &stream, const CAS::Term &term)
   return stream;
 }
 
+Term::Term()
+: references(1)
+{
+
+}
+
 
 Term* SimpleTerm::Clone() const
 {

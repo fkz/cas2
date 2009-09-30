@@ -33,6 +33,9 @@ class Hash
     uint32_t hash;
     Hash (uint32_t h) : hash (h) { }
   public:
+    Hash ()
+    : hash (0)
+    { }
     Hash (hashes::Hashes type, uint32_t data)
     : hash (type ^ data)
     { }
