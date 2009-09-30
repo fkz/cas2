@@ -103,6 +103,8 @@ class Term
 		DoSimplify(termRule);
 		if (!data.push_back (termRule))
 		  delete termRule;
+		else
+		  finnish = false;
 	      }
 	    }
 	  }
@@ -179,7 +181,7 @@ class Term
 	      dataArray[i] = (*iterators[i])->Clone();
 	    Term *tTerm = all_it->second.first->CreateTerm (dataArray);
 	    if (!objects_all.push_back (tTerm))
-	      delete tTerm;
+	      /*delete tTerm*/;
 	    
 	    while (++iterators[index] == data[index].end())
 	    {

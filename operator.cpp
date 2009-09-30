@@ -27,7 +27,7 @@ using namespace CAS;
 
 CAS::Type* Operator::GetType() const
 {
-
+  return Type::GetBuildInType(Type::Term);
 }
 
 Term *Operator::Simplify()
