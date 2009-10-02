@@ -19,6 +19,7 @@
 */
 
 #include "termreference.h"
+#include <cassert>
 
 using namespace CAS;
 

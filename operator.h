@@ -22,6 +22,7 @@
 #define CAS_OPERATOR_H
 
 #include "term.h"
+#include "termreference.h"
 #include <map>
 #include <vector>
 
@@ -30,22 +31,22 @@ namespace CAS {
 class Operator : public CAS::Term
 {
   protected:
-    std::multimap<Hash, CAS::Term *> children;
+    std::multimap<Hash, CAS::TermReference *> children;
     //Die FindEqual-Funktion darf KEINE Änderungen an children durchführen, die Iteratoren ungültig machen; diese Änderungen sollten
     //ans Ende angestellt werden!
-    void FindEquals (void (Operator::*) (CAS::Term*, int));
+    void FindEquals (void (Operator::*) (CAS::TermReference*, int));
     Operator ();
-    Operator (const std::multimap<Hash, CAS::Term *> &c);
-    Operator (Term **t, size_t anzahl);
+    Operator (const std::multimap< CAS::Hash, CAS::TermReference* >& c);
+    Operator (CAS::TermReference** t, size_t anzahl);
     Hash GetPseudoHashCode (CAS::hashes::Hashes hT1, uint32_t data) const;
     void PseudoToString (std::ostream &stream, const std::string &op) const;
     
     template<class C, class _It> 
-    void Where (_It output_iterator, bool (Operator::*predicate) (C *))
+    void Where (_It output_iterator, bool (Operator::*predicate) (const C *))
     {
-      for (std::multimap< Hash, Term* >::iterator it = children.begin(); it != children.end();)
+      for (std::multimap< Hash, TermReference* >::iterator it = children.begin(); it != children.end();)
       {
-	C *c = dynamic_cast<C *> (it->second);
+	const C *c = dynamic_cast<const C *> (it->second->get_const ());
 	if (!c)
 	{
 	  ++it;
@@ -53,7 +54,7 @@ class Operator : public CAS::Term
 	}
 	if ((this->*predicate) (c))
 	{
-	  *output_iterator++ = c;
+	  *output_iterator++ = it->second;
 	  children.erase(it++);
 	  continue;
 	}
@@ -74,7 +75,7 @@ class Operator : public CAS::Term
     virtual Term *Simplify();
     virtual ~Operator();
     virtual bool Equals(const CAS::Term& t) const;
-    virtual Term* GetChildren(void*& param) const;
+    virtual TermReference* GetChildren(void*& param) const;
     
     friend Term* OperatorRule::MatchRule(const Term* t, std::vector< Term* >::iterator params, int count) const;
 };
@@ -84,16 +85,16 @@ class Add: public Operator
   private:
     Add ();
     Add (const Add &a);
-    Add (Term **t, size_t anz);
-    std::vector<std::pair< Term *, int> > temporary_equality;
-    void EqualRoutine (Term *t, int anzahl);
+    Add (CAS::TermReference** t, size_t anz);
+    std::vector<std::pair< TermReference *, int> > temporary_equality;
+    void EqualRoutine (CAS::TermReference* t, int anzahl);
   public:
     virtual Term* Clone() const;
     virtual Hash GetHashCode() const;
     virtual void ToString(std::ostream& stream) const;
     virtual Term *Simplify();
-    virtual Term* CreateTerm(Term** children) const;
-    static Add *CreateTerm (Term *t1, Term *t2);
+    virtual Term* CreateTerm(TermReference** children) const;
+    static Add *CreateTerm (CAS::TermReference* t1, CAS::TermReference* t2);
 };
 
 class Mul: public Operator
@@ -101,15 +102,15 @@ class Mul: public Operator
   private:
     Mul (const Mul &m);
     Mul ();
-    Mul (Term **t, size_t anz);
-    void EqualRoutine (Term *t, int anzahl);
-    std::vector< std::pair< Term*, int > > temporary_equality;
+    Mul (CAS::TermReference** t, size_t anz);
+    void EqualRoutine (CAS::TermReference* t, int anzahl);
+    std::vector< std::pair< TermReference*, int > > temporary_equality;
   public:
     virtual Term* Clone() const;
     virtual Hash GetHashCode() const;
     virtual void ToString(std::ostream& stream) const;
-    static Mul *CreateTerm (Term *t1, Term *t2);
-    virtual Term* CreateTerm(Term** children) const;
+    static Mul *CreateTerm (CAS::TermReference* t1, CAS::TermReference* t2);
+    virtual Term* CreateTerm(CAS::TermReference** children) const;
     virtual Term* Simplify();
 };
 

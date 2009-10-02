@@ -25,27 +25,28 @@
 #include "hash.h"
 
 namespace CAS {
+class TermReference;
 class Term;
 
 
-class TermCollection: public std::multimap< Hash, std::pair< Term *, uint8_t > >
+class TermCollection: public std::multimap< Hash, std::pair< TermReference *, uint8_t > >
 {
   private:
     uint8_t DefaultFlag;
     bool iterating, inserted, push_back_called;
     TermCollection *insertCollection;
   public:
-    typedef Term *&reference;
+    typedef TermReference *&reference;
     typedef const reference const_reference;
     typedef Term *value_type;
     static const int Flag_Newly_Added = 0;
     static const int Flag_Processed = 1;
     static const int Flag_Simplified = 2;
     TermCollection();
-    bool push_back (CAS::Term*const& t, uint8_t flag = 0xFF);
-    const_iterator find (const CAS::Term* t) const;
-    iterator find (const CAS::Term *t);
-    bool contains (Term *t)
+    bool push_back (CAS::TermReference*const& t, uint8_t flag = 0xFF);
+    const_iterator find (const CAS::TermReference* t) const;
+    iterator find (const CAS::TermReference* t);
+    bool contains (TermReference *t)
     {
       return find (t) != end() && (!insertCollection || insertCollection->find(t) != insertCollection->end());
     }

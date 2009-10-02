@@ -53,17 +53,22 @@ class Term
     virtual bool Equals (const Term &t) const = 0;
     virtual void ToString (std::ostream &stream) const = 0;
     virtual Hash GetHashCode () const = 0;
-    virtual Term *GetChildren (void *&param) const = 0;
-    virtual Term *CreateTerm(Term** children) const = 0;
+    virtual TermReference *GetChildren (void *&param) const = 0;
+    virtual Term *CreateTerm(TermReference** children) const = 0;
     virtual ~Term () {}
     template<class T>
     static bool DoSimplify (T *&term)
     {
+      assert (term->references == 1);
       Term *temp = term->Simplify();
       if (temp)
       {
-	term = dynamic_cast< T * > (temp);
-	assert (term);
+	if (term != temp)
+	{
+	  ++term->references;
+	  term = dynamic_cast< T * > (temp);
+	  assert (term);
+	}
       }
       return temp;
     }
@@ -72,6 +77,18 @@ class Term
     virtual Term *Transform (TransformType t) const;
     //berechne alle möglichen Terme, die nicht weiter "vereinfacht" werden können (durch Regeln)
     //setzt voraus, dass vorher Simplify aufgerufen wurde!
+    template<class T>
+    T *Cast ()
+    {
+      return dynamic_cast< T * > (this);
+    }
+    
+    template<class T>
+    const T *Cast () const
+    {
+      return dynamic_cast < const T * > (this);
+    }
+    
     template<class _It, class _outIt>
     bool SimplifyWithRules (_It rule_begin, _It rule_end, _outIt output);
     
@@ -93,12 +110,12 @@ class SimpleTerm: public Term
     virtual Type* GetType() const;
     virtual Term* Simplify();
     virtual void ToString(std::ostream& stream) const;
-    virtual Term* CreateTerm(Term** children) const;
-    virtual Term* GetChildren(void*& param) const;
+    virtual Term* CreateTerm(TermReference** children) const;
+    virtual TermReference* GetChildren(void*& param) const;
     static SimpleTerm *obj ();
 };
 
 }
 
-#include "term_templates.cpp"
+//#include "term_templates.cpp"
 #endif // CAS_TERM_H

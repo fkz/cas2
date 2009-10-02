@@ -19,6 +19,7 @@
 */
 
 #include "functiondefinition.h"
+#include "termreference.h"
 
 using namespace CAS;
 
@@ -29,7 +30,7 @@ CAS::Hash FunctionDefinition::GetHashCode() const
 
 void FunctionDefinition::ToString(std::ostream& stream) const
 {
-  stream << *variable << "->" << *term;
+  stream << *variable << "->" << *term->get_const();
 }
 
 bool FunctionDefinition::Equals(const CAS::Term& t) const
@@ -51,30 +52,26 @@ CAS::Term* FunctionDefinition::Clone() const
 
 CAS::Term* FunctionDefinition::Simplify()
 {
-  Term* temp = term->Simplify();
-  if (temp)
-    term = temp;
-  return temp ? this : NULL;
-  //Variable kann nicht vereinfacht werden
+  return NULL;
 }
 
-FunctionDefinition* FunctionDefinition::CreateTerm(Term *t, Variable *v )
+FunctionDefinition* FunctionDefinition::CreateTerm(TermReference *t, Variable *v )
 {
   return new FunctionDefinition (t, v);
 }
 
-FunctionDefinition::FunctionDefinition(Term* t, Variable* v)
+FunctionDefinition::FunctionDefinition(TermReference* t, Variable* v)
 : term(t), variable(v)
 {
 
 }
 
-Term* FunctionDefinition::CreateTerm(Term** children) const
+Term* FunctionDefinition::CreateTerm(TermReference** children) const
 {
   return new FunctionDefinition (children[0], variable);
 }
 
-Term* FunctionDefinition::GetChildren(void*& param) const
+TermReference* FunctionDefinition::GetChildren(void*& param) const
 {
   if (!param)
   {
@@ -148,12 +145,12 @@ CAS::Term* CAS::BuildInFunctionDefinition::Transform(TransformType t) const
   return CAS::Term::Transform(t);
 }
 
-Term* BuildInFunctionDefinition::CreateTerm(Term** children) const
+Term* BuildInFunctionDefinition::CreateTerm(TermReference** children) const
 {
   return new BuildInFunctionDefinition (func);
 }
 
-Term* BuildInFunctionDefinition::GetChildren(void*& param) const
+TermReference* BuildInFunctionDefinition::GetChildren(void*& param) const
 {
   return NULL;
 }

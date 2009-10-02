@@ -22,6 +22,7 @@
 #include "number.h"
 #include <cassert>
 #include "exp.h"
+#include "termreference.h"
 
 using namespace CAS;
 
@@ -32,42 +33,25 @@ CAS::Type* Operator::GetType() const
 
 Term *Operator::Simplify()
 {
-  Term *result = NULL;
-  std::vector< Term * > tempValues;
-  for (std::multimap< Hash, Term* >::iterator it = children.begin(); it != children.end();)
-  {
-    Term *t;
-    if (t = (*it).second->Simplify())
-    {
-      tempValues.push_back(t);
-      children.erase (it++);
-      result = this;
-    }
-    else
-      ++it;
-  }
-  for (std::vector< Term* >::iterator it = tempValues.begin(); it != tempValues.end(); ++it)
-  {
-    children.insert (std::make_pair((*it)->GetHashCode(), *it));
-  }
-  return result;
+  //es gibt nichts zu tun: Die Kinder sind bereits alle vereinfacht
+  return NULL;
 }
 
 
-void Operator::FindEquals (void (Operator::*FindEqual) (CAS::Term *t1, int n))
+void Operator::FindEquals (void (Operator::*FindEqual) (CAS::TermReference *t1, int n))
 {
   //Die FindEqual-Funktion darf KEINE Änderungen an children durchführen, die Iteratoren ungültig machen; diese Änderungen sollten
   //ans Ende angestellt werden!
-  std::multimap< Hash, Term* >::iterator it = children.begin();
+  std::multimap< Hash, TermReference* >::iterator it = children.begin();
   while (it != children.end())
   {
-    std::multimap< Hash, Term* >::iterator start = it++;
+    std::multimap< Hash, TermReference* >::iterator start = it++;
     for (; it != children.end() && start->first == it->first; ++it) ; //this (;) is correct
     //suche gleiche
     for (; start != it; ++start)
     {
       int anzahl = 1;
-      std::multimap< Hash, Term* >::iterator it2 = start;
+      std::multimap< Hash, TermReference* >::iterator it2 = start;
       ++it2;
       for (; it2 != it;)
       {
@@ -82,7 +66,7 @@ void Operator::FindEquals (void (Operator::*FindEqual) (CAS::Term *t1, int n))
       }
       if (anzahl > 1)
       {
-	Term *t = start->second;
+	TermReference *t = start->second;
 	children.erase (start);
 	(this->*FindEqual) (t, anzahl);
       }
@@ -92,18 +76,18 @@ void Operator::FindEquals (void (Operator::*FindEqual) (CAS::Term *t1, int n))
 
 Operator::~Operator()
 {
-  for (std::multimap< Hash, Term* >::const_iterator it = children.begin(); it != children.end(); ++it)
+  for (std::multimap< Hash, TermReference* >::const_iterator it = children.begin(); it != children.end(); ++it)
     delete it->second;    
 }
 
-Operator::Operator(const std::multimap< Hash, Term* >& c)
+Operator::Operator(const std::multimap< Hash, TermReference* >& c)
 : children(c)
 {
 
 }
 
 
-Operator::Operator(Term** t, size_t anzahl)
+Operator::Operator(TermReference** t, size_t anzahl)
 {
   for (int i = 0; i < anzahl; ++i)
     children.insert(std::make_pair(t[i]->GetHashCode(),  t[i]));
@@ -121,11 +105,11 @@ bool Operator::Equals(const CAS::Term& t) const
   const CAS::Operator* ct = dynamic_cast<const Operator *> (&t);
   if (!ct)
     return false;
-  for (std::multimap< Hash, Term* >::const_iterator it = children.begin(), ctit = ct->children.begin(); ; )
+  for (std::multimap< Hash, TermReference* >::const_iterator it = children.begin(), ctit = ct->children.begin(); ; )
   {
     if (it->first != ctit->first)
       return false;
-    std::multimap< Hash, Term* >::const_iterator itend = it, ctitend = ctit;
+    std::multimap< Hash, TermReference* >::const_iterator itend = it, ctitend = ctit;
     while (itend != children.end() && ctitend != ct->children.end() && it->first == itend->first && ctit->first == ctitend->first)
       ++itend, ++ctitend;
     if ((itend != children.end()) == !(ctitend != ct->children.end()))
@@ -144,49 +128,43 @@ bool Operator::Equals(const CAS::Term& t) const
 Hash CAS::Operator::GetPseudoHashCode(hashes::Hashes hT1, uint32_t data) const
 {
   Hash result (hT1, data);
-  for (std::multimap< Hash, Term* >::const_iterator it = children.begin(); it != children.end(); ++it)
+  for (std::multimap< Hash, TermReference* >::const_iterator it = children.begin(); it != children.end(); ++it)
     result = result ^ it->first;
   return result;
 }
  
 void Operator::PseudoToString(std::ostream& stream, const std::string& op) const
 {
-  std::multimap< Hash, Term* >::const_iterator it = children.begin();
-  stream << "(";
-  it->second->ToString(stream);
+  std::multimap< Hash, TermReference* >::const_iterator it = children.begin();
+  stream << "(" << *it->second;
   for (++it; it != children.end(); ++it)
   {
-    stream << op;
-    it->second->ToString(stream);
+    stream << op << *it->second;
   }
   stream << ")";
 }
 
 Term* Operator::GetSingleObject()
 {
-  std::multimap< Hash, Term* >::iterator it = children.begin();
+  std::multimap< Hash, TermReference* >::iterator it = children.begin();
   ++it;
   if (it == children.end())
   {
-    Term *result = children.begin()->second;
+    TermReference *result = children.begin()->second;
     children.clear();
     delete this;
-    Term *temp = result->Simplify();
-    if (temp)
-      return temp;
-    else
-      return result;
+    //TODO:return result;
   }
   return NULL;
 }
 
-Term* Operator::GetChildren(void*& param) const
+TermReference* Operator::GetChildren(void*& param) const
 {
-  std::multimap< Hash, Term * >::const_iterator *it;
+  std::multimap< Hash, TermReference * >::const_iterator *it;
   if (!param)
-    param = it = new std::multimap< Hash, Term * >::const_iterator (children.begin());
+    param = it = new std::multimap< Hash, TermReference * >::const_iterator (children.begin());
   else
-    it = (std::multimap< Hash, Term * >::const_iterator *)param;
+    it = (std::multimap< Hash, TermReference * >::const_iterator *)param;
   if (*it != children.end())
     return ((*it)++)->second;
   else
@@ -220,7 +198,7 @@ Add::Add(const CAS::Add& a)
 
 }
 
-Term* Add::CreateTerm(Term** children) const
+Term* Add::CreateTerm(TermReference** children) const
 {
   return new Add (children, this->children.size());
 }
@@ -231,30 +209,30 @@ Term *Add::Simplify()
   Term *result = CAS::Operator::Simplify();
   assert (!result || result == this);
   temporary_equality.clear();
-  FindEquals(static_cast < void (Operator::*) (Term *, int) > (&Add::EqualRoutine));
+  //TODO:FindEquals(static_cast < void (Operator::*) (Term *, int) > (&Add::EqualRoutine));
   result = (result || !temporary_equality.empty()) ? this : NULL;
-  for (std::vector< std::pair< Term*, int > >::const_iterator it = temporary_equality.begin(); it != temporary_equality.end(); ++it)
+  for (std::vector< std::pair< TermReference*, int > >::const_iterator it = temporary_equality.begin(); it != temporary_equality.end(); ++it)
   {
-    Mul *mul = Mul::CreateTerm (Number::CreateTerm (it->second), it->first);
+    TermReference *mul = TermReference::Create<Mul> (TermReference::Create<Number> (it->second), it->first);
     children.insert (std::make_pair (mul->GetHashCode(), mul));
   }
   temporary_equality.clear();
   
-  std::vector< Number * > vect;
-  std::back_insert_iterator< std::vector< Number * > > outputiterator (vect);
+  std::vector< TermReference * > vect;
+  std::back_insert_iterator< std::vector< TermReference * > > outputiterator (vect);
   Where< Number > (outputiterator, &Operator::True);
   if (vect.size() >= 2)
   {
     int res = 0;
-    for (std::vector< Number* >::iterator it = vect.begin(); it != vect.end();)
+    for (std::vector< TermReference * >::iterator it = vect.begin(); it != vect.end();)
     {
-      Number *t = *it++;
-      res += t->GetNumber ();
+      TermReference *t = *it++;
+      res += t->get_const()->Cast< Number > ()->GetNumber ();
       delete t;
     }
     if (res != 0)
     {
-      Number *number = Number::CreateTerm(res);
+      TermReference *number = TermReference::Create<Number> (res);
       children.insert(std::make_pair(number->GetHashCode(), number));
     }
     assert (result == this || ! result );
@@ -262,7 +240,7 @@ Term *Add::Simplify()
   }
   else
     if (!vect.empty())
-      if (vect.front()->GetNumber() != 0)
+      if (vect.front()->get_const()->Cast< Number > ()->GetNumber() != 0)
 	children.insert(std::make_pair (vect.front()->GetHashCode(), vect.front()));
       else
       {
@@ -278,7 +256,7 @@ Term *Add::Simplify()
   return result;
 }
 
-Add* Add::CreateTerm(Term* t1, Term* t2)
+Add* Add::CreateTerm(TermReference* t1, TermReference* t2)
 {
   Add *result = new Add ();
   result->children.insert (std::make_pair (t1->GetHashCode(), t1));
@@ -291,7 +269,7 @@ Add::Add ()
   
 }
 
-Add::Add(Term** t, size_t anz)
+Add::Add(TermReference** t, size_t anz)
 : Operator(t, anz)
 {
   
@@ -299,7 +277,7 @@ Add::Add(Term** t, size_t anz)
 
 
 
-void Add::EqualRoutine(Term* t, int anzahl)
+void Add::EqualRoutine(TermReference* t, int anzahl)
 {
   temporary_equality.push_back(std::make_pair (t, anzahl));
 }
@@ -321,7 +299,7 @@ Mul::Mul(const CAS::Mul& m)
 
 }
 
-Mul::Mul(Term** t, size_t anz)
+Mul::Mul(TermReference** t, size_t anz)
 : Operator(t, anz)
 {
 
@@ -335,7 +313,7 @@ void Mul::ToString(std::ostream& stream) const
 }
 
 
-Mul *Mul::CreateTerm(Term* t1, Term* t2)
+Mul *Mul::CreateTerm(TermReference* t1, TermReference* t2)
 {
   Mul* result = new Mul ();
   result->children.insert (std::make_pair(t1->GetHashCode(), t1));
@@ -343,7 +321,7 @@ Mul *Mul::CreateTerm(Term* t1, Term* t2)
   return result;
 }
 
-Term* Mul::CreateTerm(Term** children) const
+Term* Mul::CreateTerm(TermReference** children) const
 {
   return new Mul (children, this->children.size());
 }
@@ -355,7 +333,7 @@ CAS::Mul::Mul()
 
 }
 
-void Mul::EqualRoutine(Term* t, int anzahl)
+void Mul::EqualRoutine(TermReference* t, int anzahl)
 {
   temporary_equality.push_back(std::make_pair(t, anzahl));
 }
@@ -365,32 +343,32 @@ Term* Mul::Simplify()
   Term *result = CAS::Operator::Simplify();
   assert (!result || result == this);
   temporary_equality.clear();
-  FindEquals(static_cast< void (Operator::*) (Term *, int) > (&Mul::EqualRoutine));
+  //TODO:FindEquals(static_cast< void (Operator::*) (Term *, int) > (&Mul::EqualRoutine));
   result = (result || !temporary_equality.empty()) ? this : NULL;
-  for (std::vector< std::pair< Term*, int > >::const_iterator it = temporary_equality.begin(); it != temporary_equality.end(); ++it)
+  for (std::vector< std::pair< TermReference*, int > >::const_iterator it = temporary_equality.begin(); it != temporary_equality.end(); ++it)
   {
-    FunctionCall *ln = BuildInFunction::CreateTerm (BuildInFunction::Ln, Number::CreateTerm(it->second));
-    Mul *mul = Mul::CreateTerm(ln, it->first);
-    FunctionCall *exp = BuildInFunction::CreateTerm (BuildInFunction::Exp, mul);
+    TermReference *ln = TermReference::Create<BuildInFunction> (BuildInFunction::Ln, TermReference::Create<Number>(it->second));
+    TermReference *mul = TermReference::Create<Mul> (ln, it->first);
+    TermReference *exp = TermReference::Create<BuildInFunction> (BuildInFunction::Exp, mul);
     children.insert (std::make_pair(exp->GetHashCode (), exp));
   }
   temporary_equality.clear();
   
-  std::vector< Number * > vect;
-  std::back_insert_iterator< std::vector< Number * > > outputiterator (vect);
+  std::vector< TermReference * > vect;
+  std::back_insert_iterator< std::vector< TermReference * > > outputiterator (vect);
   Where< Number > (outputiterator, &Operator::True);
   if (vect.size() >= 2)
   {
     int res = 1;
-    for (std::vector< Number* >::const_iterator it = vect.begin(); it != vect.end();)
+    for (std::vector< TermReference* >::const_iterator it = vect.begin(); it != vect.end();)
     {
-      Number *t = *it++;
-      res *= t->GetNumber();
+      const TermReference *t = *it++;
+      res *= t->get_const()->Cast<Number>()->GetNumber();
       delete t;
     }
     if (res != 1)
     {
-      Number *number = Number::CreateTerm(res);
+      TermReference *number = TermReference::Create<Number>(res);
       children.insert(std::make_pair(number->GetHashCode(), number));
     }
     assert (result == this || ! result );
@@ -398,7 +376,7 @@ Term* Mul::Simplify()
   }
   else
     if (!vect.empty())
-      if (vect.front()->GetNumber() != 1)
+      if (vect.front()->get_const()->Cast<Number>()->GetNumber() != 1)
 	children.insert(std::make_pair (vect.front()->GetHashCode(), vect.front()));
       else
       {

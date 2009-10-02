@@ -29,8 +29,8 @@ class FunctionDefinition;
 class FunctionCall: public Term
 {
   protected:
-    FunctionCall (Term *t);
-    Term *parameter;
+    FunctionCall (TermReference *t);
+    TermReference *parameter;
     virtual std::string GetFunctionName () const = 0;
     bool IsSameFunction (const FunctionCall &f) const;
     //Der Rückgabetyp wird nicht gelöscht
@@ -43,7 +43,7 @@ class FunctionCall: public Term
     virtual Type *GetType() const;
     virtual Term *Simplify();
     virtual void ToString(std::ostream& stream) const;
-    virtual Term* GetChildren(void*& param) const;
+    virtual TermReference* GetChildren(void*& param) const;
     ~FunctionCall ();
 };
   
@@ -57,14 +57,14 @@ class BuildInFunction: public FunctionCall
     };
   private:
     virtual std::string GetFunctionName() const;
-    BuildInFunction(Function f, Term *t);
+    BuildInFunction(CAS::BuildInFunction::Function f, CAS::TermReference* t);
     virtual const CAS::Term* GetFunction() const;
     Function func;
   public:
-    static BuildInFunction *CreateTerm (Function f, Term *t);
+    static BuildInFunction *CreateTerm (CAS::BuildInFunction::Function f, CAS::TermReference* t);
     virtual Term* Clone() const;
     virtual Hash GetHashCode() const;
-    virtual Term* CreateTerm(Term** children) const;
+    virtual Term* CreateTerm(TermReference** children) const;
     static void GetFunctionNameEx(std::ostream&, CAS::BuildInFunction::Function);
 };
   
@@ -73,7 +73,7 @@ class NormalFunctionCall: public FunctionCall
 {
   private:
     FunctionDefinition *definition;
-    NormalFunctionCall(Term* param, FunctionDefinition *fd);
+    NormalFunctionCall(TermReference* param, FunctionDefinition *fd);
     virtual const CAS::Term* GetFunction() const;
   public:
     virtual Term* Clone() const;
@@ -81,7 +81,7 @@ class NormalFunctionCall: public FunctionCall
     virtual Hash GetHashCode() const;
     virtual FunctionCall* GetUmkehrFunktion() const;
     virtual bool Equals(const CAS::Term& t) const;
-    virtual Term* CreateTerm(Term** children) const;
+    virtual Term* CreateTerm(TermReference** children) const;
     virtual ~NormalFunctionCall();
 };
 

@@ -20,10 +20,11 @@
 
 #include "termcollection.h"
 #include "term.h"
+#include "termreference.h"
 
 using namespace CAS;
 
-TermCollection::const_iterator TermCollection::find(const Term* t) const
+TermCollection::const_iterator TermCollection::find(const TermReference * t) const
 {
   assert (!iterating);
   Hash hash = t->GetHashCode();
@@ -36,7 +37,7 @@ TermCollection::const_iterator TermCollection::find(const Term* t) const
   return end();
 }
 
-TermCollection::iterator TermCollection::find(const CAS::Term* t)
+TermCollection::iterator TermCollection::find(const CAS::TermReference* t)
 {
   assert (!iterating);
   Hash hash = t->GetHashCode();
@@ -51,7 +52,7 @@ TermCollection::iterator TermCollection::find(const CAS::Term* t)
 
 
 
-bool CAS::TermCollection::push_back(CAS::Term* const & t, uint8_t flag)
+bool CAS::TermCollection::push_back(CAS::TermReference* const & t, uint8_t flag)
 {
   push_back_called = true;
   Hash hash = t->GetHashCode();

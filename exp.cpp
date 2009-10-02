@@ -20,6 +20,7 @@
 
 #include "exp.h"
 #include "functiondefinition.h"
+#include "termreference.h"
 
 using namespace CAS;
 
@@ -32,7 +33,7 @@ bool FunctionCall::Equals(const CAS::Term& t) const
   return parameter->Equals(*func->parameter);
 }
 
-FunctionCall::FunctionCall(Term* t)
+FunctionCall::FunctionCall(TermReference* t)
 : parameter(t)
 {
 
@@ -46,14 +47,8 @@ Type* FunctionCall::GetType() const
 Term *FunctionCall::Simplify()
 {
   Term *result = NULL;
-  Term *temp = parameter->Simplify();
-  if (temp)
-  {
-    parameter = temp;
-    result = this;
-  }
   
-  FunctionCall *f = dynamic_cast< FunctionCall * > (parameter);
+  const FunctionCall *f = dynamic_cast< const FunctionCall * > (parameter->get_const());
   if (f)
   {
     const Term *t1 = f->GetFunction();
@@ -61,8 +56,7 @@ Term *FunctionCall::Simplify()
     Term* t1_ = t1->Transform(Transforms::UmkehrFunktion);
     if (t1_->Equals(*t2))
     {
-      result = f->parameter;
-      f->parameter = NULL;
+      //TODO:result = f->parameter->Clone();
       delete f;
     }
     delete t1_;
@@ -88,7 +82,7 @@ void FunctionCall::ToString(std::ostream& stream) const
   stream << GetFunctionName () << "(" << *parameter << ")";
 }
 
-Term* FunctionCall::GetChildren(void*& param) const
+TermReference* FunctionCall::GetChildren(void*& param) const
 {
   if (!param)
   {
@@ -135,7 +129,7 @@ FunctionCall* NormalFunctionCall::GetUmkehrFunktion() const
   return NULL;
 }
 
-NormalFunctionCall::NormalFunctionCall(Term* param, FunctionDefinition* fd)
+NormalFunctionCall::NormalFunctionCall(TermReference* param, FunctionDefinition* fd)
 : FunctionCall(param), definition(fd)
 {
   
@@ -152,7 +146,7 @@ const CAS::Term* NormalFunctionCall::GetFunction() const
   return definition;
 }
 
-BuildInFunction::BuildInFunction(BuildInFunction::Function f, Term* t)
+BuildInFunction::BuildInFunction(BuildInFunction::Function f, TermReference* t)
 : FunctionCall(t), func(f)
 {
 
@@ -163,7 +157,7 @@ Term* BuildInFunction::Clone() const
   return new BuildInFunction (func, parameter);
 }
 
-BuildInFunction* BuildInFunction::CreateTerm(BuildInFunction::Function f, Term* t)
+BuildInFunction* BuildInFunction::CreateTerm(BuildInFunction::Function f, TermReference* t)
 {
   return new BuildInFunction (f, t);
 }
@@ -198,13 +192,13 @@ void BuildInFunction::GetFunctionNameEx(std::ostream &stream, BuildInFunction::F
   }
 }
 
-Term* BuildInFunction::CreateTerm(Term** children) const
+Term* BuildInFunction::CreateTerm(TermReference** children) const
 {
   return new BuildInFunction (func, children[0]);
 }
 
 
-Term* NormalFunctionCall::CreateTerm(Term** children) const
+Term* NormalFunctionCall::CreateTerm(TermReference** children) const
 {
   return new NormalFunctionCall (children[0], definition);
 }

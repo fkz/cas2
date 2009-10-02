@@ -18,10 +18,11 @@
 
 */
 
+//#include "term.h"
 #ifndef CAS_TERMREFERENCE_H
 #define CAS_TERMREFERENCE_H
-#include "hash.h"
 #include "term.h"
+#include "hash.h"
 
 namespace CAS {
 
@@ -40,7 +41,11 @@ class TermReference
     }
     bool Equals (const TermReference *r2) const
     {
-      return hash == r2->hash && term->Equals (*r2->term);
+      return r2->term == term || (hash == r2->hash && term->Equals (*r2->term));
+    }
+    bool Equals (const TermReference &r2) const
+    {
+      return Equals (&r2);
     }
     const Term *get_const () const
     {
@@ -60,16 +65,31 @@ class TermReference
     }
     
     template<class T>
-    TermReference *Create ()
+    static TermReference *Create ()
     {
       return new TermReference (T::CreateTerm ());
     }
     template<class T, class P1>
-    TermReference *Create (P1 p1)
+    static TermReference *Create (P1 p1)
     {
       return new TermReference (T::CreateTerm (p1));
     }
+    template<class T, class P1, class P2>
+    static TermReference *Create (P1 p1, P2 p2)
+    {
+      return new TermReference (T::CreateTerm (p1, p2));
+    }
+    TermReference *GetChildren(void *&arg1) const
+    {
+      return term->GetChildren(arg1);
+    }
 };
+
+inline std::ostream &operator << (std::ostream &o, const TermReference &r)
+{
+  o << r.get_const();
+  return o;
+}
 
 }
 

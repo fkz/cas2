@@ -31,9 +31,9 @@ namespace CAS {
 class FunctionDefinition : public CAS::Term
 {
   private:
-    Term *term;
+    TermReference *term;
     Variable *variable;
-    FunctionDefinition (Term *, Variable *);
+    FunctionDefinition (TermReference *, Variable *);
   public:
     virtual CAS::Hash GetHashCode() const;
     virtual void ToString(std::ostream& stream) const;
@@ -41,9 +41,9 @@ class FunctionDefinition : public CAS::Term
     virtual CAS::Type* GetType() const;
     virtual CAS::Term* Clone() const;
     virtual CAS::Term* Simplify();
-    virtual Term* CreateTerm(Term** children) const;
-    virtual Term* GetChildren(void*& param) const;
-    static FunctionDefinition *CreateTerm (Term *, Variable *);
+    virtual Term* CreateTerm(CAS::TermReference **children) const;
+    virtual TermReference* GetChildren(void*& param) const;
+    static FunctionDefinition *CreateTerm (TermReference *, Variable *);
 };
 
 class BuildInFunctionDefinition: public Term
@@ -59,8 +59,8 @@ class BuildInFunctionDefinition: public Term
     virtual Term* Simplify();
     virtual void ToString(std::ostream& stream) const;
     virtual Term* Transform(TransformType t) const;
-    virtual Term* CreateTerm(Term** children) const;
-    virtual Term* GetChildren(void*& param) const;
+    virtual Term* CreateTerm(TermReference** children) const;
+    virtual TermReference* GetChildren(void*& param) const;
     static BuildInFunctionDefinition *GetStandardFunction (BuildInFunction::Function f);
     
 };
