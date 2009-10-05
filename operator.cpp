@@ -209,7 +209,7 @@ TermReference *Add::Simplify()
   TermReference *result = CAS::Operator::Simplify();
   assert (!result || result == This());
   temporary_equality.clear();
-  //TODO:FindEquals(static_cast < void (Operator::*) (Term *, int) > (&Add::EqualRoutine));
+  FindEquals(static_cast < void (Operator::*) (TermReference *, int) > (&Add::EqualRoutine));
   result = (result || !temporary_equality.empty()) ? This() : NULL;
   for (std::vector< std::pair< TermReference*, int > >::const_iterator it = temporary_equality.begin(); it != temporary_equality.end(); ++it)
   {
@@ -343,7 +343,7 @@ TermReference* Mul::Simplify()
   TermReference *result = CAS::Operator::Simplify();
   assert (!result || result == This());
   temporary_equality.clear();
-  //TODO:FindEquals(static_cast< void (Operator::*) (Term *, int) > (&Mul::EqualRoutine));
+  FindEquals(static_cast< void (Operator::*) (TermReference *, int) > (&Mul::EqualRoutine));
   result = (result || !temporary_equality.empty()) ? This() : NULL;
   for (std::vector< std::pair< TermReference*, int > >::const_iterator it = temporary_equality.begin(); it != temporary_equality.end(); ++it)
   {
