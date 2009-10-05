@@ -20,6 +20,7 @@
 
 #include "relations.h"
 #include <cassert>
+#include "termreference.h"
 
 using namespace CAS;
 
@@ -30,7 +31,7 @@ Term* Boolean::Clone() const
   return new Boolean (b);
 }
 
-Term *Boolean::CreateTerm(Term** children) const
+Term *Boolean::CreateTerm(TermReference** children) const
 {
   return new Boolean (b);
 }
@@ -43,7 +44,7 @@ bool Boolean::Equals(const CAS::Term& t) const
   return b == tt->b;
 }
 
-Term* Boolean::GetChildren(void*& param) const
+TermReference* Boolean::GetChildren(void*& param) const
 {
   return NULL;
 }
@@ -68,21 +69,33 @@ void Boolean::ToString(std::ostream& stream) const
   stream << (b ? "true" : "false");
 }
 
-Relations::Relations(Relations::RelationType type, Term* l, Term* r)
+Relations::Relations(Relations::RelationType type, TermReference* l, TermReference* r)
 : type(type), left(l), right(r)
 {
 
 }
 
 
-Term *Relations::CreateTerm(CAS::Term** children) const
+Term *Relations::CreateTerm(TermReference** children) const
 {
   return new Relations (type, children[0], children[1]);
 }
 
-CAS::Term* Relations::GetChildren(void*& param) const
+CAS::TermReference* Relations::GetChildren(void*& param) const
 {
-
+  if (!param)
+  {
+    param = (void *)1;
+    return left;
+  }
+  else
+    if (param == (void *)1)
+    {
+      param = (void *)2;
+      return right;
+    }
+    else
+      return NULL;
 }
 
 CAS::Hash Relations::GetHashCode() const
@@ -92,8 +105,7 @@ CAS::Hash Relations::GetHashCode() const
 
 void Relations::ToString(std::ostream& stream) const
 {
-  left->ToString(stream);
-  right->ToString(stream);
+  stream << *left << *right;
 }
 
 bool Relations::Equals(const CAS::Term& t) const
@@ -117,9 +129,7 @@ CAS::Term* Relations::Clone() const
 CAS::Term* Relations::Simplify()
 {
   bool result = false;
-  //bitwise um DoSimplify auf jeden Fall auszuführen!
-  result |= DoSimplify(left);
-  result |= DoSimplify(right);
+  //left und right sind bereits vereinfacht
   if (left->Equals(*right))
   {
     Term *result = NULL;
