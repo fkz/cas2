@@ -44,9 +44,9 @@ Type* FunctionCall::GetType() const
   return Type::GetBuildInType(Type::Term);
 }
 
-Term *FunctionCall::Simplify()
+TermReference *FunctionCall::Simplify()
 {
-  Term *result = NULL;
+  TermReference *result = NULL;
   
   const FunctionCall *f = dynamic_cast< const FunctionCall * > (parameter->get_const());
   if (f)
@@ -56,7 +56,7 @@ Term *FunctionCall::Simplify()
     Term* t1_ = t1->Transform(Transforms::UmkehrFunktion);
     if (t1_->Equals(*t2))
     {
-      //TODO:result = f->parameter->Clone();
+      result = f->parameter->Clone();
       delete f;
     }
     delete t1_;

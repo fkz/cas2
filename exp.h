@@ -41,7 +41,7 @@ class FunctionCall: public Term
   public:
     virtual bool Equals(const CAS::Term& t) const;
     virtual Type *GetType() const;
-    virtual Term *Simplify();
+    virtual TermReference *Simplify();
     virtual void ToString(std::ostream& stream) const;
     virtual TermReference* GetChildren(void*& param) const;
     ~FunctionCall ();

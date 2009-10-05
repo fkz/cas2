@@ -28,8 +28,7 @@ TermReference::TermReference(Term *t)
 : term (t)
 {
   assert (t->references == 1);
-  Term::DoSimplify (term);
-  hash = term->GetHashCode();
+  Simplify();
 }
 
 TermReference::TermReference(const CAS::TermReference &r)

@@ -47,7 +47,7 @@ class Term
 	if (temp)
 	  t = temp;
     */
-    virtual Term *Simplify () = 0;
+    virtual TermReference *Simplify () = 0;
     virtual Term *Clone () const = 0;
     virtual Type *GetType () const = 0;
     virtual bool Equals (const Term &t) const = 0;
@@ -56,22 +56,16 @@ class Term
     virtual TermReference *GetChildren (void *&param) const = 0;
     virtual Term *CreateTerm(TermReference** children) const = 0;
     virtual ~Term () {}
-    template<class T>
-    static bool DoSimplify (T *&term)
+    
+    static bool IsThis (TermReference *t)
     {
-      assert (term->references == 1);
-      Term *temp = term->Simplify();
-      if (temp)
-      {
-	if (term != temp)
-	{
-	  ++term->references;
-	  term = dynamic_cast< T * > (temp);
-	  assert (term);
-	}
-      }
-      return temp;
+      return t == (TermReference *)1;
     }
+    static TermReference *This ()
+    {
+      return (TermReference *)1;
+    }
+    
     //gibt einen transformierten Term, wie z. B. die Ableitung, Umkehrfunktion o. a. zurück
     //oder NULL (bei falschem Gebrauch oder Nichtexistenz)
     virtual Term *Transform (TransformType t) const;
@@ -108,7 +102,7 @@ class SimpleTerm: public Term
     virtual bool Equals(const CAS::Term& t) const;
     virtual Hash GetHashCode() const;
     virtual Type* GetType() const;
-    virtual Term* Simplify();
+    virtual TermReference* Simplify();
     virtual void ToString(std::ostream& stream) const;
     virtual Term* CreateTerm(TermReference** children) const;
     virtual TermReference* GetChildren(void*& param) const;

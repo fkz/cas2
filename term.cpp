@@ -19,6 +19,7 @@
 */
 
 #include "term.h"
+#include "termreference.h"
 
 using namespace CAS;
 
@@ -56,7 +57,7 @@ Type* SimpleTerm::GetType() const
   return Type::GetBuildInType(Type::Term);
 }
 
-Term* SimpleTerm::Simplify()
+TermReference* SimpleTerm::Simplify()
 {
   return NULL;
 }
@@ -75,12 +76,14 @@ void SimpleTerm::ToString(std::ostream& stream) const
 
 Term* Term::Transform(TransformType t) const
 {
+  //TODO: Transform an TermReference irgentwie anpassen
   if (t == Transforms::Simplify)
   {
+    assert(0);
     Term *result = Clone();
-    Term *ret = result->Simplify();
+    TermReference *ret = result->Simplify();
     if (ret)
-      return ret;
+      return ret->get_unconst();
     else
       return result;
   }

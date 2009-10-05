@@ -31,7 +31,7 @@ CAS::Type* Operator::GetType() const
   return Type::GetBuildInType(Type::Term);
 }
 
-Term *Operator::Simplify()
+TermReference *Operator::Simplify()
 {
   //es gibt nichts zu tun: Die Kinder sind bereits alle vereinfacht
   return NULL;
@@ -144,7 +144,7 @@ void Operator::PseudoToString(std::ostream& stream, const std::string& op) const
   stream << ")";
 }
 
-Term* Operator::GetSingleObject()
+TermReference* Operator::GetSingleObject()
 {
   std::multimap< Hash, TermReference* >::iterator it = children.begin();
   ++it;
@@ -153,7 +153,7 @@ Term* Operator::GetSingleObject()
     TermReference *result = children.begin()->second;
     children.clear();
     delete this;
-    //TODO:return result;
+    return result;
   }
   return NULL;
 }
@@ -204,13 +204,13 @@ Term* Add::CreateTerm(TermReference** children) const
 }
 
 
-Term *Add::Simplify()
+TermReference *Add::Simplify()
 {
-  Term *result = CAS::Operator::Simplify();
-  assert (!result || result == this);
+  TermReference *result = CAS::Operator::Simplify();
+  assert (!result || result == This());
   temporary_equality.clear();
   //TODO:FindEquals(static_cast < void (Operator::*) (Term *, int) > (&Add::EqualRoutine));
-  result = (result || !temporary_equality.empty()) ? this : NULL;
+  result = (result || !temporary_equality.empty()) ? This() : NULL;
   for (std::vector< std::pair< TermReference*, int > >::const_iterator it = temporary_equality.begin(); it != temporary_equality.end(); ++it)
   {
     TermReference *mul = TermReference::Create<Mul> (TermReference::Create<Number> (it->second), it->first);
@@ -235,8 +235,8 @@ Term *Add::Simplify()
       TermReference *number = TermReference::Create<Number> (res);
       children.insert(std::make_pair(number->GetHashCode(), number));
     }
-    assert (result == this || ! result );
-    result = this;
+    assert (result == This() || ! result );
+    result = This();
   }
   else
     if (!vect.empty())
@@ -244,12 +244,12 @@ Term *Add::Simplify()
 	children.insert(std::make_pair (vect.front()->GetHashCode(), vect.front()));
       else
       {
-	assert (result == this || ! result);
-	result = this;
+	assert (result == This() || ! result);
+	result = This();
       }
     
   
-  Term *single = GetSingleObject();
+  TermReference *single = GetSingleObject();
   if (single)
     return single;
   
@@ -338,13 +338,13 @@ void Mul::EqualRoutine(TermReference* t, int anzahl)
   temporary_equality.push_back(std::make_pair(t, anzahl));
 }
 
-Term* Mul::Simplify()
+TermReference* Mul::Simplify()
 {
-  Term *result = CAS::Operator::Simplify();
-  assert (!result || result == this);
+  TermReference *result = CAS::Operator::Simplify();
+  assert (!result || result == This());
   temporary_equality.clear();
   //TODO:FindEquals(static_cast< void (Operator::*) (Term *, int) > (&Mul::EqualRoutine));
-  result = (result || !temporary_equality.empty()) ? this : NULL;
+  result = (result || !temporary_equality.empty()) ? This() : NULL;
   for (std::vector< std::pair< TermReference*, int > >::const_iterator it = temporary_equality.begin(); it != temporary_equality.end(); ++it)
   {
     TermReference *ln = TermReference::Create<BuildInFunction> (BuildInFunction::Ln, TermReference::Create<Number>(it->second));
@@ -371,8 +371,8 @@ Term* Mul::Simplify()
       TermReference *number = TermReference::Create<Number>(res);
       children.insert(std::make_pair(number->GetHashCode(), number));
     }
-    assert (result == this || ! result );
-    result = this;
+    assert (result == This() || ! result );
+    result = This();
   }
   else
     if (!vect.empty())
@@ -380,11 +380,11 @@ Term* Mul::Simplify()
 	children.insert(std::make_pair (vect.front()->GetHashCode(), vect.front()));
       else
       {
-	assert (result == this || ! result);
-	result = this;
+	assert (result == This() || ! result);
+	result = This();
       }
   
-  Term *single = GetSingleObject();
+  TermReference *single = GetSingleObject();
   if (single)
     return single;
   

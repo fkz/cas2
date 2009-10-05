@@ -35,11 +35,8 @@ CAS::Type* FunctionChange::GetType() const
   return Type::GetBuildInType(Type::FunctionDefinition);
 }
 
-CAS::Term* FunctionChange::Simplify()
+CAS::TermReference* FunctionChange::Simplify()
 {
-  Term *result = NULL;
-  if (DoSimplify (definition))
-    result = this;
-  return result;
+  return NULL;
 }
 

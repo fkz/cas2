@@ -34,7 +34,7 @@ class FunctionChange : public CAS::Term
   public:
     virtual bool Equals(const CAS::Term& t) const;
     virtual CAS::Type* GetType() const;
-    virtual CAS::Term* Simplify();
+    virtual CAS::TermReference* Simplify();
 };
 
 }

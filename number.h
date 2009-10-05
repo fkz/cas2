@@ -33,7 +33,7 @@ class Number : public CAS::Term
     int zahl;
   public:
     virtual CAS::Type* GetType() const;
-    virtual Term *Simplify();
+    virtual TermReference *Simplify();
     virtual Number *Clone() const;
     virtual bool Equals(const CAS::Term& t) const;
     virtual void ToString(std::ostream& stream) const;
@@ -55,7 +55,7 @@ class Frac: public CAS::Term
     virtual bool Equals(const CAS::Term& t) const;
     virtual Hash GetHashCode() const;
     virtual Type* GetType() const;
-    virtual Term *Simplify();
+    virtual TermReference *Simplify();
     virtual void ToString(std::ostream& stream) const;
     virtual Term* CreateTerm(TermReference** children) const;
     virtual TermReference* GetChildren(void*& param) const;
@@ -71,7 +71,7 @@ class Variable: public CAS::Term
     virtual bool Equals(const CAS::Term& t) const;
     virtual Hash GetHashCode() const;
     virtual Type* GetType() const;
-    virtual Term *Simplify();
+    virtual TermReference *Simplify();
     virtual void ToString(std::ostream& stream) const;
     virtual Term* CreateTerm(TermReference** children) const;
     virtual TermReference* GetChildren(void*& param) const;

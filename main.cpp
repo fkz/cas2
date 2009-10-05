@@ -38,11 +38,20 @@ int main (int argc, char **argv)
 void Output (CAS::Term *t)
 {
   std::cout << "Term(Hash:" << t->GetHashCode() << "): " << *t << std::endl;
-  CAS::Term* temp = t->Simplify();
+  CAS::TermReference* temp = t->Simplify();
   if (temp)
   {
-    std::cout << "Vereinfacht: " << *temp << std::endl;
-    t = temp;
+    const CAS::Term *tt;
+    if (temp == CAS::Term::This())
+      tt = t;
+    else
+    {
+      tt = temp->get_const();
+      t = NULL;
+    }
+    std::cout << "Vereinfacht: " << *tt << std::endl;
+    if (temp != CAS::Term::This ())
+      delete temp;
   }
   delete t;
 }

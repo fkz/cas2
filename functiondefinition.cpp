@@ -50,7 +50,7 @@ CAS::Term* FunctionDefinition::Clone() const
   return new FunctionDefinition (term, variable);
 }
 
-CAS::Term* FunctionDefinition::Simplify()
+CAS::TermReference* FunctionDefinition::Simplify()
 {
   return NULL;
 }
@@ -118,7 +118,7 @@ Type* BuildInFunctionDefinition::GetType() const
   return Type::GetBuildInType(Type::FunctionDefinition);
 }
 
-Term* BuildInFunctionDefinition::Simplify()
+TermReference* BuildInFunctionDefinition::Simplify()
 {
   return NULL;
 }

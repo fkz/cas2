@@ -22,6 +22,7 @@
 #define CAS_RELATIONS_H
 
 #include <../../home/fabian/svn/trunk/c++/mathematics/cas2/term.h>
+#include "termreference.h"
 
 
 namespace CAS {
@@ -32,13 +33,15 @@ class Boolean: public CAS::Term
     bool b;
     Boolean (bool z) : b (z) { }
   public:
-    static Boolean *True()
+    static TermReference *True()
     {
-      return new Boolean (true);
+      static TermReference t(new Boolean (true));
+      return t.Clone();
     }
-    static Boolean *False()
+    static TermReference *False()
     {
-      return new Boolean (false);
+      static TermReference t (new Boolean (false));
+      return t.Clone();
     }
     bool GetBoolean ()
     {
@@ -50,7 +53,7 @@ class Boolean: public CAS::Term
     virtual TermReference* GetChildren(void*& param) const;
     virtual Hash GetHashCode() const;
     virtual Type* GetType() const;
-    virtual Term* Simplify();
+    virtual TermReference* Simplify();
     virtual void ToString(std::ostream& stream) const;
 };
   
@@ -72,7 +75,7 @@ class Relations : public CAS::Term
     virtual bool Equals(const CAS::Term& t) const;
     virtual CAS::Type* GetType() const;
     virtual CAS::Term* Clone() const;
-    virtual CAS::Term* Simplify();
+    virtual CAS::TermReference* Simplify();
 };
 
 }

@@ -59,7 +59,7 @@ Type* Boolean::GetType() const
   return Type::GetBuildInType(Type::Boolean);
 }
 
-Term* Boolean::Simplify()
+TermReference* Boolean::Simplify()
 {
   return NULL;
 }
@@ -126,13 +126,13 @@ CAS::Term* Relations::Clone() const
   return new Relations (type, left, right);
 }
 
-CAS::Term* Relations::Simplify()
+CAS::TermReference* Relations::Simplify()
 {
   bool result = false;
   //left und right sind bereits vereinfacht
   if (left->Equals(*right))
   {
-    Term *result = NULL;
+    TermReference *result = NULL;
     switch (type)
     {
       case Equality:
@@ -145,6 +145,6 @@ CAS::Term* Relations::Simplify()
     delete this;
     return result;
   }
-  return result ? this : NULL;
+  return result ? This() : NULL;
 }
 

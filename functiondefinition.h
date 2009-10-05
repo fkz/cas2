@@ -40,7 +40,7 @@ class FunctionDefinition : public CAS::Term
     virtual bool Equals(const CAS::Term& t) const;
     virtual CAS::Type* GetType() const;
     virtual CAS::Term* Clone() const;
-    virtual CAS::Term* Simplify();
+    virtual CAS::TermReference* Simplify();
     virtual Term* CreateTerm(CAS::TermReference **children) const;
     virtual TermReference* GetChildren(void*& param) const;
     static FunctionDefinition *CreateTerm (TermReference *, Variable *);
@@ -56,7 +56,7 @@ class BuildInFunctionDefinition: public Term
     virtual bool Equals(const CAS::Term& t) const;
     virtual Hash GetHashCode() const;
     virtual Type* GetType() const;
-    virtual Term* Simplify();
+    virtual TermReference* Simplify();
     virtual void ToString(std::ostream& stream) const;
     virtual Term* Transform(TransformType t) const;
     virtual Term* CreateTerm(TermReference** children) const;

@@ -32,6 +32,26 @@ class TermReference
     Term *term;
     Hash hash;
     TermReference (const TermReference &);
+    bool Simplify ()
+    {
+      assert (term->references == 1);
+      TermReference *re = term->Simplify();
+      if (!re)
+      {
+	hash = term->GetHashCode();
+	return false;
+      }
+      if (re == Term::This())
+      {
+	hash = term->GetHashCode();
+	return true;
+      }
+      //references wird nicht erhöht, da das Parent, das ja eigentlich eine Reference ist, in Term::Simplify gelöscht wurde
+      term = re->term;
+      hash = re->hash;
+      assert (term->references >= 1);
+      return true;
+    }
   public:
     TermReference (Term *);
     ~TermReference();
@@ -55,9 +75,7 @@ class TermReference
     bool finnish_get_unconst ()
     {
       assert (term->references == 1);
-      bool result = Term::DoSimplify (term);
-      hash = term->GetHashCode();
-      return result;
+      return Simplify();
     }
     TermReference *Clone ()
     {
@@ -87,7 +105,7 @@ class TermReference
 
 inline std::ostream &operator << (std::ostream &o, const TermReference &r)
 {
-  o << r.get_const();
+  o << *r.get_const();
   return o;
 }
 
