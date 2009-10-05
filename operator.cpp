@@ -89,7 +89,7 @@ Operator::Operator(const std::multimap< Hash, TermReference* >& c)
 
 Operator::Operator(TermReference** t, size_t anzahl)
 {
-  for (int i = 0; i < anzahl; ++i)
+  for (size_t i = 0; i < anzahl; ++i)
     children.insert(std::make_pair(t[i]->GetHashCode(),  t[i]));
 }
 
@@ -240,6 +240,7 @@ TermReference *Add::Simplify()
   }
   else
     if (!vect.empty())
+    {
       if (vect.front()->get_const()->Cast< Number > ()->GetNumber() != 0)
 	children.insert(std::make_pair (vect.front()->GetHashCode(), vect.front()));
       else
@@ -247,6 +248,7 @@ TermReference *Add::Simplify()
 	assert (result == This() || ! result);
 	result = This();
       }
+    }
     
   
   TermReference *single = GetSingleObject();
@@ -376,6 +378,7 @@ TermReference* Mul::Simplify()
   }
   else
     if (!vect.empty())
+    {
       if (vect.front()->get_const()->Cast<Number>()->GetNumber() != 1)
 	children.insert(std::make_pair (vect.front()->GetHashCode(), vect.front()));
       else
@@ -383,6 +386,7 @@ TermReference* Mul::Simplify()
 	assert (result == This() || ! result);
 	result = This();
       }
+    }
   
   TermReference *single = GetSingleObject();
   if (single)

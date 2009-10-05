@@ -138,7 +138,6 @@ NormalFunctionCall::NormalFunctionCall(TermReference* param, FunctionDefinition*
 NormalFunctionCall::~NormalFunctionCall()
 {
   delete definition;
-  //TODO: muss parent aufgerufen werden??
 }
 
 const CAS::Term* NormalFunctionCall::GetFunction() const
