@@ -24,6 +24,7 @@
 #include <vector>
 
 namespace CAS {
+class TermReference;
 class Term;
 
 class Rule
@@ -31,7 +32,7 @@ class Rule
   public:
     virtual Type *GetCorrespondingType () const = 0;
     //gibt NULL zurück, falls die Regel nicht angewandt werden konnte; sonst gibt es ein (weiteres) Term * zurück
-    virtual Term *UseRule (const Term *) const = 0;
+    virtual TermReference *UseRule (const TermReference *) const = 0;
 };
 
 class SubRule: public Rule
@@ -39,8 +40,8 @@ class SubRule: public Rule
   private:
     size_t parameterCount;
   public:
-    virtual Term *MatchRule (const Term *t, std::vector< Term * >::iterator params, int count) const = 0;
-    virtual Term* UseRule(const Term *t) const;
+    virtual TermReference *MatchRule (const TermReference *t, std::vector< TermReference * >::iterator params, int count) const = 0;
+    virtual TermReference* UseRule(const TermReference *t) const;
 };
 
 class OperatorRule: public SubRule
@@ -49,7 +50,7 @@ class OperatorRule: public SubRule
     std::vector< SubRule * > children;
   public:
     virtual Type* GetCorrespondingType() const;
-    virtual Term* MatchRule(const CAS::Term* t, std::vector< CAS::Term* >::iterator params, int count) const;    
+    virtual TermReference* MatchRule(const CAS::TermReference* t, std::vector< CAS::TermReference* >::iterator params, int count) const;    
 };
 
 }

@@ -23,9 +23,9 @@
 
 using namespace CAS;
 
-CAS::Term* CAS::SubRule::UseRule(const Term* t) const
+CAS::TermReference* CAS::SubRule::UseRule(const TermReference* t) const
 {
-  std::vector< Term * > vec (parameterCount, NULL);
+  std::vector< TermReference * > vec (parameterCount, NULL);
   return MatchRule(t, vec.begin(), parameterCount);
 }
 
@@ -34,24 +34,21 @@ Type* OperatorRule::GetCorrespondingType() const
   return Type::GetBuildInType(Type::Term);
 }
 
-Term* OperatorRule::MatchRule(const Term* t, std::vector< Term* >::iterator params, int count) const
+TermReference* OperatorRule::MatchRule(const TermReference* t, std::vector< TermReference* >::iterator params, int count) const
 {
-  //TODO: MatchRule nicht fertig implementiert!
   assert(0);
-  const Operator *op = dynamic_cast< const Operator * > (t);
+  const Operator *op = dynamic_cast< const Operator * > (t->get_const());
   if (!op)
     return NULL;
   for (std::vector< SubRule* >::const_iterator cit = children.begin(); cit != children.end(); ++cit)
   {
-    for (std::multimap< Hash, Term* >::const_iterator it = op->children.begin(); it != op->children.end(); ++it)
+    for (std::multimap< Hash, TermReference* >::const_iterator it = op->children.begin(); it != op->children.end(); ++it)
     {
-      Term *result = (*cit)->MatchRule(it->second, params, count);
+      TermReference *result = (*cit)->MatchRule(it->second, params, count);
       if (result)
       {
       }
     }
   }
-  
 }
-
 

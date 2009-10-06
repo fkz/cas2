@@ -21,14 +21,14 @@
 #ifndef CAS_EXPANDRULE_H
 #define CAS_EXPANDRULE_H
 
-#include <../../home/fabian/svn/trunk/c++/mathematics/cas2/rule.h>
+#include "rule.h"
 
 
 namespace CAS {
 
 class ExpandRule : public CAS::Rule
 {
-    virtual CAS::Term* UseRule(const CAS::Term* ) const;
+    virtual CAS::TermReference* UseRule(const CAS::TermReference* ) const;
     virtual CAS::Type* GetCorrespondingType() const;
 };
 

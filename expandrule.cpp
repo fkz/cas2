@@ -24,27 +24,27 @@
 
 using namespace CAS;
 
-CAS::Term* ExpandRule::UseRule(const CAS::Term *p) const
+CAS::TermReference* ExpandRule::UseRule(const CAS::TermReference *p) const
 {
-  const CAS::Mul *mul = dynamic_cast< const CAS::Mul * > (p);
+  const CAS::Mul *mul = dynamic_cast< const CAS::Mul * > (p->get_const());
   if (mul)
   {
-    std::vector< Term * > terms;
+    std::vector< TermReference * > terms;
     void *param = NULL;
-    Term *t;
+    TermReference *t;
     while (t = mul->GetChildren(param))
       terms.push_back(t);
     for (int index = 0; index < terms.size(); ++index)
     {
-      Add *add = dynamic_cast < Add * > (terms[index]);
+      const Add *add = dynamic_cast < const Add * > (terms[index]->get_const());
       if (add)
       {
-	std::vector< Term * > addTerms;
+	std::vector< TermReference * > addTerms;
 	param = NULL;
 	while (t = add->GetChildren(param))
 	  addTerms.push_back(t);
-	Term **addTermsArray = new Term * [ addTerms.size() ] ;
-	Term **mulTermsArray = new Term * [ terms.size() ];
+	TermReference **addTermsArray = new TermReference * [ addTerms.size() ] ;
+	TermReference **mulTermsArray = new TermReference * [ terms.size() ];
 	for (int addIndex = 0; addIndex != addTerms.size(); ++addIndex)
 	{
 	  for (int mulIndex = 0; mulIndex != terms.size(); ++mulIndex)
@@ -58,10 +58,10 @@ CAS::Term* ExpandRule::UseRule(const CAS::Term *p) const
 	      mulTermsArray[mulIndex] = addTerms[addIndex]->Clone();
 	    }
 	  }
-	  addTermsArray[addIndex] = mul->CreateTerm(mulTermsArray);
+	  addTermsArray[addIndex] = new TermReference (mul->CreateTerm(mulTermsArray));
 	}
 	Term *newAdd = add->CreateTerm (addTermsArray);
-	return newAdd;
+	return new TermReference (newAdd);
       }
     }
   }

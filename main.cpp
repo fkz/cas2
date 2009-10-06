@@ -3,6 +3,7 @@
 #include "number.h"
 #include "exp.h"
 #include "expandrule.h"
+#include "SimplifyTerm.h"
 
 template<class T>
 CAS::TermReference *Create ()
@@ -62,6 +63,18 @@ void Output (CAS::TermReference *t)
   delete t;
 }
 
+void OutputRule (CAS::TermReference *t, CAS::Rule *rule)
+{
+  std::cout << "Term: " << *t << std::endl;
+  std::vector< CAS::TermReference * > its;
+  CAS::SimplifyWithRule (t, rule, std::back_insert_iterator< std::vector <CAS::TermReference *> > (its));
+  std::cout << "Nach Regelanwendung: (" << its.size() << " Mal)"  << std::endl;
+  for (std::vector< CAS::TermReference* >::iterator it = its.begin(); it != its.end(); ++it)
+  {
+    std::cout << "->" << **it << std::endl;
+  }
+}
+
 void test1() {
     Output (Create<CAS::Add> (Create<CAS::Number>(2), Create<CAS::Number>(1)));
 }
@@ -80,16 +93,11 @@ void test3 ()
 
 void test4 ()
 {
-  /*CAS::Term *term = CAS::Mul::CreateTerm (CAS::Add::CreateTerm (CAS::Variable::CreateTerm (0), CAS::Variable::CreateTerm (1)),
-					  CAS::Add::CreateTerm (CAS::Variable::CreateTerm (0), CAS::Variable::CreateTerm (2)));
-  std::cout << "Term: " << *term << std::endl;
-  CAS::Term::DoSimplify(term);
-  std::cout << "Vereinfacht: " << *term << std::endl;
-  CAS::Rule *rule = new CAS::ExpandRule ();
-  std::vector< CAS::Term * > its;
-  term->SimplifyChildsWithRules(&rule, (&rule)+1, std::back_insert_iterator< std::vector< CAS::Term * > > (its));
-  for (std::vector< CAS::Term* >::iterator it = its.begin(); it != its.end(); ++it)
-  {
-    std::cout << **it << std::endl;
-  }*/
+  CAS::TermReference *term = Create<CAS::Mul> (Create<CAS::Add> (Create<CAS::Variable> (0), Create<CAS::Variable> (1)),
+					  Create<CAS::Add> (Create<CAS::Variable> (0), Create<CAS::Variable> (2)));
+  OutputRule(term, new CAS::ExpandRule());
+  
+  CAS::TermReference* addTerm = Create<CAS::Add> (Create<CAS::Variable> (0), Create<CAS::Variable> (1));
+  term = Create<CAS::Mul> (addTerm, addTerm->Clone());
+  OutputRule(term, new CAS::ExpandRule());  
 }

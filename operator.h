@@ -77,7 +77,7 @@ class Operator : public CAS::Term
     virtual bool Equals(const CAS::Term& t) const;
     virtual TermReference* GetChildren(void*& param) const;
     
-    friend Term* OperatorRule::MatchRule(const Term* t, std::vector< Term* >::iterator params, int count) const;
+    friend TermReference* OperatorRule::MatchRule(const TermReference* t, std::vector< TermReference* >::iterator params, int count) const;
 };
 
 class Add: public Operator
