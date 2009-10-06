@@ -202,6 +202,20 @@ Term* NormalFunctionCall::CreateTerm(TermReference** children) const
   return new NormalFunctionCall (children[0], definition);
 }
 
+TermReference* BuildInFunction::Simplify()
+{
+  if (func == Exp)
+  {
+    const CAS::Number* n = dynamic_cast< const Number * > (parameter->get_const());
+    if (n && n->GetNumber() == 0)
+    {
+      delete this;
+      return TermReference::Create<Number> (1);
+    }
+  }
+  return CAS::FunctionCall::Simplify();
+}
+
 
 
 

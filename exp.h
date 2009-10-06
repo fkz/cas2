@@ -65,6 +65,7 @@ class BuildInFunction: public FunctionCall
     virtual Term* Clone() const;
     virtual Hash GetHashCode() const;
     virtual Term* CreateTerm(TermReference** children) const;
+    virtual TermReference* Simplify();
     static void GetFunctionNameEx(std::ostream&, CAS::BuildInFunction::Function);
 };
   
