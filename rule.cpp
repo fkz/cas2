@@ -23,6 +23,19 @@
 
 using namespace CAS;
 
+
+TermReference* Rule::UseRule(const CAS::TermReference *t, void*& param)
+{
+  if (!param)
+  {
+    param = (void *)1;
+    return UseRule (t);
+  }
+  else
+    return NULL;
+}
+
+
 CAS::TermReference* CAS::SubRule::UseRule(const TermReference* t) const
 {
   std::vector< TermReference * > vec (parameterCount, NULL);

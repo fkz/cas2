@@ -1,6 +1,6 @@
 #include "SimplifyTerm.h"
 
-void CAS::SimplifyWithRule(CAS::TermReference* ref, CAS::Rule* rule, std::back_insert_iterator< std::vector< TermReference * > > output)
+void CAS::SimplifyWithRule(CAS::TermReference* ref, CAS::RuleCollection* rule, std::back_insert_iterator< std::vector< TermReference * > > output)
 {
   void *param = NULL;
   std::vector< TermReference * > children;
@@ -57,9 +57,12 @@ void CAS::SimplifyWithRule(CAS::TermReference* ref, CAS::Rule* rule, std::back_i
   {
     for (TermCollection::iterator it = coll.begin(); it != coll.end(); ++it)
     {
-      TermReference *vereinfacht = rule->UseRule(it->second.first);
+      void *param = NULL;
+      TermReference *vereinfacht = rule->UseRule(it->second.first, param);
       if (vereinfacht)
       {
+	while (vereinfacht) 
+	{
 	it->second.second = TermCollection::Flag_Simplified;
 	SimplifyWithRule(vereinfacht, rule, std::back_insert_iterator< std::vector< TermReference * > > (vector));
 	for (std::vector< TermReference* >::const_iterator it_ = vector.begin(); it_ != vector.end(); ++it_)
@@ -67,6 +70,8 @@ void CAS::SimplifyWithRule(CAS::TermReference* ref, CAS::Rule* rule, std::back_i
 	  newly_addings.push_back(*it_);
 	}
 	vector.clear();
+	vereinfacht = rule->UseRule(it->second.first, param);
+	}
       }
       else
 	newly_addings.push_back(it->second.first);
