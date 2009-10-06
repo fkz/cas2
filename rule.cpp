@@ -24,7 +24,7 @@
 using namespace CAS;
 
 
-TermReference* Rule::UseRule(const CAS::TermReference *t, void*& param)
+TermReference* Rule::UseRule(const CAS::TermReference *t, void*& param) const
 {
   if (!param)
   {
@@ -35,33 +35,27 @@ TermReference* Rule::UseRule(const CAS::TermReference *t, void*& param)
     return NULL;
 }
 
-
-CAS::TermReference* CAS::SubRule::UseRule(const TermReference* t) const
+Type* RuleCollectionBase::GetCorrespondingType() const
 {
-  std::vector< TermReference * > vec (parameterCount, NULL);
-  return MatchRule(t, vec.begin(), parameterCount);
+  return type;
 }
 
-Type* OperatorRule::GetCorrespondingType() const
+TermReference* RuleCollectionBase::UseRule(const CAS::TermReference *ref , void*& param) const
 {
-  return Type::GetBuildInType(Type::Term);
-}
-
-TermReference* OperatorRule::MatchRule(const TermReference* t, std::vector< TermReference* >::iterator params, int count) const
-{
-  assert(0);
-  const Operator *op = dynamic_cast< const Operator * > (t->get_const());
-  if (!op)
-    return NULL;
-  for (std::vector< SubRule* >::const_iterator cit = children.begin(); cit != children.end(); ++cit)
+  std::pair< void *, std::vector< RuleCollection * >::const_iterator > *p; 
+  if (!param)
   {
-    for (std::multimap< Hash, TermReference* >::const_iterator it = op->children.begin(); it != op->children.end(); ++it)
-    {
-      TermReference *result = (*cit)->MatchRule(it->second, params, count);
-      if (result)
-      {
-      }
-    }
+    param = p = new std::pair< void *, std::vector< RuleCollection * >::const_iterator > (NULL, rules.begin());
   }
+  else
+    p = static_cast<std::pair< void *, std::vector< RuleCollection * >::const_iterator > *> (param);
+  do
+  {
+    TermReference *result = (*p->second)->UseRule(ref, p->first);
+    if (result) return result;
+    p->first = NULL;
+  } while (++p->second != rules.end());
+  delete p;
+  return NULL;
 }
 

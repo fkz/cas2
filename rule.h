@@ -22,6 +22,7 @@
 #define CAS_RULE_H
 #include "type.h"
 #include <vector>
+#include <stdexcept>
 
 namespace CAS {
 class TermReference;
@@ -31,7 +32,7 @@ class RuleCollection
 {
   public:
     virtual Type *GetCorrespondingType () const = 0;
-    virtual TermReference *UseRule (const TermReference *, void *&param) = 0;
+    virtual TermReference *UseRule (const TermReference *, void *&param) const = 0;
 };
 
 class Rule: public RuleCollection
@@ -40,7 +41,25 @@ class Rule: public RuleCollection
     virtual Type *GetCorrespondingType () const = 0;
     //gibt NULL zurück, falls die Regel nicht angewandt werden konnte; sonst gibt es ein (weiteres) Term * zurück
     virtual TermReference *UseRule (const TermReference *) const = 0;
-    virtual TermReference* UseRule(const CAS::TermReference* , void*& param);
+    virtual TermReference* UseRule(const CAS::TermReference* , void*& param) const;
+};
+
+class RuleCollectionBase: public RuleCollection
+{
+  private:
+    Type *type;
+    std::vector< RuleCollection * > rules;
+  public:
+    template<class _It>
+    RuleCollectionBase (_It begin, _It end)
+    : rules (begin, end), type (begin->GetCorrespondingType ())
+    {
+      for (; begin != end; ++begin)
+	if (!begin->GetCorrespondingType()->Equals (*type))
+	  throw new std::runtime_error ("Rules all have to be the same type");
+    }
+    virtual Type* GetCorrespondingType() const;
+    virtual TermReference* UseRule(const CAS::TermReference* , void*& param) const;
 };
 
 class SubRule: public Rule
@@ -48,7 +67,7 @@ class SubRule: public Rule
   private:
     size_t parameterCount;
   public:
-    virtual TermReference *MatchRule (const TermReference *t, std::vector< TermReference * >::iterator params, int count) const = 0;
+    virtual TermReference *MatchRule (const TermReference *t, std::vector< TermReference * >::iterator paramsBegin, std::vector< TermReference * >::iterator paramsEnd) const = 0;
     virtual TermReference* UseRule(const TermReference *t) const;
 };
 
