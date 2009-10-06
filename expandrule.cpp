@@ -21,6 +21,8 @@
 #include "expandrule.h"
 #include "term.h"
 #include "operator.h"
+#include "exp.h"
+#include "number.h"
 
 using namespace CAS;
 
@@ -62,6 +64,60 @@ CAS::TermReference* ExpandRule::UseRule(const CAS::TermReference *p) const
 	}
 	Term *newAdd = add->CreateTerm (addTermsArray);
 	return new TermReference (newAdd);
+      }
+    }
+  }
+  const BuildInFunction *exp = dynamic_cast< const BuildInFunction * > (p->get_const());
+  if (exp && exp->GetFunctionEnum () == BuildInFunction::Exp)
+  {
+    void *p = NULL;
+    const Mul *mul = exp->GetChildren (p)->get_const()->Cast<const Mul>();
+    if (mul)
+    {
+      p = NULL;
+      TermReference *t1 = mul->GetChildren(p);
+      TermReference *t2 = mul->GetChildren(p);
+      if (mul->GetChildren (p) == NULL)
+      {
+	TermReference *other = t2;
+	const Number *number = t1->get_const()->Cast<const Number>();
+	if (!number)
+	{
+	  number = t2->get_const()->Cast<const Number>();
+	  other = t1;
+	}
+	if (number)
+	{
+	  const BuildInFunction *bif = other->get_const()->Cast<const BuildInFunction>();
+	  if (bif && bif->GetFunctionEnum() == BuildInFunction::Ln)
+	  {
+	    p = NULL;
+	    const Add *add = bif->GetChildren(p)->get_const()->Cast<const Add>();
+	    if (add)
+	    {
+	      int zahl = number->GetNumber();
+	      assert (zahl > 0);
+	      
+	      TermReference *expTerm = TermReference::Create< BuildInFunction > (BuildInFunction::Exp,
+		TermReference::Create< Mul > (other->Clone(), TermReference::Create< Number > (zahl - 1)));
+	      std::vector< TermReference * > mulTerms;
+	      p = NULL;
+	      TermReference *a;
+	      while (a = add->GetChildren(p))
+	      {
+		mulTerms.push_back(TermReference::Create< Mul > (a->Clone(), expTerm->Clone()));
+	      }
+	      delete expTerm;
+	      TermReference **array = new TermReference * [ mulTerms.size() ];
+	      for (size_t i = 0; i < mulTerms.size(); ++i)
+		array[i] = mulTerms[i];
+	      
+	      TermReference *result = new TermReference (add->CreateTerm(array));
+	      delete array;
+	      return result;
+	    }
+	  }
+	}
       }
     }
   }

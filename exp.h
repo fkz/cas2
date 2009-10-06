@@ -61,6 +61,10 @@ class BuildInFunction: public FunctionCall
     virtual const CAS::Term* GetFunction() const;
     Function func;
   public:
+    Function GetFunctionEnum () const
+    {
+      return func;
+    }
     static BuildInFunction *CreateTerm (CAS::BuildInFunction::Function f, CAS::TermReference* t);
     virtual Term* Clone() const;
     virtual Hash GetHashCode() const;
