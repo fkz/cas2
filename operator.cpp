@@ -349,8 +349,8 @@ TermReference* Mul::Simplify()
   result = (result || !temporary_equality.empty()) ? This() : NULL;
   for (std::vector< std::pair< TermReference*, int > >::const_iterator it = temporary_equality.begin(); it != temporary_equality.end(); ++it)
   {
-    TermReference *ln = TermReference::Create<BuildInFunction> (BuildInFunction::Ln, TermReference::Create<Number>(it->second));
-    TermReference *mul = TermReference::Create<Mul> (ln, it->first);
+    TermReference *ln = TermReference::Create<BuildInFunction> (BuildInFunction::Ln, it->first);
+    TermReference *mul = TermReference::Create<Mul> (ln, TermReference::Create<Number>(it->second));
     TermReference *exp = TermReference::Create<BuildInFunction> (BuildInFunction::Exp, mul);
     children.insert (std::make_pair(exp->GetHashCode (), exp));
   }
