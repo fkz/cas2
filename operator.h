@@ -68,6 +68,23 @@ class Operator : public CAS::Term
       return true;
     }
     
+    template<class C>
+    bool SimplifyEx ()
+    {
+      std::vector< TermReference * > refs;
+      Where< C > (std::back_insert_iterator< std::vector< TermReference * > > (refs), &Operator::True);
+      for (std::vector< TermReference* >::const_iterator it = refs.begin(); it != refs.end(); ++it)
+      {
+	const Operator *op = static_cast< const Operator * > ((*it)->get_const());
+	for (std::multimap< Hash, TermReference* >::const_iterator it2 = op->children.begin(); it2 != op->children.end(); ++it2)
+	{
+	  children.insert (std::make_pair(it2->first, it2->second->Clone()));
+	}
+	delete *it;
+      }
+      return !refs.empty();
+    }
+    
     //Vereinfachungsmethoden:
     TermReference *GetSingleObject ();
   public:

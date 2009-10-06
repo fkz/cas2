@@ -206,8 +206,7 @@ Term* Add::CreateTerm(TermReference** children) const
 
 TermReference *Add::Simplify()
 {
-  TermReference *result = CAS::Operator::Simplify();
-  assert (!result || result == This());
+  TermReference *result = SimplifyEx< Add > () ? This() : NULL; 
   temporary_equality.clear();
   FindEquals(static_cast < void (Operator::*) (TermReference *, int) > (&Add::EqualRoutine));
   result = (result || !temporary_equality.empty()) ? This() : NULL;
@@ -342,8 +341,7 @@ void Mul::EqualRoutine(TermReference* t, int anzahl)
 
 TermReference* Mul::Simplify()
 {
-  TermReference *result = CAS::Operator::Simplify();
-  assert (!result || result == This());
+  TermReference *result = SimplifyEx<Mul> () ? This() : NULL;
   temporary_equality.clear();
   FindEquals(static_cast< void (Operator::*) (TermReference *, int) > (&Mul::EqualRoutine));
   result = (result || !temporary_equality.empty()) ? This() : NULL;
