@@ -34,7 +34,7 @@ void CAS::SimplifyWithRule(CAS::TermReference* ref, CAS::RuleCollection* rule, s
       ++index;
       iterators[index] = childrenSimplifications[index].begin();
     }
-    for (int i = 0; i < paramcount; ++i)
+    for (size_t i = 0; i < paramcount; ++i)
       dataArray[i] = (*iterators[i])->Clone();
     TermReference *tTerm = new TermReference (ref->get_const()->CreateTerm (dataArray));
     if (!coll.push_back (tTerm))

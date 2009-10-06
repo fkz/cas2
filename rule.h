@@ -62,7 +62,7 @@ class RuleCollectionBase: public RuleCollection
     virtual TermReference* UseRule(const CAS::TermReference* , void*& param) const;
 };
 
-class SubRule: public Rule
+/*class SubRule: public Rule
 {
   private:
     size_t parameterCount;
@@ -79,7 +79,7 @@ class OperatorRule: public SubRule
     virtual Type* GetCorrespondingType() const;
     virtual TermReference* MatchRule(const CAS::TermReference* t, std::vector< CAS::TermReference* >::iterator params, int count) const;    
 };
-
+*/
 }
 
 #endif // CAS_RULE_H
