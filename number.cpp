@@ -161,7 +161,11 @@ TermReference *Variable::Simplify()
 
 void Variable::ToString(std::ostream& stream) const
 {
+  #ifndef NUMBER_STYLE
+  stream << static_cast<char> (id + 'a');
+  #else
   stream << "(Var:" << id << ")";
+  #endif
 }
 
 Variable* Variable::CreateTerm(int id)
