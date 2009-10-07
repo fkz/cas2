@@ -63,6 +63,8 @@ CAS::TermReference* ExpandRule::UseRule(const CAS::TermReference *p) const
 	  addTermsArray[addIndex] = new TermReference (mul->CreateTerm(mulTermsArray));
 	}
 	Term *newAdd = add->CreateTerm (addTermsArray);
+	delete [] addTermsArray;
+	delete [] mulTermsArray;
 	return new TermReference (newAdd);
       }
     }

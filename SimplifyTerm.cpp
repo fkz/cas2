@@ -1,4 +1,5 @@
 #include "SimplifyTerm.h"
+#include "termcollection.h"
 
 void CAS::SimplifyWithRule(CAS::TermReference* ref, CAS::RuleCollection* rule, std::back_insert_iterator< std::vector< TermReference * > > output)
 {
@@ -22,7 +23,7 @@ void CAS::SimplifyWithRule(CAS::TermReference* ref, CAS::RuleCollection* rule, s
   }
   
   TermCollection coll;
-  std::vector< TermReference * >::iterator *iterators = new std::vector< TermReference * >::iterator[paramcount];
+  std::vector< TermReference * >::iterator *iterators = new std::vector< TermReference * >::iterator [paramcount];
   TermReference **dataArray = new TermReference * [ paramcount ];
 
   iterators[0] = childrenSimplifications[0].begin();
@@ -46,9 +47,9 @@ void CAS::SimplifyWithRule(CAS::TermReference* ref, CAS::RuleCollection* rule, s
 	break;
     }
   } while (index != -1);
-  //delete [] dataArray;
-  //delete [] iterators;
-  //delete [] childrenSimplifications;
+  delete [] dataArray;
+  //delete iterators;
+  delete [] childrenSimplifications;
   
   TermCollection newly_addings;
   std::vector< TermReference * > vector;
@@ -63,18 +64,21 @@ void CAS::SimplifyWithRule(CAS::TermReference* ref, CAS::RuleCollection* rule, s
       {
 	while (vereinfacht) 
 	{
-	it->second.second = TermCollection::Flag_Simplified;
 	SimplifyWithRule(vereinfacht, rule, std::back_insert_iterator< std::vector< TermReference * > > (vector));
 	for (std::vector< TermReference* >::const_iterator it_ = vector.begin(); it_ != vector.end(); ++it_)
 	{
-	  newly_addings.push_back(*it_);
+	  if (!newly_addings.push_back(*it_))
+	    delete *it_;
 	}
 	vector.clear();
+	delete vereinfacht;
 	vereinfacht = rule->UseRule(it->second.first, param);
 	}
+	delete it->second.first;
       }
       else
-	newly_addings.push_back(it->second.first);
+	if (!newly_addings.push_back(it->second.first))
+	  delete it->second.first;
     }
     tt = &newly_addings;
   }
