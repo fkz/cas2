@@ -72,7 +72,9 @@ void OutputRule (CAS::TermReference *t, CAS::Rule *rule)
   for (std::vector< CAS::TermReference* >::iterator it = its.begin(); it != its.end(); ++it)
   {
     std::cout << "->" << **it << std::endl;
+    delete *it;
   }
+  delete t;
 }
 
 void test1() {
@@ -99,10 +101,10 @@ void test4 ()
   OutputRule(term, &rule);
   
   CAS::TermReference* addTerm = Create<CAS::Add> (Create<CAS::Variable> (0), Create<CAS::Variable> (1));
-  term = Create<CAS::Mul> (addTerm, addTerm->Clone());
+  term = Create<CAS::Mul> (addTerm->Clone(), addTerm->Clone());
   OutputRule(term, &rule);
-  
-  term = Create<CAS::BuildInFunction> (CAS::BuildInFunction::Exp, Create<CAS::Mul> (Create<CAS::BuildInFunction> (CAS::BuildInFunction::Ln, addTerm->Clone()), Create<CAS::Number> (15)));
+  const CAS::Number *n = addTerm->get_const()->Cast<const CAS::Number>();
+  term = Create<CAS::BuildInFunction> (CAS::BuildInFunction::Exp, Create<CAS::Mul> (Create<CAS::BuildInFunction> (CAS::BuildInFunction::Ln, addTerm->Clone()), Create<CAS::Number> (13)));
   OutputRule(term, &rule);
   
 }
