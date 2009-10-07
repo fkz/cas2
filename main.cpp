@@ -34,7 +34,7 @@ int main (int argc, char **argv)
   test1();
   test2();
   test3();
-  //test4();
+  test4();
 }
 
 void Output (CAS::Term *t)
@@ -98,15 +98,14 @@ void test3 ()
 void test4 ()
 {
   CAS::ExpandRule rule;
-  CAS::TermReference *term/* = Create<CAS::Mul> (Create<CAS::Add> (Create<CAS::Variable> (0), Create<CAS::Variable> (1)),
+  CAS::TermReference *term = Create<CAS::Mul> (Create<CAS::Add> (Create<CAS::Variable> (0), Create<CAS::Variable> (1)),
 					  Create<CAS::Add> (Create<CAS::Variable> (0), Create<CAS::Variable> (2)));
-  OutputRule(term, &rule)*/;
+  OutputRule(term, &rule);
   
-  CAS::TermReference* addTerm = Create<CAS::Add> (Create<CAS::Variable> (0), Create<CAS::Variable> (1));/*
+  CAS::TermReference* addTerm = Create<CAS::Add> (Create<CAS::Variable> (0), Create<CAS::Variable> (1));
   term = Create<CAS::Mul> (addTerm->Clone(), addTerm->Clone());
   OutputRule(term, &rule);
-  const CAS::Number *n = addTerm->get_const()->Cast<const CAS::Number>();*/
-  term = Create<CAS::BuildInFunction> (CAS::BuildInFunction::Exp, Create<CAS::Mul> (Create<CAS::BuildInFunction> (CAS::BuildInFunction::Ln, addTerm->Clone()), Create<CAS::Number> (1)));
+  term = Create<CAS::BuildInFunction> (CAS::BuildInFunction::Exp, Create<CAS::Mul> (Create<CAS::BuildInFunction> (CAS::BuildInFunction::Ln, addTerm->Clone()), Create<CAS::Number> (15)));
   OutputRule(term, &rule);
   delete addTerm;
 }
