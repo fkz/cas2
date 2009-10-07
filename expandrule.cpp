@@ -115,7 +115,7 @@ CAS::TermReference* ExpandRule::UseRule(const CAS::TermReference *p) const
 		array[i] = mulTerms[i];
 	      
 	      TermReference *result = new TermReference (add->CreateTerm(array));
-	      delete array;
+	      delete [] array;
 	      return result;
 	    }
 	  }

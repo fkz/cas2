@@ -26,6 +26,8 @@ void CAS::SimplifyWithRule(CAS::TermReference* ref, CAS::RuleCollection* rule, s
   std::vector< TermReference * >::iterator *iterators = new std::vector< TermReference * >::iterator [paramcount];
   TermReference **dataArray = new TermReference * [ paramcount ];
 
+  if (paramcount > 0)
+  {
   iterators[0] = childrenSimplifications[0].begin();
   int index = -1;
   do
@@ -47,8 +49,15 @@ void CAS::SimplifyWithRule(CAS::TermReference* ref, CAS::RuleCollection* rule, s
 	break;
     }
   } while (index != -1);
+  }
+  else
+  {
+    TermReference *tTerm = ref->Clone();
+    if (!coll.push_back (tTerm))
+      delete tTerm;
+  }
   delete [] dataArray;
-  //delete iterators;
+  delete [] iterators;
   delete [] childrenSimplifications;
   
   TermCollection newly_addings;
