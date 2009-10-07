@@ -52,6 +52,33 @@ typename TermCollectionTemplate<Type>::parent::iterator TermCollectionTemplate<T
   return this->end();
 }
 
+template<class Type>
+typename TermCollectionTemplate<Type>::parent::const_iterator TermCollectionTemplate<Type>::find(const Term * t) const
+{
+  assert (!iterating);
+  Hash hash = t->GetHashCode();
+  std::pair< typename parent::const_iterator, typename parent::const_iterator > range = this->equal_range(hash);
+  for (; range.first != range.second; ++range.first)
+  {
+    if (range.first->second.first->Equals(*t))
+      return range.first;
+  }
+  return this->end();
+}
+
+template<class Type>
+typename TermCollectionTemplate<Type>::parent::iterator TermCollectionTemplate<Type>::find(const CAS::Term* t)
+{
+  assert (!iterating);
+  Hash hash = t->GetHashCode();
+  std::pair< typename parent::iterator, typename parent::iterator > range = this->equal_range(hash);
+  for (; range.first != range.second; ++range.first)
+  {
+    if (range.first->second.first->get_const()->Equals(*t))
+      return range.first;
+  }
+  return this->end();
+}
 
 template<class Type>
 bool CAS::TermCollectionTemplate<Type>::push_back(CAS::TermReference* const & t, const Type &flag)

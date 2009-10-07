@@ -105,6 +105,7 @@ class Add: public Operator
     Add (CAS::TermReference** t, size_t anz);
     std::vector<std::pair< TermReference *, int> > temporary_equality;
     void EqualRoutine (CAS::TermReference* t, int anzahl);
+    bool FindAddEquals ();
   public:
     virtual Term* Clone() const;
     virtual Hash GetHashCode() const;

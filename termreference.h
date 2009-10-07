@@ -72,10 +72,16 @@ class TermReference
       return term;
     }
     Term *get_unconst ();
-    bool finnish_get_unconst ()
+    bool finnish_get_unconst (bool simplify = true)
     {
       assert (term->references == 1);
-      return Simplify();
+      if (simplify)
+	return Simplify();
+      else
+      {
+	hash = term->GetHashCode();
+	return false;
+      }
     }
     TermReference *Clone ()
     {

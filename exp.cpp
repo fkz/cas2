@@ -21,6 +21,7 @@
 #include "exp.h"
 #include "functiondefinition.h"
 #include "termreference.h"
+#include "operator.h"
 
 using namespace CAS;
 
@@ -211,6 +212,53 @@ TermReference* BuildInFunction::Simplify()
     {
       delete this;
       return TermReference::Create<Number> (1);
+    }
+    
+    const Mul *m = parameter->get_const()->Cast<const Mul> ();
+    if (m)
+    {
+      void *p = NULL;
+      TermReference *tr[2];
+      tr[0] = m->GetChildren(p);
+      if (tr[0])
+      {
+	tr[1] = m->GetChildren(p);
+	if (tr[1] && !m->GetChildren(p))
+	{
+	  const Number *number = tr[0]->get_const()->Cast<const Number>();
+	  const BuildInFunction *ln = NULL;
+	  if (number)
+	  {
+	    ln = tr[1]->get_const()->Cast<const BuildInFunction>();
+	    if (ln && ln->GetFunctionEnum() != Ln)
+	      ln = NULL;
+	  }
+	  else
+	  {
+	    number = tr[1]->get_const()->Cast<const Number>();
+	    if (number)
+	    {
+	      ln = tr[0]->get_const()->Cast<const BuildInFunction>();
+	      if (ln && ln->GetFunctionEnum() != Ln)
+		ln = NULL;
+	    }
+	  }
+	  if (ln)
+	  {
+	    const Number *num2 = ln->parameter->get_const()->Cast<const Number>();
+	    if (num2)
+	    {
+	      int num1_ = number->GetNumber();
+	      int num2_ = num2->GetNumber();
+	      int result = 1;
+	      for (int i = 0; i < num2_; ++i)
+		result *= num1_;
+	      delete this;
+	      return TermReference::Create<Number> (result);
+	    }
+	  }
+	}
+      }
     }
   }
   return CAS::FunctionCall::Simplify();

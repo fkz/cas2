@@ -47,6 +47,8 @@ class TermCollectionTemplate: public std::multimap< Hash, std::pair< TermReferen
     bool push_back (CAS::TermReference*const& t, const Type &flag = 0xFF);
     typename parent::const_iterator find (const CAS::TermReference* t) const;
     typename parent::iterator find (const CAS::TermReference* t);
+    typename parent::const_iterator find (const CAS::Term* t) const;
+    typename parent::iterator find (const CAS::Term* t);
     bool contains (TermReference *t)
     {
       return find (t) != this->end() && (!insertCollection || insertCollection->find(t) != insertCollection->end());

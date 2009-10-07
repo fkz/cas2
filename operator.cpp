@@ -23,6 +23,8 @@
 #include <cassert>
 #include "exp.h"
 #include "termreference.h"
+#include "termcollection.h"
+#include <iostream>
 
 using namespace CAS;
 
@@ -81,9 +83,11 @@ Operator::~Operator()
 }
 
 Operator::Operator(const std::multimap< Hash, TermReference* >& c)
-: children(c)
 {
-
+  for (std::multimap< Hash, TermReference* >::const_iterator it = c.begin(); it != c.end(); ++it)
+  {
+    children.insert (std::make_pair(it->first, it->second->Clone()));
+  }
 }
 
 
@@ -136,6 +140,11 @@ Hash CAS::Operator::GetPseudoHashCode(hashes::Hashes hT1, uint32_t data) const
 void Operator::PseudoToString(std::ostream& stream, const std::string& op) const
 {
   std::multimap< Hash, TermReference* >::const_iterator it = children.begin();
+  if (it == children.end())
+  {
+    stream << "(" << op << ")";
+    return;
+  }
   stream << "(" << *it->second;
   for (++it; it != children.end(); ++it)
   {
@@ -175,6 +184,77 @@ TermReference* Operator::GetChildren(void*& param) const
 }
 
 
+bool Add::FindAddEquals()
+{
+  bool result = false;
+  TermCollectionTemplate< int > terms;
+  
+  for (std::multimap< Hash, TermReference* >::const_iterator it = children.begin(); it != children.end(); ++it)
+  {
+    const Mul* cmul = it->second->get_const()->Cast< const Mul >();
+    if (cmul)
+    {
+      Mul *mul = it->second->get_unconst()->Cast< Mul > ();
+      std::vector< TermReference * > refs;
+      mul->Where<Number>(std::back_insert_iterator< std::vector< TermReference * > > (refs), &Operator::True);
+      assert (refs.size() <= 1);
+      int number = 1;
+      if (!refs.empty())
+      {
+	number = refs.front()->get_const()->Cast<const Number>()->GetNumber();
+	delete refs.front();
+      }
+      it->second->finnish_get_unconst(false);
+      TermCollectionTemplate<int>::iterator it2 = terms.find (mul);
+      if (it2 != terms.end())
+      {
+	it2->second.second += number;
+	delete it->second;
+	result = true;
+      }
+      else
+      {
+	terms.push_back(it->second, number);
+      }
+    }
+    else
+    {
+      TermCollectionTemplate<int>::iterator it2 = terms.find (it->second);
+      if (it2 != terms.end())
+      {
+	++it2->second.second;
+	delete it->second;
+      }
+      else
+      {
+	terms.push_back(it->second, 1);
+      }
+    }
+  }
+  
+  children.clear ();
+  for (TermCollectionTemplate< int >::const_iterator it = terms.begin(); it != terms.end(); ++it)
+  {
+    if (it->second.second == 0)
+    {
+      delete it->second.first;
+      continue;
+    }
+    if (it->second.second == 1)
+    {
+      children.insert(children.end(), std::make_pair (it->first, it->second.first));
+      continue;
+    }
+    else
+    {
+      TermReference *zahl = TermReference::Create<Number>(it->second.second);
+      TermReference *mul = TermReference::Create<Mul> (zahl, it->second.first);
+      children.insert (children.end(), std::make_pair(mul->GetHashCode(), mul));
+    }
+  }
+  return result;
+}
+
 
 
 Term* Add::Clone() const
@@ -206,16 +286,9 @@ Term* Add::CreateTerm(TermReference** children) const
 
 TermReference *Add::Simplify()
 {
-  TermReference *result = SimplifyEx< Add > () ? This() : NULL; 
-  temporary_equality.clear();
-  FindEquals(static_cast < void (Operator::*) (TermReference *, int) > (&Add::EqualRoutine));
-  result = (result || !temporary_equality.empty()) ? This() : NULL;
-  for (std::vector< std::pair< TermReference*, int > >::const_iterator it = temporary_equality.begin(); it != temporary_equality.end(); ++it)
-  {
-    TermReference *mul = TermReference::Create<Mul> (TermReference::Create<Number> (it->second), it->first);
-    children.insert (std::make_pair (mul->GetHashCode(), mul));
-  }
-  temporary_equality.clear();
+  bool b1 = SimplifyEx<Add>();
+  bool b2 = FindAddEquals();
+  TermReference *result = (b1 || b2) ? This() : NULL;
   
   std::vector< TermReference * > vect;
   std::back_insert_iterator< std::vector< TermReference * > > outputiterator (vect);
@@ -295,7 +368,7 @@ Hash Mul::GetHashCode() const
 }
 
 Mul::Mul(const CAS::Mul& m)
-: Operator(children)
+: Operator(m.children)
 {
 
 }
