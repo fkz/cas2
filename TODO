@@ -1,0 +1,10 @@
+Speicherlecks bereinigen
+Ableitungen vervollständigen
+Integrieren
+Lösen von Gleichungen
+Transform an TermReference anpassen
+Parser für Eingabe erstellen
+Factor ?
+Expand weiterverfolgen: Geschwindigkeit verbessern?
+Mul eine ähnliche Funktion wie Add::FindAddEquals hinzufügen
+Hash-Codes zufällig machen -- Untersuchung auf Hash-Collisions; evtl. Hash-Funktion verbessern
