@@ -33,6 +33,7 @@ class FunctionCall: public Term
     TermReference *parameter;
     virtual std::string GetFunctionName () const = 0;
     bool IsSameFunction (const FunctionCall &f) const;
+  public:
     //Der Rückgabetyp wird nicht gelöscht
     //gibt ein Term mit Typ "FunctionDefinition" zurück
     //GetFunction() gibt ein Objekt zurück, dass bis zur Destruktion von FunctionCall existiert und

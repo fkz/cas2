@@ -18,7 +18,8 @@ enum Hashes {
   BuildInFunctionDefinition = 0x634781,
   Relation = 0x01639F,
   Boolean = 0x64178,
-  SimpleUniqueTerm = 0x4781
+  SimpleUniqueTerm = 0x4781,
+  Derive = 0x648126
 };
 
   
