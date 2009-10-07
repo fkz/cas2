@@ -111,6 +111,57 @@ class SimpleTerm: public Term
     static SimpleTerm *obj ();
 };
 
+class SimpleUniqueTerm: public Term
+{
+  public:
+    typedef int ID;
+  private:
+    ID id;
+    SimpleUniqueTerm(ID id)
+    : id (id)
+    {
+    }
+  public:
+    static SimpleUniqueTerm *GetNewSimpleUniqueTerm ()
+    {
+      static ID id = 0;
+      return new SimpleUniqueTerm (id);
+    }
+    virtual Term* Clone() const
+    {
+      return new SimpleUniqueTerm (id);
+    }
+    virtual Term* CreateTerm(TermReference** children) const
+    {
+      return new SimpleUniqueTerm (id);
+    }
+    virtual bool Equals(const CAS::Term& t) const
+    {
+      const SimpleUniqueTerm *i = t.Cast<SimpleUniqueTerm>();
+      return i && i->id == id;
+    }
+    virtual TermReference* GetChildren(void*& param) const
+    {
+      return NULL;
+    }
+    virtual Hash GetHashCode() const
+    {
+      return Hash (hashes::SimpleUniqueTerm, id);
+    }
+    virtual Type* GetType() const
+    {
+      return Type::GetBuildInType(Type::Term);
+    }
+    virtual TermReference* Simplify()
+    {
+      return NULL;
+    }
+    virtual void ToString(std::ostream& stream) const
+    {
+      stream << "(Unique_" << id << ")";
+    }
+};
+
 }
 
 //#include "term_templates.cpp"
