@@ -24,39 +24,41 @@
 
 using namespace CAS;
 
-TermCollection::const_iterator TermCollection::find(const TermReference * t) const
+template<class Type>
+typename TermCollectionTemplate<Type>::parent::const_iterator TermCollectionTemplate<Type>::find(const TermReference * t) const
 {
   assert (!iterating);
   Hash hash = t->GetHashCode();
-  std::pair< const_iterator, const_iterator > range = equal_range(hash);
+  std::pair< typename parent::const_iterator, typename parent::const_iterator > range = this->equal_range(hash);
   for (; range.first != range.second; ++range.first)
   {
     if (range.first->second.first->Equals(*t))
       return range.first;
   }
-  return end();
+  return this->end();
 }
 
-TermCollection::iterator TermCollection::find(const CAS::TermReference* t)
+template<class Type>
+typename TermCollectionTemplate<Type>::parent::iterator TermCollectionTemplate<Type>::find(const CAS::TermReference* t)
 {
   assert (!iterating);
   Hash hash = t->GetHashCode();
-  std::pair< iterator, iterator > range = equal_range(hash);
+  std::pair< typename parent::iterator, typename parent::iterator > range = this->equal_range(hash);
   for (; range.first != range.second; ++range.first)
   {
     if (range.first->second.first->Equals(*t))
       return range.first;
   }
-  return end();
+  return this->end();
 }
 
 
-
-bool CAS::TermCollection::push_back(CAS::TermReference* const & t, uint8_t flag)
+template<class Type>
+bool CAS::TermCollectionTemplate<Type>::push_back(CAS::TermReference* const & t, const Type &flag)
 {
   push_back_called = true;
   Hash hash = t->GetHashCode();
-  std::pair< iterator, iterator > range = equal_range(hash);
+  std::pair< typename parent::iterator, typename parent::iterator > range = this->equal_range(hash);
   for (; range.first != range.second; ++range.first)
   {
     if (range.first->second.first->Equals(*t))
@@ -80,14 +82,15 @@ bool CAS::TermCollection::push_back(CAS::TermReference* const & t, uint8_t flag)
   return true;
 }
 
-
-TermCollection::TermCollection()
+template<class Type>
+TermCollectionTemplate<Type>::TermCollectionTemplate()
 : DefaultFlag(0), iterating(false), inserted(false), push_back_called(false), insertCollection(NULL)
 {
-
+  
 }
 
-TermCollection::~TermCollection()
+template<class Type>
+TermCollectionTemplate<Type>::~TermCollectionTemplate()
 {
   delete insertCollection;
 }

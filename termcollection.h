@@ -28,13 +28,14 @@ namespace CAS {
 class TermReference;
 class Term;
 
-
-class TermCollection: public std::multimap< Hash, std::pair< TermReference *, uint8_t > >
+template<class Type>
+class TermCollectionTemplate: public std::multimap< Hash, std::pair< TermReference *, Type > >
 {
   private:
-    uint8_t DefaultFlag;
+    Type DefaultFlag;
     bool iterating, inserted, push_back_called;
-    TermCollection *insertCollection;
+    TermCollectionTemplate<Type> *insertCollection;
+    typedef std::multimap< Hash, std::pair< TermReference *, Type > > parent;
   public:
     typedef TermReference *&reference;
     typedef const reference const_reference;
@@ -42,15 +43,15 @@ class TermCollection: public std::multimap< Hash, std::pair< TermReference *, ui
     static const int Flag_Newly_Added = 0;
     static const int Flag_Processed = 1;
     static const int Flag_Simplified = 2;
-    TermCollection();
-    bool push_back (CAS::TermReference*const& t, uint8_t flag = 0xFF);
-    const_iterator find (const CAS::TermReference* t) const;
-    iterator find (const CAS::TermReference* t);
+    TermCollectionTemplate();
+    bool push_back (CAS::TermReference*const& t, const Type &flag = 0xFF);
+    typename parent::const_iterator find (const CAS::TermReference* t) const;
+    typename parent::iterator find (const CAS::TermReference* t);
     bool contains (TermReference *t)
     {
-      return find (t) != end() && (!insertCollection || insertCollection->find(t) != insertCollection->end());
+      return find (t) != this->end() && (!insertCollection || insertCollection->find(t) != insertCollection->end());
     }
-    void SetDefaultFlag (uint8_t flag)
+    void SetDefaultFlag (const Type &flag)
     {
       DefaultFlag = flag;
     }
@@ -58,13 +59,13 @@ class TermCollection: public std::multimap< Hash, std::pair< TermReference *, ui
     {
       iterating = true;
       if (!insertCollection)
-	insertCollection = new TermCollection ();
+	insertCollection = new TermCollectionTemplate<Type> ();
     }
     void EndIteration()
     {
       assert(iterating);
       iterating = false;
-      insert (insertCollection->begin(), insertCollection->end());
+      this->insert (insertCollection->begin(), insertCollection->end());
       insertCollection->clear();
     }
     void ClearStatus ()
@@ -80,14 +81,17 @@ class TermCollection: public std::multimap< Hash, std::pair< TermReference *, ui
     {
       return push_back_called;
     }
-    ~TermCollection();
-    TermCollection &GetInsertCollection ()
+    ~TermCollectionTemplate();
+    TermCollectionTemplate<Type> &GetInsertCollection ()
     {
       assert (inserted);
       return *insertCollection;
     }
 };
 
+typedef TermCollectionTemplate<uint8_t> TermCollection;
+
 }
 
+#include "termcollection.cpp"
 #endif // CAS_TERMCOLLECTION_H

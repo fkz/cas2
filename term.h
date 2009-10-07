@@ -28,10 +28,12 @@
 #include <map>
 #include <vector>
 #include "rule.h"
-#include "termcollection.h"
 #include <list>
 
 namespace CAS {
+template<class Type = uint8_t>
+class TermCollectionTemplate;
+typedef TermCollectionTemplate<> TermCollection;
 
 class Term
 {
