@@ -80,7 +80,7 @@ class Operator : public CAS::Term
 	const Operator *op = static_cast< const Operator * > (it->first->get_const());
 	for (TermCollectionTemplate<NumberX>::const_iterator it2 = op->children.begin(); it2 != op->children.end(); ++it2)
 	{
-	  children.insert (std::make_pair(it2->first, std::make_pair(it2->second.first->Clone(), it2->second.second)));
+	  push_back (std::make_pair(it2->second.first->Clone(), it2->second.second));
 	}
 	delete it->first;
       }
@@ -91,6 +91,7 @@ class Operator : public CAS::Term
     std::pair<TermReference *, NumberX> GetSingleObject ();
     
     virtual TermReference *GetElement(TermCollectionTemplate<NumberX>::const_iterator arg1) const = 0;
+    virtual void push_back(std::pair< TermReference*, NumberX > arg1) = 0;
   public:
     virtual CAS::Type* GetType() const;
     virtual TermReference *Simplify();
@@ -110,6 +111,7 @@ class Add: public Operator
     std::vector<std::pair< TermReference *, int> > temporary_equality;
     void EqualRoutine (CAS::TermReference* t, int anzahl);
     void push_back(TermReference* arg1);
+    virtual void push_back(std::pair< TermReference*, NumberX > arg1);
     virtual TermReference* GetElement(std::multimap< CAS::Hash, std::pair< CAS::TermReference*, CAS::Operator::NumberX > >::const_iterator arg1) const;
   public:
     virtual Term* Clone() const;
@@ -130,6 +132,7 @@ class Mul: public Operator
     void EqualRoutine (CAS::TermReference* t, int anzahl);
     bool LnEq (const BuildInFunction *func);
     bool FindMulEquals ();
+    virtual void push_back(std::pair< TermReference*, NumberX > arg1);
     std::vector< std::pair< TermReference*, int > > temporary_equality;
     virtual TermReference* GetElement(std::multimap< Hash, std::pair< TermReference*, NumberX > >::const_iterator arg1) const;
   public:

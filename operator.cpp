@@ -321,6 +321,15 @@ void Add::push_back(TermReference* arg1)
   }
 }
 
+void Add::push_back(std::pair< TermReference*, Operator::NumberX > arg1)
+{
+  if (!children.push_back(arg1.first, arg1.second))
+  {
+    children.find(arg1.first)->second.second += arg1.second;
+  }
+}
+
+
 
 void Add::EqualRoutine(TermReference* t, int anzahl)
 {
@@ -361,6 +370,11 @@ Mul::Mul(TermReference** t, size_t anz)
 void Mul::push_back(TermReference* arg1)
 {
   children.push_back(arg1);
+}
+
+void Mul::push_back(std::pair< TermReference*, Operator::NumberX > arg1)
+{
+  children.push_back(arg1.first, arg1.second);
 }
 
 
