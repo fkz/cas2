@@ -44,22 +44,22 @@ void Operator::FindEquals (void (Operator::*FindEqual) (CAS::TermReference *t1, 
 {
   //Die FindEqual-Funktion darf KEINE Änderungen an children durchführen, die Iteratoren ungültig machen; diese Änderungen sollten
   //ans Ende angestellt werden!
-  std::multimap< Hash, TermReference* >::iterator it = children.begin();
+  TermCollectionTemplate<NumberX>::iterator it = children.begin();
   while (it != children.end())
   {
-    std::multimap< Hash, TermReference* >::iterator start = it++;
+    TermCollectionTemplate<NumberX>::iterator start = it++;
     for (; it != children.end() && start->first == it->first; ++it) ; //this (;) is correct
     //suche gleiche
     for (; start != it; ++start)
     {
       int anzahl = 1;
-      std::multimap< Hash, TermReference* >::iterator it2 = start;
+      TermCollectionTemplate<NumberX>::iterator it2 = start;
       ++it2;
       for (; it2 != it;)
       {
-	if (start->second->Equals (*it2->second))
+	if (start->second.first->Equals (*it2->second.first))
 	{
-	  delete it2->second;
+	  delete it2->second.first;
 	  children.erase (it2++);
 	  ++anzahl;
 	}
@@ -68,7 +68,7 @@ void Operator::FindEquals (void (Operator::*FindEqual) (CAS::TermReference *t1, 
       }
       if (anzahl > 1)
       {
-	TermReference *t = start->second;
+	TermReference *t = start->second.first;
 	children.erase (start);
 	(this->*FindEqual) (t, anzahl);
       }
@@ -78,24 +78,18 @@ void Operator::FindEquals (void (Operator::*FindEqual) (CAS::TermReference *t1, 
 
 Operator::~Operator()
 {
-  for (std::multimap< Hash, TermReference* >::const_iterator it = children.begin(); it != children.end(); ++it)
-    delete it->second;    
+  for (TermCollectionTemplate<NumberX>::const_iterator it = children.begin(); it != children.end(); ++it)
+    delete it->second.first;    
 }
 
-Operator::Operator(const std::multimap< Hash, TermReference* >& c)
+Operator::Operator(const CAS::TermCollectionTemplate< Operator::NumberX >& c)
 {
-  for (std::multimap< Hash, TermReference* >::const_iterator it = c.begin(); it != c.end(); ++it)
+  for (TermCollectionTemplate<NumberX>::const_iterator it = c.begin(); it != c.end(); ++it)
   {
-    children.insert (std::make_pair(it->first, it->second->Clone()));
+    children.insert (std::make_pair(it->first, std::make_pair (it->second.first->Clone(), it->second.second)));
   }
 }
 
-
-Operator::Operator(TermReference** t, size_t anzahl)
-{
-  for (size_t i = 0; i < anzahl; ++i)
-    children.insert(std::make_pair(t[i]->GetHashCode(),  t[i]));
-}
 
 
 Operator::Operator()
@@ -109,11 +103,11 @@ bool Operator::Equals(const CAS::Term& t) const
   const CAS::Operator* ct = dynamic_cast<const Operator *> (&t);
   if (!ct)
     return false;
-  for (std::multimap< Hash, TermReference* >::const_iterator it = children.begin(), ctit = ct->children.begin(); ; )
+  for (TermCollectionTemplate<NumberX>::const_iterator it = children.begin(), ctit = ct->children.begin(); ; )
   {
     if (it->first != ctit->first)
       return false;
-    std::multimap< Hash, TermReference* >::const_iterator itend = it, ctitend = ctit;
+    TermCollectionTemplate<NumberX>::const_iterator itend = it, ctitend = ctit;
     while (itend != children.end() && ctitend != ct->children.end() && it->first == itend->first && ctit->first == ctitend->first)
       ++itend, ++ctitend;
     if ((itend != children.end()) == !(ctitend != ct->children.end()))
@@ -132,50 +126,51 @@ bool Operator::Equals(const CAS::Term& t) const
 Hash CAS::Operator::GetPseudoHashCode(hashes::Hashes hT1, uint32_t data) const
 {
   Hash result (hT1, data);
-  for (std::multimap< Hash, TermReference* >::const_iterator it = children.begin(); it != children.end(); ++it)
+  for (TermCollectionTemplate<NumberX>::const_iterator it = children.begin(); it != children.end(); ++it)
     result = result ^ it->first;
   return result;
 }
  
 void Operator::PseudoToString(std::ostream& stream, const std::string& op) const
 {
-  std::multimap< Hash, TermReference* >::const_iterator it = children.begin();
-  if (it == children.end())
+  void *p = NULL;
+  TermReference *ref;
+  stream << "(";
+  ref = GetChildren(p);
+  if (ref)
+    stream << *ref;
+  while (ref)
   {
-    stream << "(" << op << ")";
-    return;
-  }
-  stream << "(" << *it->second;
-  for (++it; it != children.end(); ++it)
-  {
-    stream << op << *it->second;
+    ref = GetChildren(p);
+    if (ref)
+      stream << op << *ref;
   }
   stream << ")";
 }
 
-TermReference* Operator::GetSingleObject()
+std::pair<TermReference*, Operator::NumberX> Operator::GetSingleObject()
 {
-  std::multimap< Hash, TermReference* >::iterator it = children.begin();
+  TermCollectionTemplate<NumberX>::iterator it = children.begin();
   ++it;
   if (it == children.end())
   {
-    TermReference *result = children.begin()->second;
+    std::pair< TermReference*, NumberX > result = children.begin()->second;
     children.clear();
     delete this;
     return result;
   }
-  return NULL;
+  return std::make_pair<TermReference *> (NULL,0);
 }
 
 TermReference* Operator::GetChildren(void*& param) const
 {
-  std::multimap< Hash, TermReference * >::const_iterator *it;
+  TermCollectionTemplate<NumberX>::const_iterator *it;
   if (!param)
-    param = it = new std::multimap< Hash, TermReference * >::const_iterator (children.begin());
+    param = it = new TermCollectionTemplate<NumberX>::const_iterator (children.begin());
   else
-    it = (std::multimap< Hash, TermReference * >::const_iterator *)param;
+    it = (TermCollectionTemplate<NumberX>::const_iterator *)param;
   if (*it != children.end())
-    return ((*it)++)->second;
+    return GetElement ((*it)++);
   else
   {
     delete it;
@@ -183,29 +178,267 @@ TermReference* Operator::GetChildren(void*& param) const
   }
 }
 
-
-bool Add::FindAddEquals()
+TermReference* Add::GetElement(std::multimap< Hash, std::pair< TermReference*, Operator::NumberX > >::const_iterator arg1) const
 {
-  bool result = false;
+  if (arg1->second.second == 1)
+  {
+    return arg1->second.first;
+  }
+  else
+  {
+    //TODO: Speicherleck. Beseitige dies, indem die Konvention von GetChildren umgeändert wird zur Erhöhung des Referenzzählers
+    return Create<Mul> (Create<Number> (arg1->second.second), arg1->second.first);
+  }
+}
+
+
+Term* Add::Clone() const
+{
+  return new Add (*this);  
+}
+
+Hash Add::GetHashCode() const
+{
+  return GetPseudoHashCode (hashes::Add, 0);
+}
+
+void Add::ToString(std::ostream& stream) const
+{
+  PseudoToString(stream, "+");  
+}
+
+Add::Add(const CAS::Add& a)
+: Operator (a.children)
+{
+
+}
+
+Term* Add::CreateTerm(TermReference** children) const
+{
+  return new Add (children, this->children.size());
+}
+
+Mul* Mul::CreateTerm(TermReference** children, size_t anzahl)
+{
+  return new Mul (children, anzahl);
+}
+
+
+
+TermReference *Add::Simplify()
+{
+  bool b1 = SimplifyEx<Add>();
+  TermReference *result = b1 ? This() : NULL;
+  
+  std::vector< std::pair< TermReference *, NumberX> > vect;
+  std::back_insert_iterator< std::vector< std::pair<TermReference *, NumberX> > > outputiterator (vect);
+  Where< Number > (outputiterator, &Operator::True);
+  if (vect.size() >= 2)
+  {
+    int res = 0;
+    for (std::vector< std::pair<TermReference *, NumberX> >::iterator it = vect.begin(); it != vect.end();)
+    {
+      TermReference *t = it->first;
+      res += t->get_const()->Cast< Number > ()->GetNumber () * it->second;
+      delete t;
+      ++it;
+    }
+    if (res != 0)
+    {
+      TermReference *number = TermReference::Create<Number> (res);
+      children.insert(std::make_pair(number->GetHashCode(), std::make_pair (number, 1)));
+    }
+    assert (result == This() || ! result );
+    result = This();
+  }
+  else
+    if (!vect.empty())
+    {
+      if (vect.front().first->get_const()->Cast< Number > ()->GetNumber() != 0)
+	children.insert(std::make_pair (vect.front().first->GetHashCode(), vect.front()));
+      else
+      {
+	assert (result == This() || ! result);
+	result = This();
+      }
+    }
+    
+  
+  std::pair< TermReference*, NumberX > single = GetSingleObject();
+  if (single.first)
+  {
+    if (single.second == 1)
+      return single.first;
+    else
+      return Create<Mul> (Create<Number> (single.second), single.first);
+  }
+  
+  return result;
+}
+
+Add* Add::CreateTerm(TermReference* t1, TermReference* t2)
+{
+  Add *result = new Add ();
+  result->push_back (t1);
+  result->push_back (t2);
+  return result;
+}
+
+Add::Add ()
+{
+  
+}
+
+Add::Add(TermReference** t, size_t anz)
+{
+  for (size_t i = 0; i < anz; ++i)
+  {
+    push_back(t[i]);
+  }
+}
+
+void Add::push_back(TermReference* arg1)
+{
+  const Mul *mul = arg1->get_const()->Cast<const Mul>();
+  int number = 1;
+  if (mul)
+  {
+    Mul *mymul = arg1->get_unconst()->Cast<Mul>();
+    std::vector< std::pair< TermReference *, NumberX> > ref;
+    mymul->Where<Number> (std::back_inserter(ref), &Operator::True);
+    assert (ref.size() <= 1);
+    if (!ref.empty())
+    {
+      assert (ref.front().second == 1);
+      number = ref.front().first->get_const()->Cast<const Number>()->GetNumber();
+    }
+    arg1->finnish_get_unconst(true);
+  }
+  
+  if (!children.push_back(arg1, number))
+  {
+    children.find(arg1)->second.second += number;
+  }
+}
+
+
+void Add::EqualRoutine(TermReference* t, int anzahl)
+{
+  temporary_equality.push_back(std::make_pair (t, anzahl));
+}
+
+
+Term* Mul::Clone() const
+{
+  return new Mul (*this);
+}
+
+TermReference* Mul::GetElement(std::multimap< Hash, std::pair< TermReference*, Operator::NumberX > >::const_iterator arg1) const
+{
+  return arg1->second.first;
+}
+
+
+Hash Mul::GetHashCode() const
+{
+  return GetPseudoHashCode(hashes::Mul, 0);
+}
+
+Mul::Mul(const CAS::Mul& m)
+: Operator(m.children)
+{
+
+}
+
+Mul::Mul(TermReference** t, size_t anz)
+{
+  for (size_t i = 0; i < anz; ++i)
+  {
+    push_back (t[i]);
+  }
+}
+
+void Mul::push_back(TermReference* arg1)
+{
+  children.push_back(arg1);
+}
+
+
+
+
+void Mul::ToString(std::ostream& stream) const
+{
+  PseudoToString(stream, "*");
+}
+
+
+Mul *Mul::CreateTerm(TermReference* t1, TermReference* t2)
+{
+  Mul* result = new Mul ();
+  if (t1->Equals(*t2))
+  {
+    result->children.push_back(Create<BuildInFunction> (BuildInFunction::Exp, Create<Mul> (Create<BuildInFunction> (BuildInFunction::Ln, t1), Create<Number> (2))));
+    delete t2;
+  }
+  else
+  {
+    result->children.push_back(t1, 1);
+    result->children.push_back(t2, 1);
+  }
+  return result;
+}
+
+Term* Mul::CreateTerm(TermReference** children) const
+{
+  return new Mul (children, this->children.size());
+}
+
+Add* Add::CreateTerm(TermReference** children, size_t anzahl)
+{
+  return new Add (children, anzahl);
+}
+
+
+
+bool Mul::LnEq(const CAS::BuildInFunction* func)
+{
+  if (func->GetFunctionEnum() != BuildInFunction::Ln)
+    return false;
+  void *p = NULL;
+  TermReference *child = func->GetChildren(p);
+  return child->get_const()->Cast< const Number >();
+}
+
+
+bool Mul::FindMulEquals()
+{
+  /*bool result = false;
   TermCollectionTemplate< int > terms;
   
   for (std::multimap< Hash, TermReference* >::const_iterator it = children.begin(); it != children.end(); ++it)
   {
-    const Mul* cmul = it->second->get_const()->Cast< const Mul >();
+    const BuildInFunction *cexp = it->second->get_const()->Cast< const BuildInFunction >();
+    void *p = NULL;
+    TermReference *mulref = (cexp && cexp->GetFunctionEnum() == BuildInFunction::Exp) ? cexp->GetChildren(p) : NULL;
+    const Mul *cmul = mulref ? mulref->get_const()->Cast< const Mul >() : NULL;
     if (cmul)
     {
-      Mul *mul = it->second->get_unconst()->Cast< Mul > ();
+      
+      
+      
+      Mul *mul = mulref->get_unconst()->Cast< Mul > ();
       std::vector< TermReference * > refs;
-      mul->Where<Number>(std::back_insert_iterator< std::vector< TermReference * > > (refs), &Operator::True);
+      mul->Where< BuildInFunction > (std::back_insert_iterator< std::vector< TermReference * > > (refs), static_cast<bool (Operator::*) (const BuildInFunction *b)> (&Mul::LnEq));
       assert (refs.size() <= 1);
       int number = 1;
       if (!refs.empty())
       {
-	number = refs.front()->get_const()->Cast<const Number>()->GetNumber();
+	void *p = NULL;
+	number = refs.front()->get_const()->Cast<const BuildInFunction>()->GetChildren(p)->get_const()->Cast<const Number>()->GetNumber();
 	delete refs.front();
       }
-      it->second->finnish_get_unconst(false);
-      TermCollectionTemplate<int>::iterator it2 = terms.find (mul);
+      mulref->finnish_get_unconst();
+      TermCollectionTemplate<int>::iterator it2 = terms.find (mulref);
       if (it2 != terms.end())
       {
 	it2->second.second += number;
@@ -214,7 +447,8 @@ bool Add::FindAddEquals()
       }
       else
       {
-	terms.push_back(it->second, number);
+	terms.push_back(mulref->Clone(), number);
+	delete it->second;
       }
     }
     else
@@ -247,158 +481,16 @@ bool Add::FindAddEquals()
     }
     else
     {
+      TermReference *ln = TermReference::Create<BuildInFunction>(BuildInFunction::Ln, it->second.second);
       TermReference *zahl = TermReference::Create<Number>(it->second.second);
       TermReference *mul = TermReference::Create<Mul> (zahl, it->second.first);
       children.insert (children.end(), std::make_pair(mul->GetHashCode(), mul));
     }
   }
-  return result;
-}
-
-
-
-Term* Add::Clone() const
-{
-  return new Add (*this);  
-}
-
-Hash Add::GetHashCode() const
-{
-  return GetPseudoHashCode (hashes::Add, 0);
-}
-
-void Add::ToString(std::ostream& stream) const
-{
-  PseudoToString(stream, "+");  
-}
-
-Add::Add(const CAS::Add& a)
-: Operator (a.children)
-{
+  return result;*/
 
 }
 
-Term* Add::CreateTerm(TermReference** children) const
-{
-  return new Add (children, this->children.size());
-}
-
-
-TermReference *Add::Simplify()
-{
-  bool b1 = SimplifyEx<Add>();
-  bool b2 = FindAddEquals();
-  TermReference *result = (b1 || b2) ? This() : NULL;
-  
-  std::vector< TermReference * > vect;
-  std::back_insert_iterator< std::vector< TermReference * > > outputiterator (vect);
-  Where< Number > (outputiterator, &Operator::True);
-  if (vect.size() >= 2)
-  {
-    int res = 0;
-    for (std::vector< TermReference * >::iterator it = vect.begin(); it != vect.end();)
-    {
-      TermReference *t = *it++;
-      res += t->get_const()->Cast< Number > ()->GetNumber ();
-      delete t;
-    }
-    if (res != 0)
-    {
-      TermReference *number = TermReference::Create<Number> (res);
-      children.insert(std::make_pair(number->GetHashCode(), number));
-    }
-    assert (result == This() || ! result );
-    result = This();
-  }
-  else
-    if (!vect.empty())
-    {
-      if (vect.front()->get_const()->Cast< Number > ()->GetNumber() != 0)
-	children.insert(std::make_pair (vect.front()->GetHashCode(), vect.front()));
-      else
-      {
-	assert (result == This() || ! result);
-	result = This();
-      }
-    }
-    
-  
-  TermReference *single = GetSingleObject();
-  if (single)
-    return single;
-  
-  return result;
-}
-
-Add* Add::CreateTerm(TermReference* t1, TermReference* t2)
-{
-  Add *result = new Add ();
-  result->children.insert (std::make_pair (t1->GetHashCode(), t1));
-  result->children.insert (std::make_pair (t2->GetHashCode(), t2));
-  return result;
-}
-
-Add::Add ()
-{
-  
-}
-
-Add::Add(TermReference** t, size_t anz)
-: Operator(t, anz)
-{
-  
-}
-
-
-
-void Add::EqualRoutine(TermReference* t, int anzahl)
-{
-  temporary_equality.push_back(std::make_pair (t, anzahl));
-}
-
-
-Term* Mul::Clone() const
-{
-  return new Mul (*this);
-}
-
-Hash Mul::GetHashCode() const
-{
-  return GetPseudoHashCode(hashes::Mul, 0);
-}
-
-Mul::Mul(const CAS::Mul& m)
-: Operator(m.children)
-{
-
-}
-
-Mul::Mul(TermReference** t, size_t anz)
-: Operator(t, anz)
-{
-
-}
-
-
-
-void Mul::ToString(std::ostream& stream) const
-{
-  PseudoToString(stream, "*");
-}
-
-
-Mul *Mul::CreateTerm(TermReference* t1, TermReference* t2)
-{
-  Mul* result = new Mul ();
-  result->children.insert (std::make_pair(t1->GetHashCode(), t1));
-  result->children.insert (std::make_pair(t2->GetHashCode(), t2));
-  return result;
-}
-
-Term* Mul::CreateTerm(TermReference** children) const
-{
-  return new Mul (children, this->children.size());
-}
 
 
 
@@ -416,33 +508,38 @@ TermReference* Mul::Simplify()
 {
   TermReference *result = SimplifyEx<Mul> () ? This() : NULL;
   temporary_equality.clear();
-  FindEquals(static_cast< void (Operator::*) (TermReference *, int) > (&Mul::EqualRoutine));
+  //FindEquals(static_cast< void (Operator::*) (TermReference *, int) > (&Mul::EqualRoutine));
   result = (result || !temporary_equality.empty()) ? This() : NULL;
   for (std::vector< std::pair< TermReference*, int > >::const_iterator it = temporary_equality.begin(); it != temporary_equality.end(); ++it)
   {
     TermReference *ln = TermReference::Create<BuildInFunction> (BuildInFunction::Ln, it->first);
     TermReference *mul = TermReference::Create<Mul> (ln, TermReference::Create<Number>(it->second));
     TermReference *exp = TermReference::Create<BuildInFunction> (BuildInFunction::Exp, mul);
-    children.insert (std::make_pair(exp->GetHashCode (), exp));
+    children.push_back (exp, 1);
   }
   temporary_equality.clear();
   
-  std::vector< TermReference * > vect;
-  std::back_insert_iterator< std::vector< TermReference * > > outputiterator (vect);
+  std::vector< std::pair< TermReference *, NumberX > > vect;
+  std::back_insert_iterator< std::vector< std::pair< TermReference *, NumberX > > > outputiterator (vect);
   Where< Number > (outputiterator, &Operator::True);
   if (vect.size() >= 2)
   {
     int res = 1;
-    for (std::vector< TermReference* >::const_iterator it = vect.begin(); it != vect.end();)
+    for (std::vector< std::pair< TermReference*, NumberX> >::const_iterator it = vect.begin(); it != vect.end();)
     {
-      const TermReference *t = *it++;
+      const TermReference *t = it++->first;
       res *= t->get_const()->Cast<Number>()->GetNumber();
       delete t;
+    }
+    if (res == 0)
+    {
+      delete this;
+      return Create<Number> (0);
     }
     if (res != 1)
     {
       TermReference *number = TermReference::Create<Number>(res);
-      children.insert(std::make_pair(number->GetHashCode(), number));
+      children.push_back(number, 1);
     }
     assert (result == This() || ! result );
     result = This();
@@ -450,8 +547,14 @@ TermReference* Mul::Simplify()
   else
     if (!vect.empty())
     {
-      if (vect.front()->get_const()->Cast<Number>()->GetNumber() != 1)
-	children.insert(std::make_pair (vect.front()->GetHashCode(), vect.front()));
+      int num = vect.front().first->get_const()->Cast<Number>()->GetNumber();
+      if (num == 0)
+      {
+	delete this;
+	return Create<Number> (0);
+      }
+      if (num != 1)
+	children.push_back (vect.front().first, 1);
       else
       {
 	assert (result == This() || ! result);
@@ -459,9 +562,9 @@ TermReference* Mul::Simplify()
       }
     }
   
-  TermReference *single = GetSingleObject();
-  if (single)
-    return single;
+  std::pair< TermReference*, NumberX > single = GetSingleObject();
+  if (single.first)
+    return single.first;
   
   return result;
 }
