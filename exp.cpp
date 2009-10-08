@@ -251,8 +251,8 @@ TermReference* BuildInFunction::Simplify()
 	      int num1_ = number->GetNumber();
 	      int num2_ = num2->GetNumber();
 	      int result = 1;
-	      for (int i = 0; i < num2_; ++i)
-		result *= num1_;
+	      for (int i = 0; i < num1_; ++i)
+		result *= num2_;
 	      delete this;
 	      return TermReference::Create<Number> (result);
 	    }
