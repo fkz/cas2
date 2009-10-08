@@ -148,5 +148,60 @@ TermReference* Derive::Simplify()
     delete this;
     return result;
   }
+  const Mul *mul = child->get_const()->Cast<const Mul> ();
+  if (mul)
+  {
+    std::vector< TermReference * > childs;
+    void *param = NULL;
+    TermReference *ref;
+    while (ref = mul->GetChildren(param))
+    {
+      childs.push_back(ref);
+    }
+    
+    TermReference **adds = new TermReference * [ childs.size() ];
+    TermReference **refs = new TermReference * [ childs.size() ];
+    for (size_t i = 0; i < childs.size(); ++i)
+    {
+      for (size_t y = 0; y < childs.size(); ++y)
+      {
+	if (y == i)
+	{
+	  refs[y] = Create<Derive> (childs[y]->Clone(), variable->Clone());
+	}
+	else
+	{
+	  refs[y] = childs[y]->Clone();
+	}
+      }
+      adds[i] = new TermReference (mul->CreateTerm(refs));
+    }
+    
+    TermReference *result = Create<Add> (adds, childs.size());
+    delete [] adds;
+    delete [] refs;
+    delete this;
+    return result;
+  }
+  const BuildInFunction *f = child->get_const()->Cast<const BuildInFunction>();
+  if (f)
+  {
+    void *p = NULL;
+    TermReference* c = f->GetChildren(p);
+    assert (f->GetChildren(p) == NULL);
+    if (f->GetFunctionEnum() == BuildInFunction::Exp)
+    {
+      TermReference *result = Create<Mul> (child->Clone(), Create<Derive> (c->Clone(), variable->Clone()));
+      delete this;
+      return result;
+    }
+    else if (f->GetFunctionEnum() == BuildInFunction::Ln)
+    {
+      TermReference *result = Create<Mul> (Create<BuildInFunction> (BuildInFunction::Exp, Create<Mul> (Create<Number> (-1), Create<BuildInFunction> (BuildInFunction::Ln, c->Clone()))), Create<Derive> (c->Clone(), variable->Clone()));
+      delete this;
+      return result;
+    }
+  }
+  
   return NULL;
 }
