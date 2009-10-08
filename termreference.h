@@ -115,6 +115,24 @@ inline std::ostream &operator << (std::ostream &o, const TermReference &r)
   return o;
 }
 
+template<class T>
+inline TermReference *Create ()
+{
+  return TermReference::Create<T>();
+}
+
+template<class T, class P1>
+inline TermReference *Create (P1 p1)
+{
+  return TermReference::Create<T>(p1);
+}
+
+template<class T, class P1, class P2>
+inline TermReference *Create (P1 p1, P2 p2)
+{
+  return TermReference::Create<T>(p1, p2);
+}
+
 }
 
 #endif // CAS_TERMREFERENCE_H
