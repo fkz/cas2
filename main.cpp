@@ -5,8 +5,9 @@
 #include "expandrule.h"
 #include "SimplifyTerm.h"
 #include "transform.h"
+#include "Parser/grammar.tab.hpp"
 
-template<class T>
+/*template<class T>
 CAS::TermReference *Create ()
 {
   return CAS::TermReference::Create<T> ();
@@ -20,7 +21,7 @@ template<class T,class P1,class P2>
 CAS::TermReference *Create (P1 p1, P2 p2)
 {
   return CAS::TermReference::Create<T> (p1,p2);
-}
+}*/
 
 
 
@@ -28,13 +29,15 @@ void test1 ();
 void test2 ();
 void test3 ();
 void test4 ();
+void test5 ();
 
 int main (int argc, char **argv)
 {
-  test1();
-  test2();
-  test3();
-  test4();
+  //test1();
+  //test2();
+  //test3();
+  //test4();
+  test5();
 }
 
 void Output (CAS::Term *t)
@@ -84,9 +87,9 @@ void test1() {
 
 void test2 ()
 {
-  Output(Create<CAS::BuildInFunction>(CAS::BuildInFunction::Ln, Create<CAS::BuildInFunction>(CAS::BuildInFunction::Ln, Create<CAS::Number>(1))));
-  Output(Create<CAS::BuildInFunction>(CAS::BuildInFunction::Ln, Create<CAS::BuildInFunction>(CAS::BuildInFunction::Exp, Create<CAS::Variable>(1))));
-  Output (Create<CAS::Mul>(Create<CAS::Variable>(2), Create<CAS::Variable>(2)));
+  //Output(Create<CAS::BuildInFunction>(CAS::BuildInFunction::Ln, Create<CAS::BuildInFunction>(CAS::BuildInFunction::Ln, Create<CAS::Number>(1))));
+  //Output(Create<CAS::BuildInFunction>(CAS::BuildInFunction::Ln, Create<CAS::BuildInFunction>(CAS::BuildInFunction::Exp, Create<CAS::Variable>(1))));
+  Output (Create<CAS::Mul>(Create<CAS::Number>(0), Create<CAS::Variable>(2)));
 }
 
 void test3 ()
@@ -105,7 +108,18 @@ void test4 ()
   CAS::TermReference* addTerm = Create<CAS::Add> (Create<CAS::Variable> (0), Create<CAS::Variable> (1));
   term = Create<CAS::Mul> (addTerm->Clone(), addTerm->Clone());
   OutputRule(term, &rule);
-  term = Create<CAS::BuildInFunction> (CAS::BuildInFunction::Exp, Create<CAS::Mul> (Create<CAS::BuildInFunction> (CAS::BuildInFunction::Ln, addTerm->Clone()), Create<CAS::Number> (15)));
+  term = Create<CAS::BuildInFunction> (CAS::BuildInFunction::Exp, Create<CAS::Mul> (Create<CAS::BuildInFunction> (CAS::BuildInFunction::Ln, addTerm->Clone()), Create<CAS::Number> (10)));
   OutputRule(term, &rule);
   delete addTerm;
+}
+
+void yyparse ();
+
+void test5 ()
+{
+  while (true)
+  {
+    yyparse ();
+    std::cout << std::endl <<  "-----------------" << std::endl;
+  }
 }
