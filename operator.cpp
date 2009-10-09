@@ -330,13 +330,6 @@ void Add::push_back(std::pair< TermReference*, Operator::NumberX > arg1)
 }
 
 
-
-void Add::EqualRoutine(TermReference* t, int anzahl)
-{
-  temporary_equality.push_back(std::make_pair (t, anzahl));
-}
-
-
 Term* Mul::Clone() const
 {
   return new Mul (*this);
@@ -344,7 +337,10 @@ Term* Mul::Clone() const
 
 TermReference* Mul::GetElement(std::multimap< Hash, std::pair< TermReference*, Operator::NumberX > >::const_iterator arg1) const
 {
-  return arg1->second.first;
+  if (arg1->second.second == 1)
+    return arg1->second.first;
+  //Speicherleck!!
+  return Create<BuildInFunction> (BuildInFunction::Exp, Create<Mul> (Create<BuildInFunction> (BuildInFunction::Ln, arg1->second.first), Create<Number> (arg1->second.second)));
 }
 
 
@@ -369,12 +365,59 @@ Mul::Mul(TermReference** t, size_t anz)
 
 void Mul::push_back(TermReference* arg1)
 {
-  children.push_back(arg1);
+  const BuildInFunction *exp = arg1->get_const()->Cast<const BuildInFunction>();
+  int number = 1;
+  if (exp && exp->GetFunctionEnum() == BuildInFunction::Exp)
+  {
+    void *p = NULL;
+    const Mul *mul = exp->GetChildren(p)->get_const()->Cast<const Mul>();
+    assert (exp->GetChildren(p) == NULL);
+    TermReference *mul_children[2];
+    p = NULL;
+    if (mul)
+    {
+      mul_children[0] = mul->GetChildren(p);
+      if (mul_children[0])
+      {
+	mul_children[1] = mul->GetChildren(p);
+	if (mul_children[1] && mul->GetChildren(p) == NULL)
+	{
+	  const BuildInFunction *ln = mul_children[0]->get_const()->Cast<const BuildInFunction>();
+	  const Number *num = NULL;
+	  if (ln && ln->GetFunctionEnum() == BuildInFunction::Ln)
+	  {
+	    num = mul_children[1]->get_const()->Cast<const Number>();
+	  }
+	  else
+	  {
+	    ln = mul_children[1]->get_const()->Cast<const BuildInFunction>();
+	    if (ln && ln->GetFunctionEnum() == BuildInFunction::Ln)
+	      num = mul_children[0]->get_const()->Cast<const Number>();
+	  }
+	  if (num)
+	  {
+	    number = num->GetNumber();
+	    p = NULL;
+	    TermReference *temp = ln->GetChildren(p)->Clone();
+	    assert (ln->GetChildren(p) == NULL);
+	    delete arg1;
+	    arg1 = temp;
+	  }
+	}
+      }
+    }
+  }
+  push_back(std::make_pair(arg1, number));
 }
 
 void Mul::push_back(std::pair< TermReference*, Operator::NumberX > arg1)
 {
-  children.push_back(arg1.first, arg1.second);
+  if (!children.push_back(arg1.first, arg1.second))
+  {
+    TermCollectionTemplate<NumberX>::iterator it = children.find (arg1.first);
+    if (! (it->second.second += arg1.second))
+      children.erase(it);
+  }
 }
 
 
@@ -389,16 +432,8 @@ void Mul::ToString(std::ostream& stream) const
 Mul *Mul::CreateTerm(TermReference* t1, TermReference* t2)
 {
   Mul* result = new Mul ();
-  if (t1->Equals(*t2))
-  {
-    result->children.push_back(Create<BuildInFunction> (BuildInFunction::Exp, Create<Mul> (Create<BuildInFunction> (BuildInFunction::Ln, t1), Create<Number> (2))));
-    delete t2;
-  }
-  else
-  {
-    result->children.push_back(t1, 1);
-    result->children.push_back(t2, 1);
-  }
+  result->push_back(t1);
+  result->push_back(t2);
   return result;
 }
 
@@ -414,124 +449,22 @@ Add* Add::CreateTerm(TermReference** children, size_t anzahl)
 
 
 
-bool Mul::LnEq(const CAS::BuildInFunction* func)
-{
-  if (func->GetFunctionEnum() != BuildInFunction::Ln)
-    return false;
-  void *p = NULL;
-  TermReference *child = func->GetChildren(p);
-  return child->get_const()->Cast< const Number >();
-}
-
-
-bool Mul::FindMulEquals()
-{
-  /*bool result = false;
-  TermCollectionTemplate< int > terms;
-  
-  for (std::multimap< Hash, TermReference* >::const_iterator it = children.begin(); it != children.end(); ++it)
-  {
-    const BuildInFunction *cexp = it->second->get_const()->Cast< const BuildInFunction >();
-    void *p = NULL;
-    TermReference *mulref = (cexp && cexp->GetFunctionEnum() == BuildInFunction::Exp) ? cexp->GetChildren(p) : NULL;
-    const Mul *cmul = mulref ? mulref->get_const()->Cast< const Mul >() : NULL;
-    if (cmul)
-    {
-      
-      
-      
-      Mul *mul = mulref->get_unconst()->Cast< Mul > ();
-      std::vector< TermReference * > refs;
-      mul->Where< BuildInFunction > (std::back_insert_iterator< std::vector< TermReference * > > (refs), static_cast<bool (Operator::*) (const BuildInFunction *b)> (&Mul::LnEq));
-      assert (refs.size() <= 1);
-      int number = 1;
-      if (!refs.empty())
-      {
-	void *p = NULL;
-	number = refs.front()->get_const()->Cast<const BuildInFunction>()->GetChildren(p)->get_const()->Cast<const Number>()->GetNumber();
-	delete refs.front();
-      }
-      mulref->finnish_get_unconst();
-      TermCollectionTemplate<int>::iterator it2 = terms.find (mulref);
-      if (it2 != terms.end())
-      {
-	it2->second.second += number;
-	delete it->second;
-	result = true;
-      }
-      else
-      {
-	terms.push_back(mulref->Clone(), number);
-	delete it->second;
-      }
-    }
-    else
-    {
-      TermCollectionTemplate<int>::iterator it2 = terms.find (it->second);
-      if (it2 != terms.end())
-      {
-	++it2->second.second;
-	delete it->second;
-      }
-      else
-      {
-	terms.push_back(it->second, 1);
-      }
-    }
-  }
-  
-  children.clear ();
-  for (TermCollectionTemplate< int >::const_iterator it = terms.begin(); it != terms.end(); ++it)
-  {
-    if (it->second.second == 0)
-    {
-      delete it->second.first;
-      continue;
-    }
-    if (it->second.second == 1)
-    {
-      children.insert(children.end(), std::make_pair (it->first, it->second.first));
-      continue;
-    }
-    else
-    {
-      TermReference *ln = TermReference::Create<BuildInFunction>(BuildInFunction::Ln, it->second.second);
-      TermReference *zahl = TermReference::Create<Number>(it->second.second);
-      TermReference *mul = TermReference::Create<Mul> (zahl, it->second.first);
-      children.insert (children.end(), std::make_pair(mul->GetHashCode(), mul));
-    }
-  }
-  return result;*/
-
-}
-
-
-
-
 CAS::Mul::Mul()
 {
 
 }
 
-void Mul::EqualRoutine(TermReference* t, int anzahl)
+int exp (int base, int exponent)
 {
-  temporary_equality.push_back(std::make_pair(t, anzahl));
+  int result = 1;
+  for (int i = 0; i < exponent;++i)
+    result *= base;
+  return result;
 }
 
 TermReference* Mul::Simplify()
 {
   TermReference *result = SimplifyEx<Mul> () ? This() : NULL;
-  temporary_equality.clear();
-  //FindEquals(static_cast< void (Operator::*) (TermReference *, int) > (&Mul::EqualRoutine));
-  result = (result || !temporary_equality.empty()) ? This() : NULL;
-  for (std::vector< std::pair< TermReference*, int > >::const_iterator it = temporary_equality.begin(); it != temporary_equality.end(); ++it)
-  {
-    TermReference *ln = TermReference::Create<BuildInFunction> (BuildInFunction::Ln, it->first);
-    TermReference *mul = TermReference::Create<Mul> (ln, TermReference::Create<Number>(it->second));
-    TermReference *exp = TermReference::Create<BuildInFunction> (BuildInFunction::Exp, mul);
-    children.push_back (exp, 1);
-  }
-  temporary_equality.clear();
   
   std::vector< std::pair< TermReference *, NumberX > > vect;
   std::back_insert_iterator< std::vector< std::pair< TermReference *, NumberX > > > outputiterator (vect);
@@ -541,9 +474,10 @@ TermReference* Mul::Simplify()
     int res = 1;
     for (std::vector< std::pair< TermReference*, NumberX> >::const_iterator it = vect.begin(); it != vect.end();)
     {
-      const TermReference *t = it++->first;
-      res *= t->get_const()->Cast<Number>()->GetNumber();
-      delete t;
+      const std::pair< TermReference*, NumberX >& t = *it;
+      ++it;
+      res *= exp (t.first->get_const()->Cast<Number>()->GetNumber(), t.second);
+      delete t.first;
     }
     if (res == 0)
     {
@@ -561,25 +495,40 @@ TermReference* Mul::Simplify()
   else
     if (!vect.empty())
     {
-      int num = vect.front().first->get_const()->Cast<Number>()->GetNumber();
+      int num = exp (vect.front().first->get_const()->Cast<Number>()->GetNumber(), vect.front().second);
       if (num == 0)
       {
 	delete this;
 	return Create<Number> (0);
       }
       if (num != 1)
-	children.push_back (vect.front().first, 1);
+      {
+	delete vect.front().first;
+	bool r = children.push_back (Create<Number> (num), 1);
+	assert (r);
+      }
       else
       {
 	assert (result == This() || ! result);
 	result = This();
       }
     }
-  
+    
+  assert (result == This () || !result);
+  if (children.empty())
+  {
+    delete this;
+    return Create<Number> (1);
+  }
+
   std::pair< TermReference*, NumberX > single = GetSingleObject();
   if (single.first)
-    return single.first;
-  
+    if (single.second == 1)
+      return single.first;
+    else
+    {
+      return Create<BuildInFunction> (BuildInFunction::Exp, Create<Mul> (Create<BuildInFunction> (BuildInFunction::Ln, single.first), Create<Number> (single.second)));
+    }
   return result;
 }
 

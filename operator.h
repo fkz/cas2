@@ -108,8 +108,6 @@ class Add: public Operator
     Add ();
     Add (const Add &a);
     Add (CAS::TermReference** t, size_t anz);
-    std::vector<std::pair< TermReference *, int> > temporary_equality;
-    void EqualRoutine (CAS::TermReference* t, int anzahl);
     void push_back(TermReference* arg1);
     virtual void push_back(std::pair< TermReference*, NumberX > arg1);
     virtual TermReference* GetElement(std::multimap< CAS::Hash, std::pair< CAS::TermReference*, CAS::Operator::NumberX > >::const_iterator arg1) const;
@@ -129,11 +127,8 @@ class Mul: public Operator
     Mul (const Mul &m);
     Mul ();
     Mul (CAS::TermReference** t, size_t anz);
-    void EqualRoutine (CAS::TermReference* t, int anzahl);
-    bool LnEq (const BuildInFunction *func);
-    bool FindMulEquals ();
     virtual void push_back(std::pair< TermReference*, NumberX > arg1);
-    std::vector< std::pair< TermReference*, int > > temporary_equality;
+    void push_back(TermReference* arg1);
     virtual TermReference* GetElement(std::multimap< Hash, std::pair< TermReference*, NumberX > >::const_iterator arg1) const;
   public:
     virtual Term* Clone() const;
@@ -143,7 +138,6 @@ class Mul: public Operator
     static Mul *CreateTerm (CAS::TermReference **children, size_t anzahl);
     virtual Term* CreateTerm(CAS::TermReference** children) const;
     virtual TermReference* Simplify();
-    void push_back(TermReference* arg1);
 };
 
 }
