@@ -6,8 +6,19 @@ this is a grammar file to the parsing projects
 #include <string>
 #include <iostream>
 extern "C" int yywrap () { return 1; }
-int yyerror (char *c) { std::cout << "Error:" << c << std::endl; }
 int yylex ();
+
+namespace GlobalGrammarOutput
+{
+  RuleParser::Intro *intros;
+  std::list< RuleParser::Rule * > *rules;
+  extern int lines;
+};
+
+int yyerror (char *c) 
+{ 
+  throw new RuleParser::ParseException (RuleParser::ParseException::SYNTAX, std::string (c), GlobalGrammarOutput::lines); 
+}
 
 %}
 
@@ -47,15 +58,17 @@ int yylex ();
 
 %%
 
-alles: intro mainPart
+alles: intro mainPart { GlobalGrammarOutput::intros = $1; GlobalGrammarOutput::rules = $2; }
 ;
 
 intro: 				{ $$ = new RuleParser::Intro (); }
 |	intro introSection	{ $$ = $1; $$->AddIntroPart ($2); }
 ;
 
-introSection: TYPE ID ':' STR ',' STR ';' { $$ = new RuleParser::IntroPart ($2, $4, $6); }
-|	TYPE ID ':' STR ',' STR ',' STR ';' { $$ = new RuleParser::IntroPart ($2, $4, $6, $8); }
+introSection: TYPE ID ':' STR ';'	{ $$ = new RuleParser::IntroPart ($2, $4); } 
+|	TYPE ID ':' STR ',' CPP_CODE ';' { $$ = new RuleParser::IntroPart ($2, $4, $6); }
+|	TYPE ID ':' STR ',' CPP_CODE ',' STR ';' { $$ = new RuleParser::IntroPart ($2, $4, $6, $8); }
+|	TYPE ID ':' STR ',' STR ';'	{ $$ = new RuleParser::IntroPart ($2, $4, NULL, $6); }
 ;
 
 mainPart:			{ $$ = new std::list< RuleParser::Rule * > (); }
@@ -80,7 +93,8 @@ inner_paramlist_more: leftside { $$ = new std::list< RuleParser::Expression * > 
 |	inner_paramlist_more ',' leftside { $1->push_back ($3); $$ = $1; }
 ;
 
-operationtype: operationtype_withoutnot { $$ = new RuleParser::ExpressionType ($1, NULL); }
+operationtype: { $$ = new RuleParser::ExpressionType (); } 
+|	operationtype_withoutnot { $$ = new RuleParser::ExpressionType ($1, new std::list< RuleParser::Identification > ()); }
 |	operationtype_withoutnot NOT operationtype_withoutnot { $$ = new RuleParser::ExpressionType ($1, $3); }
 ;
 
@@ -101,7 +115,8 @@ more_params_list: 	{ $$ = new std::list< RuleParser::ExpressionList * > (); }
 |	more_params_list ',' leftside_list { $$ = $1; $1->push_back ($3); }
 ;
 
-name:	'{' ID '}' { $$ = $2; }
+name:	{ $$.SetNone (); }
+|	'{' ID '}' { $$ = $2; }
 ;
 
 rightside: operationtype paramlist_right { $$ = new RuleParser::Expression ($1, $2->first, $2->second); delete $2; }

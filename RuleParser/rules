@@ -1,0 +1,5 @@
+TYPE Add: "CAS::Add";
+TYPE Mul: "CAS::Mul";
+
+Mul[ Add[ {hallo} ]] 
+  --> Add[ ... i:other { i } ];
