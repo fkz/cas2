@@ -107,9 +107,9 @@ const Identification IntroPart::GetName()
 void IntroPart::GetCondition(std::ostream& stream, const std::string& rep)
 {
   size_t index_before = 0;
-  for (size_t index = condition.find ("$"); index != std::string::npos; ++index)
+  for (size_t index = condition.find ("$", index_before);index != std::string::npos;index = condition.find ("$", index_before))
   {
-    stream << condition.substr(index_before, index_before - index) << rep;
+    stream << condition.substr(index_before, index - index_before) << rep;
     index_before = ++index;
   }
   stream << condition.substr(index_before);
@@ -126,7 +126,11 @@ void Rule::ToString(std::ostream& out) const
   out << "CAS::TermReference *Simplify (const " << left->GetType()->GetData()->GetCPPClassName () << " *param)\n{\n";
   std::map< Identification, std::string > idStrings;
   int varIndex = 0;
+  left->ToStringDeclared(out, idStrings, varIndex);
+  varIndex = 0;
   left->ToString(out, "param", false, idStrings, varIndex, "return NULL;");
+  out << "CAS::TermReference *result;\n";
+  right->ToStringRight(out, "result", idStrings, varIndex);
   out << "}\n";
 }
 
@@ -150,6 +154,30 @@ Expression::Expression(Identification id)
 
 }
 
+
+void Expression::ToStringDeclared(std::ostream& out, std::map< Identification, std::string >& vars, int& index)
+{
+  if (id.isId())
+  {
+    int myindex = ++index;
+    out << "CAS::TermReference *namedData" << myindex << ";\n";
+    std::stringstream str;
+    str << "namedData" << myindex;
+    vars.insert(std::make_pair (id, str.str()));
+  }
+  if (children)
+    for (std::list< Expression* >::const_iterator it = children->begin(); it != children->end(); ++it)
+    {
+      (*it)->ToStringDeclared(out, vars, index);
+    }
+  if (children2)
+    for (std::list< ExpressionList* >::iterator it = children2->begin(); it != children2->end(); ++it)
+    {
+      (*it)->ToStringDeclared(out, vars, index);
+    }
+}
+
+
 void Expression::ToString(std::ostream& out, const std::string &obj, bool isReference, std::map< Identification, std::string > &vars, int &varIndex, std::string endStr) const
 {
   int index = varIndex++;
@@ -159,23 +187,20 @@ void Expression::ToString(std::ostream& out, const std::string &obj, bool isRefe
       throw new ParseException (ParseException::SEMANTICERROR, "type of start action has to be set");
     if (!id.isId())
       throw new ParseException (ParseException::SEMANTICERROR, "action without type has to be named");
-    out << "TermReference *namedData" << index << " = " << obj << ";\n";
-    std::stringstream data;
-    data << "namedData" << index;
-    vars.insert(std::make_pair(id, data.str()));
+    out << vars.find(id)->second << " = " << obj << ";\n";
     return;
   }
   IntroPart* data = GetType ()->GetData();
   const std::string &classname = data->GetCPPClassName();
-  out << "const " << classname << " my" << index << " = ";
+  out << "const " << classname << " *my" << index << " = ";
   if (isReference)
      out << obj << "->get_const ()->Cast< const " << classname << " > ();\n";
   else
     out << obj << ";\n";
-  out << "if (!my" << index << " || !";
+  out << "if (!my" << index << " || !(";
   std::stringstream l; l << "my" << index; 
   data->GetCondition(out, l.str());
-  out << ") " << endStr << "\n";
+  out << ")) " << endStr << "\n";
   out << "void *param" << index << " = NULL;\n";
   if (children)
   {
@@ -201,7 +226,7 @@ void Expression::ToString(std::ostream& out, const std::string &obj, bool isRefe
       out << "std::list< CAS::TermReference * > childList" << index << ";\n";
       out << "while (true)\n";
       out << "{\n";
-      out << "TermReference *loc = my" << index << "->GetChildren(param" << index << ");\n";
+      out << "CAS::TermReference *loc = my" << index << "->GetChildren(param" << index << ");\n";
       out << "if (loc)\n";
       out << "childList" << index << ".push_back (loc);\n";
       out << "else\n";
@@ -216,18 +241,97 @@ void Expression::ToString(std::ostream& out, const std::string &obj, bool isRefe
   }
   if (id.isId())
   {
-    out << "TermReference *namedData" << index << " = " << obj << ";\n";
-    std::stringstream data;
-    data << "namedData" << index;
-    vars.insert(std::make_pair(id, data.str()));
+    out << vars.find(id)->second << " = " << obj << ";\n";
   }
 }
 
 
+void Expression::ToStringRight(std::ostream &out, const std::string& obj, std::map< Identification, std::string >& vars, int& varIndex) const
+{
+  int index = ++varIndex;
+  if (children)
+  {
+    if (!children2)
+    {
+      out << "CAS::TermReference *children" << index << "[" << children2->size() << "];\n";
+      std::list< Expression* >::iterator it = children->begin();
+      for (size_t i = 0; i != children->size(); ++i, ++it)
+      {
+	std::stringstream loc;
+	loc << "children" << index << "[" << i << "]";
+	(*it)->ToStringRight(out, loc.str(), vars, varIndex);
+      }
+      IntroPart* data = type->GetData();
+      out << obj << " = CAS::Create< " << data->GetCPPClassName() << " > (";
+      for (size_t i = 0; i != children->size(); out << ",", ++i)
+      {
+	out << "children" << index << "[" << i << "]";
+      }
+      out << ");\n";
+    }
+    else
+    {
+      out << "//TODO: this feature has to be implemented\n";
+    }
+  }
+  else
+  {
+    if (!id.isId())
+    {
+      assert (0);
+    }
+    else
+    {
+      out << obj << " = " << vars[id] << "->Clone();\n";
+    }
+  }
+}
+
+
+
 void ExpressionList::ToString(std::ostream& out, const std::string& name, std::map< Identification, std::string >& vars, std::string endStr, int varIndex)
 {
-
+  if (!normalId.isId())
+    throw new ParseException (RuleParser::ParseException::SEMANTICERROR, "unnamed expression lists not allowd");
+  
+  const std::string &output = vars[normalId];
+  
+  out << "for (std::list< CAS::TermReference * >::iterator it = " << name << ".begin();it != " << name << ".end();)\n";
+  out << "{";
+  if (type && type->HasType())
+  {
+    IntroPart* data = type->GetData();
+    out << data->GetCPPClassName () << " *temp = it->get_const()->Cast< " << data->GetCPPClassName() << " > ();\n";
+    out << "if (temp && (";
+    data->GetCondition(out, "temp");
+    out << "))\n";
+  }
+  else
+  {
+    out << "if (true)\n";
+  }
+  out << "{\n";
+  out << output << ".push_back(*it);\n";
+  out << name << ".erase (it++);\n";
+  out << "}\n";
+  out << "else\n";
+  out << "++it;\n";
+  out << "}\n";
 }
+
+void ExpressionList::ToStringDeclared(std::ostream& out, std::map< Identification, std::string > &vars, int& index)
+{
+  assert (art == LEFT);
+  if (normalId.isId())
+  {
+    int myindex = ++index;
+    std::stringstream str;
+    str << "namedData" << myindex;
+    out << "std::list< CAS::TermReference * > namedData" << myindex << ";\n";
+    vars.insert(std::make_pair(normalId, str.str()));
+  }
+}
+
 
 
 
@@ -260,21 +364,24 @@ IntroPart::IntroPart(Identification id, std::string* classname, std::string* con
 
 IntroPart* ExpressionType::GetData()
 {
-  if (yes.size() != 1 || !no.empty())
+  if (!id.isId())
     throw new ParseException (ParseException::NOTIMPLEMENTED, "more than one type");
-  return Intro::GetInstance()->GetIntroPart(yes.front());
+  return Intro::GetInstance()->GetIntroPart(id);
 }
 
 ExpressionType::ExpressionType ()
 {
-  art = 1;
+  id.SetNone();
 }
 
-ExpressionType::ExpressionType(std::list< Identification >* yes, std::list< Identification >* no)
-: yes(*yes), no (*no)
+ExpressionType::ExpressionType(Identification id)
+: id (id), condition("")
 {
-  art = 0;
-  delete yes;
-  delete no;
+  
 }
 
+RuleParser::ExpressionType::ExpressionType(Identification yes, std::string* str)
+: id (id), condition(*str)
+{
+  delete str;
+}

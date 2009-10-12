@@ -1,12 +1,19 @@
 %{
 #include "expression.h"
 #include "grammar.tab.hpp"
-
+#define YYDEBUG 1
 namespace GlobalGrammarOutput
 {
   int lines = 1;
 };
+/*
+"%{"[.\n]*"%}" { yylval.STRING = new std::string (yytext+2,yyleng-4);
+		  for (int i = 2; i < yyleng-2; ++i)
+		    if (yytext[i] == '\n') ++GlobalGrammarOutput::lines;
+		 return CPP_CODE; }
 
+"//"[^\n]* { /* Komentar *-/ }
+*/
 %}
 
 delim [ \t]
@@ -15,6 +22,12 @@ whitespace {delim}+
 
 %%
 
+"%{"([^%]|\n)*(%[^{]([^%]|\n)*)*"%}" { yylval.STRING = new std::string (yytext+2, yyleng-4);
+				      for (int i = 2; i < yyleng - 2; ++i)
+					  if (yytext[i] == '\n')
+					     ++GlobalGrammarOutput::lines;
+					return CPP_CODE; }
+"//"[^\n]* { /**/ }
 TYPE { return TYPE; }
 {whitespace} { /* do nothing */ }
 \n { ++GlobalGrammarOutput::lines; }

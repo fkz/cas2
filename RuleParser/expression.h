@@ -33,6 +33,7 @@ namespace GlobalGrammarOutput
   extern RuleParser::Intro *intros;
   extern std::list< RuleParser::Rule * > *rules;
   extern int lines;
+  extern std::stringstream begin_stream;
 };
 
 
@@ -133,17 +134,17 @@ class Intro
 class ExpressionType
 {
   private:
-    std::list<Identification> yes;
-    std::list<Identification> no;
-    int art;
+    Identification id;
+    std::string condition;
     
   public:
     ExpressionType();
-    ExpressionType (std::list<Identification> * yes, std::list<Identification> *no);
+    ExpressionType (RuleParser::Identification yes);
+    ExpressionType (RuleParser::Identification yes, std::string *str);
     IntroPart *GetData ();
     bool HasType ()
     {
-      return art == 0;
+      return id.isId();
     }
 };
 
@@ -167,6 +168,7 @@ class ExpressionList
     ExpressionList (ExpressionType *type, Identification id);
     ExpressionList (Identification idLocal, Identification idGlobal, Expression *expr);
     void ToString(std::ostream &out, const std::string &name, std::map< RuleParser::Identification, std::string >& vars, std::string endStr, int varIndex);
+    void ToStringDeclared(std::ostream& out, std::map< RuleParser::Identification, std::string >& vars, int& index);
 };
 
 
@@ -186,7 +188,9 @@ class Expression
     {
       return type;
     }
+    void ToStringDeclared (std::ostream &s, std::map< RuleParser::Identification, std::string > &vars, int &index);
     void ToString (std::ostream& s, const std::string& obj, bool isReference, std::map< RuleParser::Identification, std::string >& vars, int& varIndex, std::string endStr) const;
+    void ToStringRight (std::ostream &s, const std::string &obj, std::map< RuleParser::Identification, std::string > &vars, int &varIndex) const;
 };
 
 class Rule
@@ -196,7 +200,17 @@ class Rule
     Expression *right;
   public:
     Rule (Expression *left, Expression *right);
-    void ToString (std::ostream &s) const;
+    virtual void ToString (std::ostream &s) const;
+};
+
+class CPlusPlusCode: public Rule
+{
+  private:
+    std::string str;
+  public:
+    CPlusPlusCode(std::string *str)
+    : Rule (NULL, NULL),  str (*str) { delete str; }
+    virtual void ToString (std::ostream &s) const { s << str; }
 };
 
 }

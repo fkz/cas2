@@ -1,5 +1,26 @@
+%{
+#include "../termreference.h"
+#include "../operator.h"
+#include "../transform.h"
+#include "../exp.h"
+
+namespace MySimplifyRules
+{
+%}
+
 TYPE Add: "CAS::Add";
 TYPE Mul: "CAS::Mul";
+TYPE Expand: "CAS::Derive";
+TYPE Ln: "CAS::BuildInFunction", %{ $->GetFunctionEnum () == CAS::BuildInFunction::Ln %};
+TYPE Exp: "CAS::BuildInFunction", %{ $->GetFunctionEnum () == CAS::BuildInFunction::Exp %};
 
-Mul[ Add[ {hallo} ]] 
-  --> Add[ ... i:other { i } ];
+Expand[ Mul[ Add[ ... { addparam }] ... {mulparam}]] 
+  --> Add[ ... i:addparam {Expand[ Mul[ ... y:addparam {y} ]]}]; 
+  
+Ln[ Exp[ {x} ] ] --> x;
+
+%{
+
+}; //MySimplifyRules
+
+%}
