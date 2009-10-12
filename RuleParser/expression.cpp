@@ -131,6 +131,7 @@ void Rule::ToString(std::ostream& out) const
   left->ToString(out, "param", false, idStrings, varIndex, "return NULL;");
   out << "CAS::TermReference *result;\n";
   right->ToStringRight(out, "result", idStrings, varIndex);
+  out << "return result;\n";
   out << "}\n";
 }
 
@@ -253,16 +254,36 @@ void Expression::ToStringRight(std::ostream &out, const std::string& obj, std::m
   {
     if (!children2)
     {
-      out << "CAS::TermReference *children" << index << "[" << children2->size() << "];\n";
-      std::list< Expression* >::iterator it = children->begin();
-      for (size_t i = 0; i != children->size(); ++i, ++it)
+      out << "CAS::TermReference *children" << index << "[" << children->size() << "];\n";
+    }
+    else
+    {
+       out << "CAS::TermReference **children" << index << " = new CAS::TermReference * [" << children->size();
+       for (std::list< ExpressionList* >::const_iterator it = children2->begin(); it != children2->end(); ++it)
+	out << "+" << (*it)->GetAnzahl(vars);
+      out << "];\n";
+    }
+    std::list< Expression* >::iterator it = children->begin();
+    for (size_t i = 0; i != children->size(); ++i, ++it)
+    {
+      std::stringstream loc;
+      loc << "children" << index << "[" << i << "]";
+      (*it)->ToStringRight(out, loc.str(), vars, varIndex);
+    }
+    if (children2)
+    {
+      out << "size_t index" << index << " = " << children->size() << ";\n";
+      for (std::list< ExpressionList* >::const_iterator myit = children2->begin(); myit != children2->end(); ++myit)
       {
-	std::stringstream loc;
-	loc << "children" << index << "[" << i << "]";
-	(*it)->ToStringRight(out, loc.str(), vars, varIndex);
+	std::stringstream children_stream; children_stream << "children" << index;
+	std::stringstream index_stream; index_stream << "index" << index;
+	(*myit)->ToStringRight (out, children_stream.str(), index_stream.str(), vars, varIndex);
       }
-      IntroPart* data = type->GetData();
-      out << obj << " = CAS::Create< " << data->GetCPPClassName() << " > (";
+    }
+    IntroPart* data = type->GetData();
+    out << obj << " = CAS::Create< " << data->GetCPPClassName() << " > (";
+    if (!children2)
+    {
       for (size_t i = 0; i != children->size(); out << ",", ++i)
       {
 	out << "children" << index << "[" << i << "]";
@@ -271,7 +292,11 @@ void Expression::ToStringRight(std::ostream &out, const std::string& obj, std::m
     }
     else
     {
-      out << "//TODO: this feature has to be implemented\n";
+      out << "children" << index << "," << children->size();
+      for (std::list< ExpressionList* >::const_iterator it = children2->begin(); it != children2->end(); ++it)
+	out << "+" << (*it)->GetAnzahl(vars);
+      out << ");\n";
+      out << "delete [] children" << index << ";\n";
     }
   }
   else
@@ -331,6 +356,26 @@ void ExpressionList::ToStringDeclared(std::ostream& out, std::map< Identificatio
     vars.insert(std::make_pair(normalId, str.str()));
   }
 }
+
+std::string ExpressionList::GetAnzahl(std::map< Identification, std::string > &vars)
+{
+  return vars[normalId] + ".size()";
+}
+
+void ExpressionList::ToStringRight(std::ostream& out, const std::string& var, const std::string& indexStr, std::map< Identification, std::string > vars, int& varIndex)
+{
+  int index = ++varIndex;
+  out << "for (std::list< CAS::TermReference * >::const_iterator it" << index << " = " << vars[normalId] << ".begin(); it" << index << " != " << vars[normalId] << ".end(); ++it" << index << ", ++" << indexStr << ")\n";
+  out << "{\n";
+  std::string varAndIndex = var + "[" + indexStr + "]";
+  std::stringstream thevar; thevar << "(*it" << index << ")";
+  vars.insert (std::make_pair(localId, thevar.str()));
+  expr->ToStringRight(out, varAndIndex, vars, varIndex);
+  vars.erase(localId);
+  out << "}\n";
+}
+
+
 
 
 

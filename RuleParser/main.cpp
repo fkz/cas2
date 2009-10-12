@@ -9,8 +9,77 @@ int yyparse ();
 extern FILE *yyin;
 extern int yydebug;
 
+class ParamTypes
+  {
+    public:
+    enum InnerParamTypes
+    {
+      HELP,
+      OUTPUT,
+      INPUT
+    };
+    InnerParamTypes obj;
+    
+    ParamTypes (ParamTypes::InnerParamTypes i)
+    : obj (i)
+    {
+    }
+    
+    bool operator < (const ParamTypes &p2) const
+    {
+      return obj < p2.obj;
+    }
+  };
+
 int main(int argc, char **argv) {
-  yyin = fopen ("rules", "r");
+  
+  std::map<ParamTypes, std::string> params;
+  for (int i = 1; i < argc; ++i)
+  {
+    if (argv[i] == "--help" || argv[i] == "-h")
+      params[ParamTypes::HELP];
+    else if (argv[i] == "-o")
+    {
+      if (argc < i+1)
+      {
+	std::cout << "Wrong usage:" << std::endl;
+	return 1;
+      }
+      params[ParamTypes::OUTPUT] = argv[++i];
+    }
+    else if (argv[i][0] == '-')
+    {
+      std::cout << "Unknown option" << argv[i] << std::endl;
+      return 1;
+    }
+    else
+    {
+      params[ParamTypes::INPUT] = argv[i];
+    }
+  }
+  
+  if (params.find (ParamTypes::HELP) != params.end())
+  {
+    std::cout << "Copyright 2009 by Fabian Schmitthenner" << std::endl;
+    std::cout << "Usage: " << argv[0] << " [-o OUTPUT_NAME] INPUT_NAME" << std::endl;
+    std::cout << "       " << argv[0] << " --help" << std::endl;
+    return 0;
+  }
+  
+  std::map< ParamTypes, std::string >::const_iterator it = params.find (ParamTypes::INPUT);
+  if (it == params.end())
+  {
+    std::cout << "no input file specified\n";
+    std::cout << "for usage information, see " << argv[0] << " --help"  << std::endl;
+    return 1;
+  }
+  
+  yyin = fopen (it->second.c_str(), "r");
+  if (!yyin)
+  {
+    std::cout << "file " << it->second << " not found\n";
+    return 1;
+  }
   std::cout << "copyright by fabian schmitthenenr" << std::endl;
   try
   {
@@ -18,11 +87,20 @@ int main(int argc, char **argv) {
     yydebug = 1;
     yyparse ();
     std::cout << "semantic analysis" << std::endl;
-    std::ofstream stream ("output.cpp");
+    std::map< ParamTypes, std::string >::const_iterator output = params.find (ParamTypes::OUTPUT);
+    std::ofstream stream;
+    if (output != params.end())
+    {
+      stream.open (output->second.c_str());
+    }
+    else
+    {
+      stream.open ((it->second + ".out.cpp").c_str());
+    }
     stream << "/* ********************** *\n";
     stream << " *  WARNING: This file is *\n";
     stream << " *     auto generated     *\n";
-    stream << " *  from the file \"" << "rules" << "\" *\n"; 
+    stream << " *  from the file \"" << it->second << "\" *\n"; 
     stream << " *all changes will be lost*\n";
     stream << " **************************/\n";
     

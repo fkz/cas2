@@ -169,6 +169,8 @@ class ExpressionList
     ExpressionList (Identification idLocal, Identification idGlobal, Expression *expr);
     void ToString(std::ostream &out, const std::string &name, std::map< RuleParser::Identification, std::string >& vars, std::string endStr, int varIndex);
     void ToStringDeclared(std::ostream& out, std::map< RuleParser::Identification, std::string >& vars, int& index);
+    std::string GetAnzahl (std::map< RuleParser::Identification, std::string >& vars);
+    void ToStringRight(std::ostream &out, const std::string &var, const std::string &indexStr, std::map< Identification, std::string > vars, int &varIndex);
 };
 
 
