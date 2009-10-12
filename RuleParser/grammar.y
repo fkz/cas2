@@ -16,6 +16,8 @@ namespace GlobalGrammarOutput
   RuleParser::Intro *intros;
   std::list< RuleParser::Rule * > *rules;
   std::stringstream begin_stream;
+  std::string classname;
+  std::string _namespace;
   extern int lines;
 };
 
@@ -43,7 +45,7 @@ int yyerror (char *c)
   RuleParser::Intro *intro;
 }
 
-%token TYPE ARROW QUESTIONARROW DOTS OR NOT 
+%token TYPE ARROW QUESTIONARROW DOTS OR NOT NAMESPACE CLASS
 %token <identification> ID;
 %token <STRING> STR CPP_CODE;
 
@@ -64,8 +66,11 @@ int yyerror (char *c)
 alles: prolog intro mainPart { GlobalGrammarOutput::intros = $2; GlobalGrammarOutput::rules = $3; }
 ;
 
-prolog:	
-|	CPP_CODE		{ GlobalGrammarOutput::begin_stream << (*$1); delete $1; }
+prolog:	other_prolog
+|	CPP_CODE other_prolog	{ GlobalGrammarOutput::begin_stream << (*$1); delete $1; }
+
+other_prolog: CLASS STR ';'	{ GlobalGrammarOutput::classname = *$2; delete $2; GlobalGrammarOutput::_namespace = ""; }
+|	NAMESPACE STR ';' CLASS STR ';' { GlobalGrammarOutput::classname = *$5; GlobalGrammarOutput::_namespace = *$2; delete $2; delete $5; }
 
 intro: 				{ $$ = new RuleParser::Intro (); }
 |	intro introSection	{ $$ = $1; $$->AddIntroPart ($2); }

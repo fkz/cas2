@@ -34,6 +34,8 @@ namespace GlobalGrammarOutput
   extern std::list< RuleParser::Rule * > *rules;
   extern int lines;
   extern std::stringstream begin_stream;
+  extern std::string classname;
+  extern std::string _namespace;
 };
 
 
@@ -202,7 +204,7 @@ class Rule
     Expression *right;
   public:
     Rule (Expression *left, Expression *right);
-    virtual void ToString (std::ostream &s) const;
+    virtual IntroPart *ToString (std::ostream& s, std::string name) const;
 };
 
 class CPlusPlusCode: public Rule
@@ -212,7 +214,7 @@ class CPlusPlusCode: public Rule
   public:
     CPlusPlusCode(std::string *str)
     : Rule (NULL, NULL),  str (*str) { delete str; }
-    virtual void ToString (std::ostream &s) const { s << str; }
+    virtual IntroPart *ToString (std::ostream &s, std::string name) const { s << str; return NULL; }
 };
 
 }

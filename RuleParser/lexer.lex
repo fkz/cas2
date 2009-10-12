@@ -29,6 +29,8 @@ whitespace {delim}+
 					return CPP_CODE; }
 "//"[^\n]* { /**/ }
 TYPE { return TYPE; }
+NAMESPACE { return NAMESPACE; }
+CLASS { return CLASS; }
 {whitespace} { /* do nothing */ }
 \n { ++GlobalGrammarOutput::lines; }
 \.\.\. {  return DOTS; }

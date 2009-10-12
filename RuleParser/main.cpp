@@ -126,10 +126,58 @@ int main(int argc, char **argv) {
 
     
     stream << GlobalGrammarOutput::begin_stream.str();
+    
+    if (!GlobalGrammarOutput::_namespace.empty())
+      stream << "namespace " << GlobalGrammarOutput::_namespace << "{\n";
+    stream << "class " << GlobalGrammarOutput::classname << "\n";
+    stream << "{\n";
+    stream << "private:\n";
+    int index = 0;
+    std::multimap< std::string, std::string > myrules;
     for (std::list< RuleParser::Rule* >::const_iterator it = GlobalGrammarOutput::rules->begin(); it != GlobalGrammarOutput::rules->end(); ++it)
     {
-      (*it)->ToString(stream);
+      std::stringstream name; name << "Simplify" << index;
+      RuleParser::IntroPart *res = (*it)->ToString(stream, name.str());
+      if (res)
+      {
+	myrules.insert (std::make_pair(res->GetCPPClassName(), name.str()));
+	++index;
+      }
     }
+    stream << "public:\n";
+    stream << "   template<class T>\n";
+    stream << "   static CAS::TermReference *Simplify (const T *param)\n";
+    stream << "   {\n";
+    stream << "      return NULL;\n";
+    stream << "   }\n";
+    
+    for (std::multimap< std::string, std::string >::const_iterator startit = myrules.begin();startit != myrules.end();)
+    {
+      std::multimap< std::string, std::string >::const_iterator endit = startit;
+      while (endit != myrules.end() && startit->first == endit->first)
+	++endit;
+      stream << "   template<>\n";
+      stream << "   static CAS::TermReference *Simplify (const " << startit->first << " *param)\n";
+      stream << "   {\n";
+      stream << "      CAS::TermReference *result;\n";
+      for (; startit != endit; ++startit)
+      {
+	stream << "      if (result = " << startit->second << " (param))\n";
+	stream << "      {\n";
+	stream << "         CAS::TermReference *temp = result->Simplify ();\n";
+	stream << "         if (temp == NULL || temp = CAS::Term::This ())\n";
+	stream << "            return result;\n";
+	stream << "         else\n";
+	stream << "            return temp;\n";
+	stream << "      }\n";
+      }
+      stream << "      return NULL;\n";
+      stream << "   }\n";
+    }
+    
+    stream << "};\n";
+    if (!GlobalGrammarOutput::_namespace.empty())
+      stream << "}; //" << GlobalGrammarOutput::_namespace << "\n";
     return 0;
   }
   catch (RuleParser::ParseException *ex)

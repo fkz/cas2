@@ -121,9 +121,9 @@ RuleParser::Rule::Rule(Expression* left, Expression* right)
   
 }
 
-void Rule::ToString(std::ostream& out) const
+IntroPart *Rule::ToString(std::ostream& out, std::string name) const
 {
-  out << "CAS::TermReference *Simplify (const " << left->GetType()->GetData()->GetCPPClassName () << " *param)\n{\n";
+  out << "static CAS::TermReference *" << name <<  "(const " << left->GetType()->GetData()->GetCPPClassName () << " *param)\n{\n";
   std::map< Identification, std::string > idStrings;
   int varIndex = 0;
   left->ToStringDeclared(out, idStrings, varIndex);
@@ -133,6 +133,7 @@ void Rule::ToString(std::ostream& out) const
   right->ToStringRight(out, "result", idStrings, varIndex);
   out << "return result;\n";
   out << "}\n";
+  return left->GetType()->GetData();
 }
 
 
@@ -322,7 +323,7 @@ void ExpressionList::ToString(std::ostream& out, const std::string& name, std::m
   const std::string &output = vars[normalId];
   
   out << "for (std::list< CAS::TermReference * >::iterator it = " << name << ".begin();it != " << name << ".end();)\n";
-  out << "{";
+  out << "{\n";
   if (type && type->HasType())
   {
     IntroPart* data = type->GetData();
