@@ -5,6 +5,9 @@
   #include "../operator.h"
   #include "../number.h"
   #include "../transform.h"
+  #include "../RuleParser/rules.out.cpp"
+
+extern MySimplifyRules::CreateClass OurTerms;
 
 extern int yylex (void);
 void yyerror (char *c);
@@ -20,9 +23,11 @@ int yywrap (void );
 %union{
   int Number;
   CAS::TermReference *Term;
+  std::string *STRING;
 }
 
 %token          LN EXP E DIFF
+%token <STRING>    STR
 %token <Number> DIGIT VARIABLE 
 %type  <Term> term literal addTerm mulTerm
 %nonassoc '^'
@@ -35,6 +40,9 @@ finallyTerm: addTerm { std::cout << *$1; }
 term: term '^' term { $$ = CAS::TermReference::Create<CAS::BuildInFunction> (CAS::BuildInFunction::Exp, CAS::TermReference::Create<CAS::Mul> ($3, CAS::TermReference::Create<CAS::BuildInFunction> (CAS::BuildInFunction::Ln, $1))); }
     |  literal { $$ = $1; }
     | '(' addTerm ')' { $$ = $2; }
+    | STR '[' addTerm ']' { $$ = OurTerms.Create (*$1, $3); delete $1; }
+    | STR '[' addTerm ',' addTerm ']' { $$ = OurTerms.Create (*$1, $3, $5); delete $1; }
+    | STR '[' addTerm ',' addTerm ',' addTerm ']' { $$ = OurTerms.Create (*$1, $3, $5, $7); delete $1; }
 ;
 
 mulTerm: term { $$ = $1; }
