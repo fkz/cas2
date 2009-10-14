@@ -59,3 +59,9 @@ CAS::Term* CAS::TermReference::get_unconst()
   }
   return term;
 }
+
+void CAS::TermReference::SetRuleCollection(const CAS::AbstractSimplifyRuleCollection& coll)
+{
+  get_unconst()->SetRuleCollection(coll);
+  finnish_get_unconst(true);
+}

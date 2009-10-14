@@ -8,7 +8,7 @@ int getNumber ();
 
 delim [ \t]
 whitespace {delim}+
-letter [A-Za-z]
+letter [a-z]
 digit [0-9]
 id {letter}({letter}|{digit})*
 number {digit}+
@@ -22,6 +22,7 @@ e    {return E;   }
 \n   {return 0;  }
 diff {return DIFF; }
 {id} {yylval.Number = installId (); return VARIABLE; }
+[A-Z]{id} {yylval.STRING = new std::string (yytext, yyleng); return STR; }
 {number} {yylval.Number = getNumber (); return DIGIT; }
 . { return *yytext; }
 

@@ -52,6 +52,7 @@ CAS::Term* FunctionDefinition::Clone() const
 
 CAS::TermReference* FunctionDefinition::Simplify()
 {
+  return coll->Simplify(this);
   return NULL;
 }
 

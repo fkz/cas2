@@ -29,6 +29,7 @@
 #include <vector>
 #include "rule.h"
 #include <list>
+#include "simplifyrulecollection.h"
 
 namespace CAS {
 template<class Type = uint8_t>
@@ -39,8 +40,11 @@ class Term
 {
   private:
     size_t references;
+    static const CAS::AbstractSimplifyRuleCollection* standardCollection;
+  protected:
+    const AbstractSimplifyRuleCollection *coll;
   public:
-    Term ();
+    Term (const CAS::AbstractSimplifyRuleCollection &c = *standardCollection);
     /*
       Vereinfacht den Term. Falls keine Vereinfachung stattgefunden hat, gibt NULL (0) zurück, sonst
       das vereinfachte Objekt. Falls result != NULL && result != this ist this danach undefiniert!!!
@@ -56,6 +60,10 @@ class Term
     virtual void ToString (std::ostream &stream) const = 0;
     virtual Hash GetHashCode () const = 0;
     virtual TermReference *GetChildren (void *&param) const = 0;
+    virtual TermReference *GetChildrenVar (void *&param)
+    {
+      return GetChildren (param);
+    }
     virtual Term *CreateTerm(TermReference** children) const = 0;
     virtual ~Term () {}
     
@@ -91,6 +99,12 @@ class Term
     //Vereinfache den Term und alle seine Kinder
     template<class _It, class _outIt>    
     bool SimplifyChildsWithRules (_It rule_begin, _It rule_end, _outIt output);
+    
+    void SetRuleCollection (const AbstractSimplifyRuleCollection &coll);
+    static void SetStandardRuleCollection (const AbstractSimplifyRuleCollection &coll)
+    {
+      standardCollection = &coll;
+    }
     
     friend class TermReference;
 };

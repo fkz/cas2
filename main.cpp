@@ -22,22 +22,33 @@ CAS::TermReference *Create (P1 p1, P2 p2)
 {
   return CAS::TermReference::Create<T> (p1,p2);
 }*/
+#include <cstdio>
+#include "RuleParser/rules.out.cpp"
+//#define TEST0
 
 
-
+void test0 ();
 void test1 ();
 void test2 ();
 void test3 ();
 void test4 ();
 void test5 ();
 
+extern FILE *yyin;
+MySimplifyRules::CreateClass OurTerms;
+
 int main (int argc, char **argv)
 {
-  //test1();
-  //test2();
-  //test3();
-  //test4();
+  std::cout << "Copyright by Fabian Schmitthenner" << std::endl;
+  
+  CAS::SimplifyRuleCollection<MySimplifyRules::MyClass> r;
+  CAS::Term::SetStandardRuleCollection(r);
+  
+  #ifdef TEST0
+  test0();
+  #else
   test5();
+  #endif
 }
 
 void Output (CAS::Term *t)
@@ -81,15 +92,34 @@ void OutputRule (CAS::TermReference *t, CAS::Rule *rule)
   delete t;
 }
 
+void yyparse ();
+
+void test0()
+{
+  std::cout << "------ANFANG-----" << std::endl;
+  yyin = fopen ("calc", "r");
+  if (!yyin)
+  {
+    std::cout << "Fehler beim Öffnen der Datei" << std::endl;
+    return;
+  }
+  while (!feof (yyin))
+  {
+    yyparse ();
+    std::cout << "\n--------------" << std::endl;
+  }
+  std::cout << "------ENDE-------" << std::endl;
+};
+
 void test1() {
-    Output (Create<CAS::Add> (Create<CAS::Number>(2), Create<CAS::Number>(1)));
+    Output (Create<CAS::Add> (Create<CAS::Variable>(2), Create<CAS::Number>(1)));
 }
 
 void test2 ()
 {
   //Output(Create<CAS::BuildInFunction>(CAS::BuildInFunction::Ln, Create<CAS::BuildInFunction>(CAS::BuildInFunction::Ln, Create<CAS::Number>(1))));
   //Output(Create<CAS::BuildInFunction>(CAS::BuildInFunction::Ln, Create<CAS::BuildInFunction>(CAS::BuildInFunction::Exp, Create<CAS::Variable>(1))));
-  Output (Create<CAS::Mul>(Create<CAS::Number>(0), Create<CAS::Variable>(2)));
+  Output (Create<CAS::Add>(Create<CAS::Variable>(2), Create<CAS::Variable>(2)));
 }
 
 void test3 ()
@@ -113,7 +143,6 @@ void test4 ()
   delete addTerm;
 }
 
-void yyparse ();
 
 void test5 ()
 {

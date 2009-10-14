@@ -128,8 +128,6 @@ CAS::Term* Relations::Clone() const
 
 CAS::TermReference* Relations::Simplify()
 {
-  bool result = false;
-  //left und right sind bereits vereinfacht
   if (left->Equals(*right))
   {
     TermReference *result = NULL;
@@ -145,6 +143,6 @@ CAS::TermReference* Relations::Simplify()
     delete this;
     return result;
   }
-  return result ? This() : NULL;
+  return coll->Simplify(this);
 }
 

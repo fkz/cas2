@@ -227,9 +227,11 @@ Mul* Mul::CreateTerm(TermReference** children, size_t anzahl)
 
 TermReference *Add::Simplify()
 {
+  //Assoziativgestz anwenden (Build-In)
   bool b1 = SimplifyEx<Add>();
   TermReference *result = b1 ? This() : NULL;
   
+  //numerische Rechnungen ausführen (Build-In)
   std::vector< std::pair< TermReference *, NumberX> > vect;
   std::back_insert_iterator< std::vector< std::pair<TermReference *, NumberX> > > outputiterator (vect);
   Where< Number > (outputiterator, &Operator::True);
@@ -263,7 +265,7 @@ TermReference *Add::Simplify()
       }
     }
     
-  
+  //einzelne Element vereinfachen (Build-In) 
   std::pair< TermReference*, NumberX > single = GetSingleObject();
   if (single.first)
   {
@@ -273,7 +275,12 @@ TermReference *Add::Simplify()
       return Create<Mul> (Create<Number> (single.second), single.first);
   }
   
-  return result;
+  assert (!result || result == This ());
+  TermReference* result2 = coll->Simplify(this);
+  if (result2)
+    return result2;
+  else
+    return result;
 }
 
 Add* Add::CreateTerm(TermReference* t1, TermReference* t2)
@@ -529,7 +536,12 @@ TermReference* Mul::Simplify()
     {
       return Create<BuildInFunction> (BuildInFunction::Exp, Create<Mul> (Create<BuildInFunction> (BuildInFunction::Ln, single.first), Create<Number> (single.second)));
     }
-  return result;
+  
+  TermReference* result2 = coll->Simplify(this);
+  if (result2)
+    return result2;
+  else
+    return result;
 }
 
 

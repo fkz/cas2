@@ -18,26 +18,7 @@
 
 */
 
-#include "functionchange.h"
+#include "simplifyrulecollection.h"
 
 using namespace CAS;
-
-bool FunctionChange::Equals(const CAS::Term& t) const
-{
-  const CAS::FunctionChange* tt = dynamic_cast<const FunctionChange * > (&t);
-  if (!tt)
-    return false;
-  return definition->Equals(*tt->definition);
-}
-
-CAS::Type* FunctionChange::GetType() const
-{
-  return Type::GetBuildInType(Type::FunctionDefinition);
-}
-
-CAS::TermReference* FunctionChange::Simplify()
-{
-  return coll->Simplify(this);
-  return NULL;
-}
 

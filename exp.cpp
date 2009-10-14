@@ -47,6 +47,8 @@ Type* FunctionCall::GetType() const
 
 TermReference *FunctionCall::Simplify()
 {
+  return coll->Simplify(this);
+  /*
   TermReference *result = NULL;
   
   const FunctionCall *f = dynamic_cast< const FunctionCall * > (parameter->get_const());
@@ -63,7 +65,7 @@ TermReference *FunctionCall::Simplify()
     delete t1_;
   }
   
-  return result;
+  return result;*/
 }
 
 FunctionCall::~FunctionCall()
@@ -207,13 +209,14 @@ TermReference* BuildInFunction::Simplify()
 {
   if (func == Exp)
   {
-    const CAS::Number* n = dynamic_cast< const Number * > (parameter->get_const());
+    /*const CAS::Number* n = dynamic_cast< const Number * > (parameter->get_const());
     if (n && n->GetNumber() == 0)
     {
       delete this;
       return TermReference::Create<Number> (1);
-    }
+    }*/
     
+    //Build-In-Teil: Ausrechnen von numerischen Rechnungen wie 2^4 etc.
     const Mul *m = parameter->get_const()->Cast<const Mul> ();
     if (m)
     {
@@ -261,7 +264,11 @@ TermReference* BuildInFunction::Simplify()
       }
     }
   }
-  return CAS::FunctionCall::Simplify();
+  TermReference *result = coll->Simplify(this);
+  if (!result)
+    return CAS::FunctionCall::Simplify();
+  else
+    return result;
 }
 
 

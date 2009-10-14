@@ -111,6 +111,8 @@ void Derive::ToString(std::ostream& stream) const
 
 TermReference* Derive::Simplify()
 {
+  
+  /*
   if (child->Equals(variable))
   {
     delete this;
@@ -122,7 +124,7 @@ TermReference* Derive::Simplify()
     /*Term *func = bf->GetFunction ();
     assert (func->GetType()->Equals(Type::GetBuildInType(Type::FunctionDefinition)));
     Term *ableitung = func->Transform(Transforms::Ableitung);
-    //...*/
+    //...* /
   }
   const Number *num = child->get_const()->Cast<const Number>();
   if (num)
@@ -204,4 +206,6 @@ TermReference* Derive::Simplify()
   }
   
   return NULL;
+  */
+  return coll->Simplify(this);   
 }

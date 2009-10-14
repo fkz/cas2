@@ -19,7 +19,8 @@ enum Hashes {
   Relation = 0x01639F,
   Boolean = 0x64178,
   SimpleUniqueTerm = 0x4781,
-  Derive = 0x648126
+  Derive = 0x648126,
+  Extended = 0x623481
 };
 
   

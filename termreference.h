@@ -103,10 +103,16 @@ class TermReference
     {
       return new TermReference (T::CreateTerm (p1, p2));
     }
+    template<class T, class P1, class P2, class P3>
+    static TermReference *Create (P1 p1, P2 p2, P3 p3)
+    {
+      return new TermReference (T::CreateTerm (p1, p2, p3));
+    }
     TermReference *GetChildren(void *&arg1) const
     {
       return term->GetChildren(arg1);
     }
+    void SetRuleCollection(const AbstractSimplifyRuleCollection &coll);
 };
 
 inline std::ostream &operator << (std::ostream &o, const TermReference &r)
@@ -132,6 +138,13 @@ inline TermReference *Create (P1 p1, P2 p2)
 {
   return TermReference::Create<T>(p1, p2);
 }
+
+template<class T, class P1, class P2, class P3>
+inline TermReference *Create (P1 p1, P2 p2, P3 p3)
+{
+  return TermReference::Create<T>(p1, p2, p3);
+}
+
 
 }
 

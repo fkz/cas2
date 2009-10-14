@@ -29,6 +29,7 @@ CAS::Type* Number::GetType() const
 
 TermReference *Number::Simplify()
 {
+  //Zahlen können definitionsgemäß nicht vereinfacht werden; auch nicht durch externe Regeln
   return NULL;
 }
 
