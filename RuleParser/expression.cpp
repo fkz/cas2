@@ -277,20 +277,17 @@ void Expression::ToString(std::ostream& out, const std::string &obj, bool isRefe
     }
     else
     {
-      out << "std::list< CAS::TermReference * > childList" << index << ";\n";
       out << "while (true)\n";
       out << "{\n";
-      out << "CAS::TermReference *loc = my" << index << "->GetChildren(param" << index << ");\n";
-      out << "if (loc)\n";
-      out << "childList" << index << ".push_back (loc);\n";
-      out << "else\n";
-      out << "break;\n";
-      out << "}\n";
+      out << "CAS::TermReference *loc" << index << " = my" << index << "->GetChildren(param" << index << ");\n";
+      out << "if (!loc" << index << ")\n   break;\n";
       for (std::list< ExpressionList* >::iterator it = children2->begin(); it != children2->end(); ++it)
       {
-	std::stringstream str; str << "childList" << index;
-	(*it)->ToString (out, str.str(), vars, endStr, varIndex);
+	std::stringstream str; str << "loc" << index;
+	(*it)->ToString (out, str.str(), vars, "continue;", varIndex);
       }
+      out << "//When this state is reached, the rule does not match\nreturn NULL;\n";
+      out << "}";
     }
   }
   if (id.isId())
@@ -448,12 +445,11 @@ void ExpressionList::ToString(std::ostream& out, const std::string& name, std::m
   
   const std::string &output = vars[normalId];
   
-  out << "for (std::list< CAS::TermReference * >::iterator it = " << name << ".begin();it != " << name << ".end();)\n";
   out << "{\n";
   if (type && type->HasType())
   {
     IntroPart* data = type->GetData();
-    out << data->GetCPPClassName () << " *temp = it->get_const()->Cast< " << data->GetCPPClassName() << " > ();\n";
+    out << data->GetCPPClassName () << " *temp = " << name << "->get_const()->Cast< " << data->GetCPPClassName() << " > ();\n";
     out << "if (temp && (";
     data->GetCondition(out, "temp");
     out << "))\n";
@@ -462,12 +458,9 @@ void ExpressionList::ToString(std::ostream& out, const std::string& name, std::m
   {
     out << "if (true)\n";
   }
-  out << "{\n";
-  out << output << ".push_back(*it);\n";
-  out << name << ".erase (it++);\n";
-  out << "}\n";
+  out << output << ".push_back(" << name << ");\n";
   out << "else\n";
-  out << "++it;\n";
+  out << endStr << "\n";
   out << "}\n";
 }
 
