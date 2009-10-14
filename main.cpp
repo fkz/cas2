@@ -23,7 +23,7 @@ CAS::TermReference *Create (P1 p1, P2 p2)
   return CAS::TermReference::Create<T> (p1,p2);
 }*/
 #include <cstdio>
-#include "RuleParser/rules.out.cpp"
+#include "Regeln/rules.out.cpp"
 //#define TEST0
 
 

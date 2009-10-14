@@ -1,0 +1,73 @@
+// PlainText //
+%{
+/*
+this file is part of the standard library
+*/
+
+#include <termreference.h>
+#include <operator.h>
+#include <transform.h>
+#include <exp.h>
+#include <number.h>
+#include <hashes.h>
+#include <typeinfo>
+
+%}
+
+NAMESPACE "MySimplifyRules";
+CLASS "MyClass";
+
+TYPE Add: "CAS::Add";
+TYPE Mul: "CAS::Mul";
+TYPE Diff: "CAS::Derive";
+TYPE Variable: "CAS::Variable";
+TYPE Ln: "CAS::BuildInFunction", %{ $->GetFunctionEnum () == CAS::BuildInFunction::Ln %}, "CAS::BuildInFunction::Ln";
+TYPE Exp: "CAS::BuildInFunction", %{ $->GetFunctionEnum () == CAS::BuildInFunction::Exp %}, "CAS::BuildInFunction::Exp";
+TYPE Number: "CAS::Number";
+TYPE Number0: "CAS::Number", %{ $->GetNumber () == 0 %};
+TYPE new Set "Set" [3]: "CAS::Type::GetBuildInType (CAS::Type::Term)";
+TYPE new Constant "Constant" [1]: "CAS::Type::GetBuildInType (CAS::Type::Term)";
+TYPE new Expand "Expand" [1]: "CAS::Type::GetBuildInType (CAS::Type::Term)";
+TYPE new Fakultaet "Fakultaet" [1]: "CAS::Type::GetBuildInType (CAS::Type::Term)";
+
+//Exponentialfunktionen:
+Exp[Number0[]] --> Number<"1">[];
+Ln[Exp[{x}]] --> x;
+Exp[Ln[{x}]] --> x;
+
+//Ableitungen
+Diff[{x},{y}] %{ $$ $x$->Equals (*$y$) %} --> Number<"1">[];
+Diff[Add[ ... {x} ],{y}] --> Add[ ... i:x { Diff[i,y] }];
+Diff[Number,{x}] --> Number<"0">[];
+Diff[Mul[ ... {mul}], {x}] --> Add[ ... i:mul { Mul[ ... y:mul { %{ if ($y$ != $i$) %} y %{ else %} Diff[y,x]  } ] } ];
+Diff[Exp[{x}],{y}] --> Mul[Exp[x], Diff[x,y]];
+Diff[Ln[{x}],{y}] --> Mul[Exp[Mul[Ln[x], Number<"-1">[]]],Diff[x,y]];
+
+//Setzen
+Set[{x},{y},{z}] %{ $$ $x$->Equals (*$y$) %} --> z;
+Set[Add[ ... {x}],{y},{z}] --> Add[ ... i:x { Set[i,y,z] } ];
+Set[Mul[ ... {x}],{y},{z}] --> Mul[ ... i:x { Set[i,y,z] } ];
+Set[Number{num},{x},{y}] --> num;
+Set[Variable{var},{x},{y}] --> var;
+Set[Exp[{x}], {y}, {z}] --> Exp[Set[x,y,z]];
+Set[Ln[{x}],{y},{z}] --> Ln[Set[x,y,z]];
+
+//Ausklammern
+Expand[Mul[Add[ ... {add}] ... {mul}]] --> Add[ ... i:add { Expand[Mul[ i ... y:mul {y} ]] } ];
+Expand[Add[ ... {x}]] --> Add[ ... i:x { Expand[i] } ];
+Expand[Number{n}] --> n;
+Expand[Variable{n}] --> n;
+Expand[Exp[Mul[Ln[Add[... {add}]], Number{num}]]]
+  --> Add[ ... i:add { Expand[Mul[ i, Exp[Mul[Ln[Add[ ... y:add {y}]], 
+  %{ $$ = CAS::Create<CAS::Number> ($num$->get_const()->Cast<const CAS::Number> ()->GetNumber () - 1); %}]]]]}]; 
+  
+Expand[Mul[ ... {x} ]] --> Mul[ ... i:x {Expand[i]}];
+Expand[Exp{x}] --> x;
+
+Fakultaet[Number{num}] -->
+%{
+  int n = $num$->get_const()->Cast<const CAS::Number> ()->GetNumber ();
+  int res = 1;
+  for (int i = 1; i < n; ++i)
+    res *= i;  
+%} Number<"res">[];

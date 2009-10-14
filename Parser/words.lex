@@ -1,5 +1,5 @@
 %{
-#include "../termreference.h"
+#include <termreference.h>
 #include "grammar.tab.hpp"
 
 int installId ();

@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
   {
     if (argv[i] == "--help" || argv[i] == "-h")
       params[ParamTypes::HELP];
-    else if (argv[i] == "-o")
+    else if (argv[i][0] == '-' && argv[i][1] == 'o' && argv[i][2] == 0)
     {
       if (argc < i+1)
       {
@@ -95,6 +95,7 @@ int main(int argc, char **argv) {
     std::ofstream stream;
     if (output != params.end())
     {
+      std::cout << "write output to file " << output->second << std::endl;
       stream.open (output->second.c_str());
     }
     else
