@@ -4,10 +4,13 @@
 #include <cstdio>
 #include <fstream>
 #include <sstream>
+#include <typeinfo>
 
 int yyparse ();
 extern FILE *yyin;
 extern int yydebug;
+
+
 
 class ParamTypes
   {
@@ -33,6 +36,7 @@ class ParamTypes
 
 int main(int argc, char **argv) {
   
+  //BUG: Vergleich von C-Strings mit Zeichenkettenliteralen führt zu undefiniertem Verhalten!
   std::map<ParamTypes, std::string> params;
   for (int i = 1; i < argc; ++i)
   {
@@ -84,7 +88,7 @@ int main(int argc, char **argv) {
   try
   {
     std::cout << "syntax analysis" << std::endl;
-    yydebug = 1;
+    yydebug = 0;
     yyparse ();
     std::cout << "semantic analysis" << std::endl;
     std::map< ParamTypes, std::string >::const_iterator output = params.find (ParamTypes::OUTPUT);
@@ -129,9 +133,7 @@ int main(int argc, char **argv) {
     
     if (!GlobalGrammarOutput::_namespace.empty())
       stream << "namespace " << GlobalGrammarOutput::_namespace << "{\n";
-    stream << "class " << GlobalGrammarOutput::classname << "\n";
-    stream << "{\n";
-    stream << "private:\n";
+    stream << "namespace __private{\n";
     int index = 0;
     std::multimap< std::string, std::string > myrules;
     for (std::list< RuleParser::Rule* >::const_iterator it = GlobalGrammarOutput::rules->begin(); it != GlobalGrammarOutput::rules->end(); ++it)
@@ -144,9 +146,8 @@ int main(int argc, char **argv) {
 	++index;
       }
     }
-    stream << "public:\n";
     stream << "   template<class T>\n";
-    stream << "   static CAS::TermReference *Simplify (const T *param)\n";
+    stream << "   inline CAS::TermReference *Simplify (const T *param)\n";
     stream << "   {\n";
     stream << "      return NULL;\n";
     stream << "   }\n";
@@ -157,25 +158,69 @@ int main(int argc, char **argv) {
       while (endit != myrules.end() && startit->first == endit->first)
 	++endit;
       stream << "   template<>\n";
-      stream << "   static CAS::TermReference *Simplify (const " << startit->first << " *param)\n";
+      stream << "   inline CAS::TermReference *Simplify (const " << startit->first << " *param)\n";
       stream << "   {\n";
       stream << "      CAS::TermReference *result;\n";
       for (; startit != endit; ++startit)
       {
 	stream << "      if (result = " << startit->second << " (param))\n";
-	stream << "      {\n";
-	stream << "         CAS::TermReference *temp = result->Simplify ();\n";
-	stream << "         if (temp == NULL || temp = CAS::Term::This ())\n";
-	stream << "            return result;\n";
-	stream << "         else\n";
-	stream << "            return temp;\n";
-	stream << "      }\n";
+	stream << "         return result;\n";
       }
       stream << "      return NULL;\n";
       stream << "   }\n";
     }
     
-    stream << "};\n";
+    stream << "template<>\n";
+    stream << "inline CAS::TermReference *Simplify (const CAS::Term *param)\n";
+    stream << "{\nconst std::type_info &info = typeid (*param);\n";
+    bool firsttime = true;
+    for (std::multimap< std::string, std::string >::const_iterator myit = myrules.begin(); myit != myrules.end();)
+    {
+      if (!firsttime)
+	stream << "else ";
+      else
+	firsttime = false;
+      stream << "if (info == typeid(" << myit->first << ")) return Simplify<" << myit->first << "> ((" << myit->first << " *)param);\n";
+      std::multimap< std::string, std::string >::const_iterator myit2 = myit;
+      while (myit != myrules.end() && myit2->first == myit->first) ++myit;
+    }
+    stream << "else return NULL;\n}\n";
+    
+    stream << "}; // namespace __private \n";
+    stream << "class " << GlobalGrammarOutput::classname << "\n";
+    stream << "{\n";
+    stream << "public:\n";
+    stream << "template<class T>\n";
+    stream << "static CAS::TermReference *Simplify (const T *t)\n";
+    stream << "{\n";
+    stream << "   return __private::Simplify (t);\n";
+    stream << "}\n";
+    stream << "}; //class " << GlobalGrammarOutput::classname << "\n";
+    stream << "class CreateClass\n{\npublic:";
+    for (int i = 1; i != 5; ++i)
+    {
+      stream << "CAS::TermReference *Create (const std::string &name, CAS::TermReference *child0";
+      for (int y = 1; y < i; ++y)
+	stream << ", CAS::TermReference *child" << y;
+      stream << ")\n{\n";
+      bool firsttime = true;
+      for (std::list< std::pair< std::string, int > >::const_iterator itit = GlobalGrammarOutput::classes.begin(); itit != GlobalGrammarOutput::classes.end(); ++itit)
+      {
+	if (itit->second != i)
+	  continue;
+	if (firsttime)
+	  firsttime = false;
+	else
+	  stream << "else ";
+	stream << "if (name == \"" << itit->first << "\") return CAS::Create<" << itit->first << "> (child0";
+	for (int y = 1; y < i; ++y)
+	  stream << ", child" << y;
+	stream << ");\n";
+      }
+      if (!firsttime) stream << "else\n";
+      stream << "{\n/*std::cout << \"\\\"\" << name << \"\\\" unbekannt\";*/\n return NULL;\n}\n}\n";
+    }
+    stream << "};";
     if (!GlobalGrammarOutput::_namespace.empty())
       stream << "}; //" << GlobalGrammarOutput::_namespace << "\n";
     return 0;

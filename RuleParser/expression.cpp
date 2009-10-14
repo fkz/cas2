@@ -25,6 +25,10 @@
 
 using namespace RuleParser;
 
+namespace GlobalGrammarOutput
+{
+  std::list< std::pair< std::string, int > > classes;
+}
 
 ParseException::ParseException(ParseException::ErrorTypes type, const std::string& param, int line)
 :  type(type), param1(param), line(line)
@@ -115,22 +119,63 @@ void IntroPart::GetCondition(std::ostream& stream, const std::string& rep)
   stream << condition.substr(index_before);
 }
 
-RuleParser::Rule::Rule(Expression* left, Expression* right)
-: left(left), right(right)
+RuleParser::Rule::Rule(Expression* left, std::string *cond, Expression* right)
+: left(left), right(right), condition(cond ? *cond : "")
 {
-  
+  delete cond;
 }
+
 
 IntroPart *Rule::ToString(std::ostream& out, std::string name) const
 {
-  out << "static CAS::TermReference *" << name <<  "(const " << left->GetType()->GetData()->GetCPPClassName () << " *param)\n{\n";
+  out << "inline CAS::TermReference *" << name <<  "(const " << left->GetType()->GetData()->GetCPPClassName () << " *param)\n{\n";
   std::map< Identification, std::string > idStrings;
   int varIndex = 0;
   left->ToStringDeclared(out, idStrings, varIndex);
   varIndex = 0;
   left->ToString(out, "param", false, idStrings, varIndex, "return NULL;");
+  
+  if (!condition.empty())
+  {
+    bool instate2 = false;
+    size_t pos = 0;
+    while (true)
+    {
+      size_t pos2 = condition.find ('$', pos);
+      if (pos2 == std::string::npos)
+	if (!instate2)
+	  throw new ParseException (RuleParser::ParseException::SEMANTICERROR, "$$ not found in sequence " + condition);
+	else
+	{
+	  out << condition.substr(pos);
+	  out << ")) return NULL;\n";
+	  break;
+	}
+      out << condition.substr (pos, pos2 - pos);
+      pos = pos2;
+      pos2 = condition.find ('$', pos+1);
+      std::string str = condition.substr(pos+1, pos2-pos-1);
+      if (str.empty())
+      {
+	out << "\nif (!(";
+	instate2 = true;
+	pos = pos2 + 1;
+      }
+      else
+      {
+	Identification id = Identification::GetIdentification(str.c_str(), str.length());
+	std::map< Identification, std::string >::iterator it = idStrings.find(id);
+	if (it == idStrings.end())
+	  throw new ParseException (RuleParser::ParseException::NOTDECLARED, str);
+	out << it->second;
+	pos = pos2 + 1;
+      }
+    }
+  }
+  
   out << "CAS::TermReference *result;\n";
   right->ToStringRight(out, "result", idStrings, varIndex);
+  out << "delete param;\n";
   out << "return result;\n";
   out << "}\n";
   return left->GetType()->GetData();
@@ -138,23 +183,30 @@ IntroPart *Rule::ToString(std::ostream& out, std::string name) const
 
 
 Expression::Expression(ExpressionType* type, std::list< Expression* >* childs, std::list< ExpressionList* >* childs2, Identification id)
-: type(type), children(childs), children2(childs2), id(id), art(LEFT)
+: type(type), children(childs), children2(childs2), id(id), art(LEFT), buildinchilds(NULL)
 {
 }
 
 
 Expression::Expression(ExpressionType* type, std::list< Expression* >* childs, std::list< ExpressionList* >* childs2)
-: type(type), children(childs), children2(childs2), art(LEFT)
+: type(type), children(childs), children2(childs2), art(LEFT), buildinchilds(NULL)
 {
   id.SetNone ();
 }
 
 
 Expression::Expression(Identification id)
-: id(id), children(NULL), children2(NULL), art(RIGHT)
+: id(id), children(NULL), children2(NULL), art(RIGHT), buildinchilds(NULL)
 {
 
 }
+
+Expression::Expression(ExpressionType* type, std::list< ExpressionStringRight* >* buildinlist, std::list< Expression* >* childs, std::list< ExpressionList* >* childs2)
+:  type(type), children(childs), children2 (childs2), buildinchilds(buildinlist), art(RIGHT)
+{
+  id.SetNone();
+}
+
 
 
 void Expression::ToStringDeclared(std::ostream& out, std::map< Identification, std::string >& vars, int& index)
@@ -247,6 +299,59 @@ void Expression::ToString(std::ostream& out, const std::string &obj, bool isRefe
   }
 }
 
+void ExpressionCPPCode::ToStringRight(std::ostream& out, const std::string& obj, std::map< Identification, std::string >& vars, int& varIndex) const
+{
+  out << "{\n";
+  for (std::list< MyNode >::const_iterator it = list.begin(); it != list.end(); ++it)
+  {
+    if (it->exp == NULL)
+    {
+      const std::string &str = it->str;
+      size_t pos = 0;
+      while (true)
+      {
+	size_t pos2 = str.find ('$', pos);
+	if (pos2 == std::string::npos)
+	{
+	  out << str.substr(pos);
+	  break;
+	}
+	out << str.substr (pos, pos2 - pos);
+	pos = pos2;
+	pos2 = str.find ('$', pos+1);
+	std::string var = str.substr(pos+1, pos2-pos-1);
+	if (var.empty())
+	{
+	  out << obj;
+	  pos = pos2 + 1;
+	}
+	else
+	{
+	  Identification id = Identification::GetIdentification(var.c_str(), var.length());
+	  std::map< Identification, std::string >::iterator it = vars.find(id);
+	  if (it == vars.end())
+	    throw new ParseException (RuleParser::ParseException::NOTDECLARED, var);
+	  out << it->second;
+	  pos = pos2 + 1;
+	}
+      }
+    }
+    else
+    {
+      std::string mystr;
+      if (it->str.empty())
+	mystr = obj;
+      else
+	mystr = it->str;
+      out << "{\n";
+      it->exp->ToStringRight(out, mystr, vars, varIndex);
+      out << "}\n";
+    }
+  }
+  out << "}\n";
+}
+
+
 
 void Expression::ToStringRight(std::ostream &out, const std::string& obj, std::map< Identification, std::string >& vars, int& varIndex) const
 {
@@ -283,10 +388,32 @@ void Expression::ToStringRight(std::ostream &out, const std::string& obj, std::m
     }
     IntroPart* data = type->GetData();
     out << obj << " = CAS::Create< " << data->GetCPPClassName() << " > (";
+    bool firsttime = true;
+    const std::string &str = data->GetAdditionalParam();
+    if (!str.empty())
+    {
+      firsttime = false;
+      out << str;
+    }
+    if (buildinchilds)
+    {
+      for (std::list< ExpressionStringRight* >::iterator itit = buildinchilds->begin(); itit != buildinchilds->end(); ++itit)
+      {
+	if (!firsttime)
+	  out << ",";
+	else
+	  firsttime = false;
+	out << (*itit)->GetString();
+      }
+    }
     if (!children2)
     {
-      for (size_t i = 0; i != children->size(); out << ",", ++i)
+      for (size_t i = 0; i != children->size(); ++i)
       {
+	if (!firsttime)
+	  out << ",";
+	else
+	  firsttime = false;
 	out << "children" << index << "[" << i << "]";
       }
       out << ");\n";
@@ -312,7 +439,6 @@ void Expression::ToStringRight(std::ostream &out, const std::string& obj, std::m
     }
   }
 }
-
 
 
 void ExpressionList::ToString(std::ostream& out, const std::string& name, std::map< Identification, std::string >& vars, std::string endStr, int varIndex)
@@ -430,4 +556,71 @@ RuleParser::ExpressionType::ExpressionType(Identification yes, std::string* str)
 : id (id), condition(*str)
 {
   delete str;
+}
+
+
+void RuleParser::CreateClass(std::string* classname, int paramcount, std::string* type)
+{
+  GlobalGrammarOutput::classes.push_back (std::make_pair(*classname, paramcount));
+  std::ostream &out = GlobalGrammarOutput::begin_stream;
+  out << "namespace " << GlobalGrammarOutput::_namespace << "{\n";
+  out << "class " << *classname << ": public CAS::Term\n";
+  out << "{\n";
+  out << "private:\n";
+  for (int i = 0; i < paramcount; ++i)
+    out << "CAS::TermReference *param" << i << ";\n";
+  out << *classname << "(CAS::TermReference *p0";
+  for (int i = 1; i < paramcount; ++i)
+    out << ", CAS::TermReference *p" << i;
+  out << "): param0 (p0)\n";
+  for (int i = 1; i < paramcount; ++i)
+    out << ", param" << i << "(p" << i << ")";
+  out << "\n{\n\n}\n";
+  out << "public:\n";
+  out << "virtual Term* Clone() const\n";
+  out << "{\n   return new " << *classname << "(param0";
+  for (int i = 1; i < paramcount; ++i)
+    out << ",param" << i;
+  out << ");\n}";
+  out << "virtual Term* CreateTerm(CAS::TermReference** children) const\n";
+  out << "{\nreturn new " << *classname << "(children[0]";
+  for (int i = 1; i < paramcount; ++i)
+    out << ",children[" << i << "]";
+  out << ");\n}\n";
+  out << "virtual bool Equals(const CAS::Term& t) const\n";
+  out << "{\n   const " << *classname << " *tt = t.Cast<const " << *classname << "> ();\n";
+  out << "   if (!tt) return false;\n";
+  out << "   return param0->Equals (*tt->param0)";
+  for (int i = 1; i < paramcount; ++i)
+    out << "&& param" << i << "->Equals (*tt->param" << i << ")";
+  out << ";\n}\n";
+  out << "virtual CAS::TermReference* GetChildren(void*& param) const\n";
+  out << "{\n   param = (void *)(((int)param)+1);\n   switch ((int)param)\n   {\n";
+  for (int i = 0; i < paramcount; ++i)
+    out << "      case " << i+1 << ": return param" << i << ";\n";
+  out << "      default: return NULL;\n";
+  out << "    }\n}";
+  out << "virtual CAS::Hash GetHashCode() const\n";
+  out << "{\n   return CAS::Hash (CAS::hashes::Extended, 7268)";
+  for (int i = 0; i < paramcount; ++i)
+    out << " ^ param" << i << "->GetHashCode ()";
+  out << ";\n}\n";
+  out << "virtual CAS::Type* GetType() const\n";
+  out << "{\n   return " << *type << ";\n}\n";
+  out << "virtual CAS::TermReference* Simplify()\n";
+  out << "{\n   return coll->Simplify (this);\n}\n";
+  out << "virtual void ToString(std::ostream& stream) const\n{\n";
+  out << " stream << \"" << *classname << "[\" << *param0";
+  for (int i = 1; i < paramcount; ++i)
+    out << "<< \",\" << *param" << i << "->get_const()";
+  out << "<< \"]\";\n}\n";
+  out << "static " << *classname << " *CreateTerm (CAS::TermReference *p0";
+  for (int i = 1; i < paramcount; ++i)
+    out << ", CAS::TermReference *p" << i;
+  out << ")\n{\n   return new " << *classname << " (p0";
+  for (int i = 1; i < paramcount; ++i)
+    out << ", p" << i;
+  out << ");\n}\n";
+  out << "};\n";
+  out << "}; //" << GlobalGrammarOutput::_namespace << "\n";
 }

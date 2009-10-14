@@ -28,7 +28,18 @@ whitespace {delim}+
 					     ++GlobalGrammarOutput::lines;
 					return CPP_CODE; }
 "//"[^\n]* { /**/ }
+[0-9]+ {
+  int result = 0;
+  for (int i = 0; i != yyleng; ++i)
+  {
+    result *= 10;
+    result += yytext[i] - '0';
+  }
+  yylval.NUMBER = result;
+  return NUM;
+}
 TYPE { return TYPE; }
+new { return NEW; }
 NAMESPACE { return NAMESPACE; }
 CLASS { return CLASS; }
 {whitespace} { /* do nothing */ }

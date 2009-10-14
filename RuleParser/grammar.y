@@ -32,6 +32,7 @@ int yyerror (char *c)
 {
   RuleParser::Identification identification;
   std::string *STRING;
+  int NUMBER;
   std::list< RuleParser::Rule * > *RuleList;
   RuleParser::Rule *Rule;
   RuleParser::Expression *expression;
@@ -43,15 +44,18 @@ int yyerror (char *c)
   std::list<RuleParser::Identification> * identifications;
   RuleParser::IntroPart *intropart;
   RuleParser::Intro *intro;
+  std::list< RuleParser::ExpressionStringRight * > *expressionbuildins;
+  RuleParser::ExpressionCPPCode *expressioncppnode;
 }
 
-%token TYPE ARROW QUESTIONARROW DOTS OR NOT NAMESPACE CLASS
-%token <identification> ID;
-%token <STRING> STR CPP_CODE;
+%token TYPE ARROW QUESTIONARROW DOTS OR NOT NAMESPACE CLASS NEW
+%token <identification> ID
+%token <STRING> STR CPP_CODE
+%token <NUMBER> NUM
 
 %type <RuleList> mainPart
 %type <Rule> rule
-%type <expression> leftside rightside
+%type <expression> leftside rightside outerrightside
 %type <expressiontype> operationtype
 %type <params> paramlist paramlist_right
 %type <identification> name
@@ -60,6 +64,9 @@ int yyerror (char *c)
 %type <intropart> introSection
 %type <intro> intro
 %type <expressionList> inner_paramlist_more_single_right leftside_list
+%type <expressionbuildins> buildin_params_right buildin_params_right2
+%type <STRING> eventuelcpp_code
+%type <expressioncppnode> cppcodelist morecppcodelist
 
 %%
 
@@ -80,6 +87,7 @@ introSection: TYPE ID ':' STR ';'	{ $$ = new RuleParser::IntroPart ($2, $4); }
 |	TYPE ID ':' STR ',' CPP_CODE ';' { $$ = new RuleParser::IntroPart ($2, $4, $6); }
 |	TYPE ID ':' STR ',' CPP_CODE ',' STR ';' { $$ = new RuleParser::IntroPart ($2, $4, $6, $8); }
 |	TYPE ID ':' STR ',' STR ';'	{ $$ = new RuleParser::IntroPart ($2, $4, NULL, $6); }
+|	TYPE NEW ID STR '[' NUM ']' ':' STR ';' { std::string str = *$4; $$ = new RuleParser::IntroPart ($3, $4); RuleParser::CreateClass (&str, $6, $9); }
 ;
 
 mainPart:			{ $$ = new std::list< RuleParser::Rule * > (); }
@@ -87,7 +95,11 @@ mainPart:			{ $$ = new std::list< RuleParser::Rule * > (); }
 |	 mainPart CPP_CODE	{ $1->push_back (new RuleParser::CPlusPlusCode ($2)); }
 ;
 
-rule: leftside ARROW rightside ';' { $$ = new RuleParser::Rule ($1, $3); }
+rule: leftside eventuelcpp_code ARROW rightside ';' { $$ = new RuleParser::Rule ($1, $2, $4); }
+;
+
+eventuelcpp_code:  { $$ = NULL; }
+|	CPP_CODE { $$ = $1; }
 ;
 
 leftside: operationtype paramlist name { $$ = new RuleParser::Expression ($1, $2->first, $2->second, $3); delete $2; }
@@ -107,7 +119,7 @@ inner_paramlist_more: leftside { $$ = new std::list< RuleParser::Expression * > 
 
 operationtype:  { $$ = new RuleParser::ExpressionType (); }
 |	ID { $$ = new RuleParser::ExpressionType ($1); }
-|	ID CPP_CODE { $$ = new RuleParser::ExpressionType ($1, $2); }
+//|	ID CPP_CODE { $$ = new RuleParser::ExpressionType ($1, $2); }
 ;
 
 
@@ -126,9 +138,28 @@ name:	{ $$.SetNone (); }
 |	'{' ID '}' { $$ = $2; }
 ;
 
-rightside: operationtype paramlist_right { $$ = new RuleParser::Expression ($1, $2->first, $2->second); delete $2; }
+rightside: outerrightside { $$ = $1; }
+|	cppcodelist { $$ = $1; }
+;
+
+outerrightside: operationtype buildin_params_right paramlist_right { $$ = new RuleParser::Expression ($1, $2, $3->first, $3->second); delete $3; }
 |	ID { $$ = new RuleParser::Expression ($1); }
 ;
+
+cppcodelist: CPP_CODE morecppcodelist { $$ = $2; $$->push_front (new RuleParser::ExpressionCPPCode::MyNode ($1)); }
+;
+
+morecppcodelist:  { $$ = new RuleParser::ExpressionCPPCode (); }
+|	morecppcodelist CPP_CODE	{ $$ = $1; $1->push_back (new RuleParser::ExpressionCPPCode::MyNode ($2)); }
+|	morecppcodelist outerrightside	{ $$ = $1; $1->push_back (new RuleParser::ExpressionCPPCode::MyNode ($2)); }
+|	morecppcodelist STR "=" rightside { $$ = $1; $1->push_back (new RuleParser::ExpressionCPPCode::MyNode ($4, $2)); }
+
+buildin_params_right:  { $$ = NULL; }
+|	'<' STR buildin_params_right2 '>' { $$ = $3; $$->push_front (new RuleParser::ExpressionStringRight ($2)); }
+;
+
+buildin_params_right2: { $$ = new std::list< RuleParser::ExpressionStringRight * > (); }
+|	buildin_params_right2 ',' STR { $$ = $1; $1->push_back (new RuleParser::ExpressionStringRight ($3)); } 
 
 paramlist_right: '[' inner_paramlist_right inner_paramlist_more_right ']' { $$ = new std::pair< std::list< RuleParser::Expression * > *, std::list< RuleParser::ExpressionList * > *> ($2, $3); }
 ;

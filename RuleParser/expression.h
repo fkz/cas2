@@ -36,11 +36,14 @@ namespace GlobalGrammarOutput
   extern std::stringstream begin_stream;
   extern std::string classname;
   extern std::string _namespace;
+  extern std::list< std::pair< std::string, int > > classes;
 };
 
 
 
 namespace RuleParser {
+  
+void CreateClass (std::string *classname, int paramcount, std::string *type);
 
 class ParseException: public std::exception
 {
@@ -107,6 +110,7 @@ class IntroPart
     IntroPart (Identification id, std::string *classname, std::string *condition = new std::string ("true"), std::string *additionalParam = NULL);
     const Identification GetName();
     const std::string &GetCPPClassName();
+    const std::string &GetAdditionalParam () { return additionalParam; }
     void GetCondition (std::ostream &stream, const std::string &rep);
 };
 
@@ -175,18 +179,24 @@ class ExpressionList
     void ToStringRight(std::ostream &out, const std::string &var, const std::string &indexStr, std::map< Identification, std::string > vars, int &varIndex);
 };
 
+class ExpressionStringRight;
 
 class Expression
 {
   private:
     ExpressionType *type;
+    std::list< ExpressionStringRight * > childrenBuildin;
     std::list<Expression *> *children;
     std::list<ExpressionList *> *children2;
+    std::list<ExpressionStringRight * > *buildinchilds;
     Identification id;
     Art art;
+  protected:
+    Expression ()  { }
   public:
     Expression (ExpressionType *type, std::list< Expression *> *childs, std::list< ExpressionList * > *childs2, Identification id);
     Expression (ExpressionType *type, std::list< Expression *> *childs, std::list< ExpressionList * > *childs2);
+    Expression (ExpressionType *type, std::list< ExpressionStringRight * > *buildinlist, std::list< Expression *> *childs, std::list< ExpressionList * > *childs2);
     Expression (Identification id);
     ExpressionType *GetType () const
     {
@@ -194,7 +204,52 @@ class Expression
     }
     void ToStringDeclared (std::ostream &s, std::map< RuleParser::Identification, std::string > &vars, int &index);
     void ToString (std::ostream& s, const std::string& obj, bool isReference, std::map< RuleParser::Identification, std::string >& vars, int& varIndex, std::string endStr) const;
-    void ToStringRight (std::ostream &s, const std::string &obj, std::map< RuleParser::Identification, std::string > &vars, int &varIndex) const;
+    virtual void ToStringRight (std::ostream &s, const std::string &obj, std::map< RuleParser::Identification, std::string > &vars, int &varIndex) const;
+};
+
+class ExpressionCPPCode: public Expression
+{
+  public:
+  class MyNode 
+  {
+    public:
+      Expression *exp;
+      std::string str;
+      
+      MyNode (Expression *exp, std::string *var = NULL)
+      : exp (exp), str (var ? *var : "")
+      {
+	
+      }
+      
+      MyNode (std::string *cpp)
+      : str (*cpp), exp (NULL)
+      {
+	
+      }
+  };
+  private:
+    std::list< MyNode > list;
+  public: 
+    void push_back (MyNode *node) { list.push_back (*node); delete node; }
+    void push_front (MyNode *node) { list.push_front (*node); delete node; }
+    virtual void ToStringRight(std::ostream& s, const std::string& obj, std::map< Identification, std::string >& vars, int& varIndex) const;
+};
+
+class ExpressionStringRight
+{
+  private:
+    std::string str;
+  public:
+    ExpressionStringRight (std::string *str)
+    : str (*str)
+    {
+      delete str;
+    }
+    virtual const std::string &GetString()
+    {
+      return str;
+    }
 };
 
 class Rule
@@ -202,8 +257,9 @@ class Rule
   private:
     Expression *left;
     Expression *right;
+    std::string condition;
   public:
-    Rule (Expression *left, Expression *right);
+    Rule (Expression *left, std::string *condition, Expression *right);
     virtual IntroPart *ToString (std::ostream& s, std::string name) const;
 };
 
@@ -213,7 +269,7 @@ class CPlusPlusCode: public Rule
     std::string str;
   public:
     CPlusPlusCode(std::string *str)
-    : Rule (NULL, NULL),  str (*str) { delete str; }
+    : Rule (NULL, NULL, NULL),  str (*str) { delete str; }
     virtual IntroPart *ToString (std::ostream &s, std::string name) const { s << str; return NULL; }
 };
 
