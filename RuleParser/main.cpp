@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#define SHOW_DEBUG
 #include "expression.h"
 #include <cstdio>
 #include <fstream>
@@ -88,7 +89,7 @@ int main(int argc, char **argv) {
   try
   {
     std::cout << "syntax analysis" << std::endl;
-    yydebug = 0;
+    yydebug = 1;
     yyparse ();
     std::cout << "semantic analysis" << std::endl;
     std::map< ParamTypes, std::string >::const_iterator output = params.find (ParamTypes::OUTPUT);
@@ -129,7 +130,8 @@ int main(int argc, char **argv) {
     << "\n"
     << "*/\n";
 
-    
+    stream << "#pragma once\n";
+    stream << "namespace Global{ extern int tabs; };\n";
     stream << GlobalGrammarOutput::begin_stream.str();
     
     if (!GlobalGrammarOutput::_namespace.empty())

@@ -44,7 +44,7 @@ class TermCollectionTemplate: public std::multimap< Hash, std::pair< TermReferen
     static const int Flag_Processed = 1;
     static const int Flag_Simplified = 2;
     TermCollectionTemplate();
-    bool push_back (CAS::TermReference*const& t, const Type &flag = 0xFF);
+    bool push_back (CAS::TermReference*const& t, const Type &flag);
     typename parent::const_iterator find (const CAS::TermReference* t) const;
     typename parent::iterator find (const CAS::TermReference* t);
     typename parent::const_iterator find (const CAS::Term* t) const;
@@ -89,6 +89,8 @@ class TermCollectionTemplate: public std::multimap< Hash, std::pair< TermReferen
       assert (inserted);
       return *insertCollection;
     }
+    
+    void GetCollisionsAndOtherData (std::ostream &stream) const;
 };
 
 typedef TermCollectionTemplate<uint8_t> TermCollection;

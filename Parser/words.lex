@@ -1,9 +1,9 @@
 %{
 #include <termreference.h>
-#include "grammar.tab.hpp"
+#include "Lexer.h"
 
-int installId ();
-int getNumber ();
+int installId (const char *, size_t);
+int getNumber (const char *, size_t);
 %}
 
 delim [ \t]
@@ -13,30 +13,31 @@ digit [0-9]
 id {letter}({letter}|{digit})*
 number {digit}+
 
+%option yyclass="MyLexer"
 %%
 
 {whitespace} {/* nichts */}
-exp  {return EXP; }
-ln   {return LN;  }
-e    {return E;   }
+exp  {return ParserBase::EXP; }
+ln   {return ParserBase::LN;  }
+e    {return ParserBase::E;   }
 \n   {return 0;  }
-diff {return DIFF; }
-{id} {yylval.Number = installId (); return VARIABLE; }
-[A-Z]{id} {yylval.STRING = new std::string (yytext, yyleng); return STR; }
-{number} {yylval.Number = getNumber (); return DIGIT; }
+diff {return ParserBase::DIFF; }
+{id} {yylval.Number = installId (yytext, yyleng); return ParserBase::VARIABLE; }
+[A-Z]{id} {yylval.STRING = new std::string (yytext, yyleng); return ParserBase::STR; }
+{number} {yylval.Number = getNumber (yytext, yyleng); return ParserBase::DIGIT; }
 . { return *yytext; }
 
 %%
 
-int installId ()
+int installId (const char *str, size_t length)
 {
-  return *yytext - 'a';
+  return *str - 'a';
 }
 
-int getNumber ()
+int getNumber (const char *str, size_t length)
 {
   int result = 0;
-  for (char *it = yytext; yytext + yyleng != it; ++it)
+  for (const char *it = str; str + length != it; ++it)
   {
     result *= 10;
     result += *it - '0';

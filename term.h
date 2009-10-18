@@ -40,11 +40,12 @@ class Term
 {
   private:
     size_t references;
-    static const CAS::AbstractSimplifyRuleCollection* standardCollection;
   protected:
-    const AbstractSimplifyRuleCollection *coll;
+    static CAS::AbstractSimplifyRuleCollection* standardCollection;
+  protected:
+    AbstractSimplifyRuleCollection *coll;
   public:
-    Term (const CAS::AbstractSimplifyRuleCollection &c = *standardCollection);
+    Term (CAS::AbstractSimplifyRuleCollection &c = *standardCollection);
     /*
       Vereinfacht den Term. Falls keine Vereinfachung stattgefunden hat, gibt NULL (0) zurück, sonst
       das vereinfachte Objekt. Falls result != NULL && result != this ist this danach undefiniert!!!
@@ -63,6 +64,10 @@ class Term
     virtual TermReference *GetChildrenVar (void *&param)
     {
       return GetChildren (param);
+    }
+    virtual bool IsCacheable ()
+    {
+      return true;
     }
     virtual Term *CreateTerm(TermReference** children) const = 0;
     virtual ~Term () {}
@@ -100,10 +105,19 @@ class Term
     template<class _It, class _outIt>    
     bool SimplifyChildsWithRules (_It rule_begin, _It rule_end, _outIt output);
     
-    void SetRuleCollection (const AbstractSimplifyRuleCollection &coll);
-    static void SetStandardRuleCollection (const AbstractSimplifyRuleCollection &coll)
+    void SetRuleCollection (AbstractSimplifyRuleCollection &coll);
+    AbstractSimplifyRuleCollection &GetRuleCollection () const
+    {
+      return *coll;
+    }
+    static void SetStandardRuleCollection (AbstractSimplifyRuleCollection &coll)
     {
       standardCollection = &coll;
+    }
+    
+    static AbstractSimplifyRuleCollection &GetStandardRuleCollection ()
+    {
+      return *standardCollection;
     }
     
     friend class TermReference;
@@ -114,6 +128,7 @@ std::ostream &operator << (std::ostream &, const Term &);
 class SimpleTerm: public Term
 {
   public:
+    SimpleTerm(AbstractSimplifyRuleCollection& c = *standardCollection) : Term (c) { }
     virtual Term* Clone() const;
     virtual bool Equals(const CAS::Term& t) const;
     virtual Hash GetHashCode() const;
@@ -131,8 +146,8 @@ class SimpleUniqueTerm: public Term
     typedef int ID;
   private:
     ID id;
-    SimpleUniqueTerm(ID id)
-    : id (id)
+    SimpleUniqueTerm(ID id, AbstractSimplifyRuleCollection &c = *standardCollection)
+    : id (id), Term (c)
     {
     }
   public:
@@ -173,6 +188,53 @@ class SimpleUniqueTerm: public Term
     virtual void ToString(std::ostream& stream) const
     {
       stream << "(Unique_" << id << ")";
+    }
+};
+
+//the NaN-Object
+//Problem: Caching führt zu langen Listen von "verschiedenen" Error-Objekten, da Error niemals gleich sind.
+class Error: public Term
+{
+  public:
+    virtual Term* Clone() const
+    {
+      return new Error ();
+    }
+    virtual Term* CreateTerm(TermReference** children) const
+    {
+      return new Error ();
+    }
+    virtual bool Equals(const CAS::Term& t) const
+    {
+      return false;
+    }
+    virtual TermReference* GetChildren(void*& param) const
+    {
+      return NULL;
+    }
+    virtual Hash GetHashCode() const
+    {
+      return Hash (hashes::Error, 0);
+    }
+    virtual Type* GetType() const
+    {
+      return Type::GetBuildInType(Type::Term);
+    }
+    virtual TermReference* Simplify()
+    {
+      return NULL;
+    }
+    virtual void ToString(std::ostream& stream) const
+    {
+      stream << "ERROR";
+    }
+    static Error *CreateTerm ()
+    {
+      return new Error ();
+    }
+    virtual bool IsCacheable()
+    {
+      return false;
     }
 };
 

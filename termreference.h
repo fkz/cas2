@@ -53,7 +53,13 @@ class TermReference
       return true;
     }
   public:
-    TermReference (Term *);
+    enum CreationFlags
+    {
+      New,
+      NotNew,
+      NotNewSimplify
+    };
+    TermReference (Term *, CreationFlags flag = New);
     ~TermReference();
     Hash GetHashCode () const
     {
@@ -112,7 +118,7 @@ class TermReference
     {
       return term->GetChildren(arg1);
     }
-    void SetRuleCollection(const AbstractSimplifyRuleCollection &coll);
+    void SetRuleCollection(CAS::AbstractSimplifyRuleCollection& coll);
 };
 
 inline std::ostream &operator << (std::ostream &o, const TermReference &r)

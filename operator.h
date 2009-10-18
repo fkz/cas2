@@ -44,7 +44,7 @@ class Operator : public CAS::Term
     void PseudoToString (std::ostream &stream, const std::string &op) const;
     
     template<class C, class _It> 
-    void Where (_It output_iterator, bool (Operator::*predicate) (const C *))
+    void Where (_It output_iterator, bool (Operator::*predicate) (TermCollectionTemplate<NumberX>::iterator C))
     {
       for (TermCollectionTemplate<NumberX>::iterator it = children.begin(); it != children.end();)
       {
@@ -54,7 +54,7 @@ class Operator : public CAS::Term
 	  ++it;
 	  continue;
 	}
-	if ((this->*predicate) (c))
+	if ((this->*predicate) (it))
 	{
 	  *output_iterator++ = it->second;
 	  children.erase(it++);
@@ -64,12 +64,13 @@ class Operator : public CAS::Term
       }
     }
     
-    template<class C>
-    bool True (C *c)
+  public:
+    bool True (TermCollectionTemplate<NumberX>::iterator c)
     {
       return true;
     }
     
+  protected:
     template<class C>
     bool SimplifyEx ()
     {
@@ -116,6 +117,7 @@ class Add: public Operator
     virtual Hash GetHashCode() const;
     virtual void ToString(std::ostream& stream) const;
     virtual TermReference *Simplify();
+    virtual bool Equals(const CAS::Term& t) const;
     virtual Term* CreateTerm(TermReference** children) const;
     static Add *CreateTerm (CAS::TermReference* t1, CAS::TermReference* t2);
     static Add *CreateTerm (TermReference **children, size_t anzahl);
@@ -130,9 +132,14 @@ class Mul: public Operator
     virtual void push_back(std::pair< TermReference*, NumberX > arg1);
     void push_back(TermReference* arg1);
     virtual TermReference* GetElement(std::multimap< Hash, std::pair< TermReference*, NumberX > >::const_iterator arg1) const;
+    bool ShouldChoose (TermCollectionTemplate<NumberX>::iterator it)
+    {
+      return it->second.second >= 0;
+    }
   public:
     virtual Term* Clone() const;
     virtual Hash GetHashCode() const;
+    virtual bool Equals(const CAS::Term& t) const;
     virtual void ToString(std::ostream& stream) const;
     static Mul *CreateTerm (CAS::TermReference* t1, CAS::TermReference* t2);
     static Mul *CreateTerm (CAS::TermReference **children, size_t anzahl);

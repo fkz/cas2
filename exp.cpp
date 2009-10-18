@@ -22,6 +22,7 @@
 #include "functiondefinition.h"
 #include "termreference.h"
 #include "operator.h"
+#include "term.h"
 
 using namespace CAS;
 
@@ -96,6 +97,40 @@ TermReference* FunctionCall::GetChildren(void*& param) const
 }
 
 
+void BuildInFunction::ToString(std::ostream& stream) const
+{
+  if (func == Exp)
+  {
+    const Mul* p = parameter->get_const()->Cast<const Mul>();
+    if (p)
+    {
+      void *param = NULL;
+      TermReference *children[2];
+      children[0] = p->GetChildren(param);
+      if (children[0] && (children[1] = p->GetChildren(param)))
+      {
+	if (!p->GetChildren (param))
+	{
+	  if (!children[0]->get_const()->Cast<const Number> ())
+	  {
+	    TermReference *temp = children[0];
+	    children[0] = children[1];
+	    children[1] = children[0];
+	  }
+	  const Number *num = children[0]->get_const()->Cast<const Number>();
+	  const BuildInFunction *ln = children[1]->get_const()->Cast<const BuildInFunction>();
+	  if (num && ln && ln->func == Ln)
+	  {
+	    stream << *ln->parameter << "^" << num->GetNumber().get_str();
+	    return;
+	  }
+	}
+      }
+    }
+  }
+  CAS::FunctionCall::ToString(stream);
+}
+
 
 
 
@@ -156,7 +191,7 @@ BuildInFunction::BuildInFunction(BuildInFunction::Function f, TermReference* t)
 
 Term* BuildInFunction::Clone() const
 {
-  return new BuildInFunction (func, parameter);
+  return new BuildInFunction (func, parameter->Clone());
 }
 
 BuildInFunction* BuildInFunction::CreateTerm(BuildInFunction::Function f, TermReference* t)
@@ -251,13 +286,21 @@ TermReference* BuildInFunction::Simplify()
 	    const Number *num2 = ln->parameter->get_const()->Cast<const Number>();
 	    if (num2)
 	    {
-	      int num1_ = number->GetNumber();
-	      int num2_ = num2->GetNumber();
-	      int result = 1;
-	      for (int i = 0; i < num1_; ++i)
-		result *= num2_;
-	      delete this;
-	      return TermReference::Create<Number> (result);
+	      const mpz_class &num1_ = number->GetNumber();
+	      const mpz_class &num2_ = num2->GetNumber();
+	      if (num1_ >= 0)
+	      {
+		mpz_class result = 1;
+		for (mpz_class i = 0; i < num1_; ++i)
+		  result *= num2_;
+		delete this;
+		return TermReference::Create<Number> (result);
+	      }
+	      else if (num1_ < 0 && num2_ == 0)
+	      {
+		delete this;
+		return Create<Error> ();
+	      }
 	    }
 	  }
 	}

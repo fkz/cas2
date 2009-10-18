@@ -93,7 +93,7 @@ bool CAS::TermCollectionTemplate<Type>::push_back(CAS::TermReference* const & t,
   }
   if (!iterating)
   {
-    insert (range.first, std::make_pair(hash, std::make_pair(t, flag == 0xFF ? DefaultFlag : flag)));
+    insert (range.first, std::make_pair(hash, std::make_pair(t, flag /*== 0xFF ? DefaultFlag : flag*/)));
   }
   else
   {
@@ -121,5 +121,34 @@ TermCollectionTemplate<Type>::~TermCollectionTemplate()
 {
   delete insertCollection;
 }
+
+template<class Type>
+void TermCollectionTemplate<Type>::GetCollisionsAndOtherData(std::ostream& stream) const
+{
+  std::map< int, int > anzahlMap;
+  for (typename parent::const_iterator it = parent::begin (); it != parent::end(); ++it)
+  {
+    int anzahl = 0;
+    typename parent::const_iterator tempit = it;
+    while (tempit->first == it->first)
+      ++anzahl, ++tempit;
+    ++anzahlMap[anzahl];
+  }
+  
+  stream << "Einträge:\n";
+  int gesamt = 0;
+  int so_gesamt = 0;
+  for (std::map< int, int >::iterator it = anzahlMap.begin(); it != anzahlMap.end(); ++it)
+  {
+    stream << it->first << " Kollisionen: " << it->second << " Mal (entspr. " << (it->second * (it->first * (it->first + 1) / 2)) << "Operationen)\n";
+    gesamt += it->second * it->first;
+    so_gesamt += it->second * (it->first * (it->first + 1) / 2);
+  }
+  stream << "Gesamt: " << gesamt << std::endl;
+  stream << "So_Gesamt: " << so_gesamt << std::endl;
+  stream << "Verlangsamungsfaktor: " << ((float)so_gesamt / gesamt) << std::endl;
+  stream << std::flush;
+}
+
 
 

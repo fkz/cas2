@@ -20,7 +20,8 @@ enum Hashes {
   Boolean = 0x64178,
   SimpleUniqueTerm = 0x4781,
   Derive = 0x648126,
-  Extended = 0x623481
+  Extended = 0x623481,
+  Error = 0
 };
 
   

@@ -38,6 +38,10 @@ whitespace {delim}+
   yylval.NUMBER = result;
   return NUM;
 }
+-- { return MINUS; }
+\+\+ { return PLUS; }
+== { return EQUAL; }
+ASSOC { return ASSOC; }
 TYPE { return TYPE; }
 new { return NEW; }
 NAMESPACE { return NAMESPACE; }

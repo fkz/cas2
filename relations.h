@@ -59,12 +59,14 @@ class Boolean: public CAS::Term
   
 class Relations : public CAS::Term
 {
-  protected:
+  public:
     enum RelationType
     {
       Equality,
       Greater
-    } type;
+    };
+  protected:
+    RelationType type;
     TermReference *left, *right;
     Relations (RelationType type, TermReference *l, TermReference *r);
   public:
@@ -76,6 +78,14 @@ class Relations : public CAS::Term
     virtual CAS::Type* GetType() const;
     virtual CAS::Term* Clone() const;
     virtual CAS::TermReference* Simplify();
+    static Relations *CreateTerm (RelationType type, TermReference *left, TermReference *right)
+    {
+      return new Relations (type, left, right);
+    }
+    RelationType GetRelationType () const
+    {
+      return type;
+    }
 };
 
 }

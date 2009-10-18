@@ -11,24 +11,33 @@ this file is part of the standard library
 #include <number.h>
 #include <hashes.h>
 #include <typeinfo>
+#include <iostream>
+#include <relations.h>
+#define SHOW_DEBUG
 
 %}
 
 NAMESPACE "MySimplifyRules";
 CLASS "MyClass";
 
-TYPE Add: "CAS::Add";
-TYPE Mul: "CAS::Mul";
+TYPE ASSOC Add: "CAS::Add";
+TYPE ASSOC Mul: "CAS::Mul";
 TYPE Diff: "CAS::Derive";
 TYPE Variable: "CAS::Variable";
 TYPE Ln: "CAS::BuildInFunction", %{ $->GetFunctionEnum () == CAS::BuildInFunction::Ln %}, "CAS::BuildInFunction::Ln";
 TYPE Exp: "CAS::BuildInFunction", %{ $->GetFunctionEnum () == CAS::BuildInFunction::Exp %}, "CAS::BuildInFunction::Exp";
 TYPE Number: "CAS::Number";
 TYPE Number0: "CAS::Number", %{ $->GetNumber () == 0 %};
+TYPE Numberm1: "CAS::Number", %{ $->GetNumber () == -1 %};
 TYPE new Set "Set" [3]: "CAS::Type::GetBuildInType (CAS::Type::Term)";
 TYPE new Constant "Constant" [1]: "CAS::Type::GetBuildInType (CAS::Type::Term)";
 TYPE new Expand "Expand" [1]: "CAS::Type::GetBuildInType (CAS::Type::Term)";
 TYPE new Fakultaet "Fakultaet" [1]: "CAS::Type::GetBuildInType (CAS::Type::Term)";
+TYPE new NoExpand "NoExpand" [1] : "CAS::Type::GetBuildInType (CAS::Type::Term)";
+TYPE Equal: "CAS::Relations", %{ $->GetRelationType () == CAS::Relations::Equality %}, "CAS::Relations::Equality";
+TYPE new Solve "Solve" [2]: "CAS::Type::GetBuildInType (CAS::Type::Boolean)";
+TYPE new Lim "Lim" [3] : "CAS::Type::GetBuildInType (CAS::Type::Term)";
+TYPE Error: "CAS::Error";
 
 //Exponentialfunktionen:
 Exp[Number0[]] --> Number<"1">[];
@@ -60,14 +69,56 @@ Expand[Variable{n}] --> n;
 Expand[Exp[Mul[Ln[Add[... {add}]], Number{num}]]]
   --> Add[ ... i:add { Expand[Mul[ i, Exp[Mul[Ln[Add[ ... y:add {y}]], 
   %{ $$ = CAS::Create<CAS::Number> ($num$->get_const()->Cast<const CAS::Number> ()->GetNumber () - 1); %}]]]]}]; 
-  
-Expand[Mul[ ... {x} ]] --> Mul[ ... i:x {Expand[i]}];
+
+//Expand[Mul[ ... {x} ]] --> Expand[Mul[ ... i:x { i }]];
 Expand[Exp{x}] --> x;
+Expand[Mul[ ... {x} ]] --> NoExpand[ Mul[ ... i:x { Expand[i] } ] ];
+NoExpand[Mul[Add ... {mul}]{x}] --> Expand[x];
+NoExpand[{x}] --> x;
+
+//NoExpand[Add{x}] --> x;
+//Expand[NoExpand[Mul[Add{x} ... {y}]{z}]] --> Expand[z];
+//Expand[NoExpand[{x}]] --> x;
 
 Fakultaet[Number{num}] -->
 %{
-  int n = $num$->get_const()->Cast<const CAS::Number> ()->GetNumber ();
-  int res = 1;
-  for (int i = 1; i < n; ++i)
+  const mpz_class &n = $num$->get_const()->Cast<const CAS::Number> ()->GetNumber ();
+  mpz_class res = 1;
+  for (mpz_class i = 1; i <= n; ++i)
     res *= i;  
 %} Number<"res">[];
+
+%{
+inline bool HasX (CAS::TermReference *term, CAS::TermReference *x)
+{
+  if (term->Equals (x))
+     return true;
+  void *param = NULL;
+  while (true)
+  {
+    CAS::TermReference *ref = term->GetChildren (param);
+    if (!ref)
+      break;
+    if (HasX (ref, x))
+      return true;
+  }
+  return false;
+}
+%}
+
+Solve [Equal[{x},{y}],{z}] %{ $$ $x$->Equals (*$z$) && !HasX ($y$, $z$) %} --> Equal[x,y];
+Solve [{a},{b}] %{ $$ !HasX ($a$, $b$) %} --> a;
+
+Lim[{term},{x},{wert}] --> %{ //HERE IS THIS RULE
+%}
+  Set[term, x, wert]
+  == Error{abc} ++ "return NULL;";
+
+Lim[Mul[Exp[Mul[Ln[{nenner}], Numberm1]] ... {zaehler}], {x}, {wert}] -->
+  %{ CAS::TermReference *zaehler; %} 
+   "zaehler" = 
+   Set[Mul[... i:zaehler {i}], x, wert]
+   %{ CAS::TermReference *nenner; %} "nenner" = Set[nenner, x, wert]
+   "zaehler" == Number0 -- "return NULL;"
+   "nenner" == Number0 -- "return NULL;"
+   Lim[Mul[Exp[Mul[Ln[Diff[nenner,x]], Number<"-1">[]]], Diff[Mul[ ... i:zaehler {i}],x] ], x, wert];

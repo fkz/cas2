@@ -114,6 +114,29 @@ bool Operator::Equals(const CAS::Term& t) const
       return false;
     if (itend != children.end() && itend->first != ctitend->first)
       return false;
+    TermCollectionTemplate<NumberX>::const_iterator ittemp = it;
+    
+    std::list< std::pair< Hash, std::pair< TermReference * , NumberX > > > tempList (it, itend);
+    for (TermCollectionTemplate<NumberX>::const_iterator thisit = ctit; thisit != ctitend; ++thisit)
+    {
+      bool found = false;
+      for (std::list< std::pair< Hash, std::pair< TermReference*, NumberX > > >::iterator itbeetween = tempList.begin(); itbeetween != tempList.end(); )
+      {
+	if (thisit->second.second == itbeetween->second.second && thisit->second.first->Equals (*itbeetween->second.first))
+	{
+	  tempList.erase (itbeetween);
+	  found = true;
+	  break;
+	}
+	else
+	{
+	  ++itbeetween;
+	}
+      }
+      if (!found)
+	return false;
+    }
+
     //Wahrscheinlichkeit von Gleichheit sehr groß
     //TODO: Mache es ganz sicher!
     it = itend;
@@ -127,7 +150,7 @@ Hash CAS::Operator::GetPseudoHashCode(hashes::Hashes hT1, uint32_t data) const
 {
   Hash result (hT1, data);
   for (TermCollectionTemplate<NumberX>::const_iterator it = children.begin(); it != children.end(); ++it)
-    result = result ^ it->first;
+    result = result ^ it->first ^ it->second.second;
   return result;
 }
  
@@ -187,9 +210,22 @@ TermReference* Add::GetElement(std::multimap< Hash, std::pair< TermReference*, O
   else
   {
     //TODO: Speicherleck. Beseitige dies, indem die Konvention von GetChildren umgeändert wird zur Erhöhung des Referenzzählers
-    return Create<Mul> (Create<Number> (arg1->second.second), arg1->second.first);
+    return Create<Mul> (Create<Number> (arg1->second.second), arg1->second.first->Clone ());
   }
 }
+
+
+bool Add::Equals(const CAS::Term& t) const
+{
+  return t.Cast<const Add >() && CAS::Operator::Equals(t);
+}
+
+bool Mul::Equals(const CAS::Term& t) const
+{
+  return t.Cast<const Mul > () && CAS::Operator::Equals(t);
+}
+
+
 
 
 Term* Add::Clone() const
@@ -241,7 +277,7 @@ TermReference *Add::Simplify()
     for (std::vector< std::pair<TermReference *, NumberX> >::iterator it = vect.begin(); it != vect.end();)
     {
       TermReference *t = it->first;
-      res += t->get_const()->Cast< Number > ()->GetNumber () * it->second;
+      res += t->get_const()->Cast< Number > ()->GetNumber ().get_si() * it->second;
       delete t;
       ++it;
     }
@@ -265,6 +301,11 @@ TermReference *Add::Simplify()
       }
     }
     
+  if (children.empty())
+  {
+    delete this;
+    return Create<Number> (0);
+  }
   //einzelne Element vereinfachen (Build-In) 
   std::pair< TermReference*, NumberX > single = GetSingleObject();
   if (single.first)
@@ -317,7 +358,7 @@ void Add::push_back(TermReference* arg1)
     if (!ref.empty())
     {
       assert (ref.front().second == 1);
-      number = ref.front().first->get_const()->Cast<const Number>()->GetNumber();
+      number = ref.front().first->get_const()->Cast<const Number>()->GetNumber().get_si();
     }
     arg1->finnish_get_unconst(true);
   }
@@ -372,6 +413,14 @@ Mul::Mul(TermReference** t, size_t anz)
 
 void Mul::push_back(TermReference* arg1)
 {
+  if (arg1->get_const()->Cast<const Error>())
+  {
+    for (TermCollectionTemplate<NumberX>::const_iterator it = children.begin(); it != children.end(); ++it)
+      delete it->second.first;    
+    children.clear();
+    children.push_back(arg1, 1);
+    return;
+  }
   const BuildInFunction *exp = arg1->get_const()->Cast<const BuildInFunction>();
   int number = 1;
   if (exp && exp->GetFunctionEnum() == BuildInFunction::Exp)
@@ -403,7 +452,7 @@ void Mul::push_back(TermReference* arg1)
 	  }
 	  if (num)
 	  {
-	    number = num->GetNumber();
+	    number = num->GetNumber().get_si();
 	    p = NULL;
 	    TermReference *temp = ln->GetChildren(p)->Clone();
 	    assert (ln->GetChildren(p) == NULL);
@@ -471,11 +520,13 @@ int exp (int base, int exponent)
 
 TermReference* Mul::Simplify()
 {
+  mpq_class c (10);
+  
   TermReference *result = SimplifyEx<Mul> () ? This() : NULL;
   
   std::vector< std::pair< TermReference *, NumberX > > vect;
   std::back_insert_iterator< std::vector< std::pair< TermReference *, NumberX > > > outputiterator (vect);
-  Where< Number > (outputiterator, &Operator::True);
+  Where< Number > (outputiterator, ( bool (Operator::*) (TermCollectionTemplate< NumberX >::iterator)) &Mul::ShouldChoose);
   if (vect.size() >= 2)
   {
     int res = 1;
@@ -483,7 +534,7 @@ TermReference* Mul::Simplify()
     {
       const std::pair< TermReference*, NumberX >& t = *it;
       ++it;
-      res *= exp (t.first->get_const()->Cast<Number>()->GetNumber(), t.second);
+      res *= exp (t.first->get_const()->Cast<Number>()->GetNumber().get_si(), t.second);
       delete t.first;
     }
     if (res == 0)
@@ -502,7 +553,7 @@ TermReference* Mul::Simplify()
   else
     if (!vect.empty())
     {
-      int num = exp (vect.front().first->get_const()->Cast<Number>()->GetNumber(), vect.front().second);
+      int num = exp (vect.front().first->get_const()->Cast<Number>()->GetNumber().get_si(), vect.front().second);
       if (num == 0)
       {
 	delete this;
@@ -536,6 +587,14 @@ TermReference* Mul::Simplify()
     {
       return Create<BuildInFunction> (BuildInFunction::Exp, Create<Mul> (Create<BuildInFunction> (BuildInFunction::Ln, single.first), Create<Number> (single.second)));
     }
+    
+  vect.clear();
+  Where< Error > (std::back_inserter (vect), &Operator::True);
+  if (!vect.empty())
+  {
+    delete this;
+    return Create<Error> ();
+  }
   
   TermReference* result2 = coll->Simplify(this);
   if (result2)

@@ -48,10 +48,10 @@ bool Number::Equals(const CAS::Term& t) const
 
 void Number::ToString(std::ostream& stream) const
 {
-  stream << zahl;
+  stream << zahl.get_str();
 }
 
-Number* Number::CreateTerm(int number)
+Number* Number::CreateTerm(const mpz_class& number)
 {
   return new Number (number);
 }
@@ -59,7 +59,7 @@ Number* Number::CreateTerm(int number)
 
 Hash Number::GetHashCode() const
 {
-  return Hash (hashes::Number, zahl);
+  return Hash (hashes::Number, zahl.get_si());
 }
 
 Term* Number::CreateTerm(TermReference** children) const
@@ -184,10 +184,5 @@ TermReference* Variable::GetChildren(void*& param) const
   return NULL;
 }
 
-
-int Number::GetNumber() const
-{
-  return zahl;
-}
 
 

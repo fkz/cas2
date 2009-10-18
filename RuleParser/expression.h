@@ -105,13 +105,18 @@ class IntroPart
     std::string classname;
     std::string additionalParam;
     std::string condition;
-  
+    bool associative;
+    
   public:
-    IntroPart (Identification id, std::string *classname, std::string *condition = new std::string ("true"), std::string *additionalParam = NULL);
+    IntroPart (Identification id, std::string *classname, std::string *condition = new std::string ("true"), std::string *additionalParam = NULL, bool associative = false);
     const Identification GetName();
     const std::string &GetCPPClassName();
     const std::string &GetAdditionalParam () { return additionalParam; }
     void GetCondition (std::ostream &stream, const std::string &rep);
+    bool isAssociative()
+    {
+      return associative;
+    }
 };
 
 
@@ -173,7 +178,7 @@ class ExpressionList
   public:
     ExpressionList (ExpressionType *type, Identification id);
     ExpressionList (Identification idLocal, Identification idGlobal, Expression *expr);
-    void ToString(std::ostream &out, const std::string &name, std::map< RuleParser::Identification, std::string >& vars, std::string endStr, int varIndex);
+    void ToString(std::ostream &out, const std::string &name, std::map< RuleParser::Identification, std::string >& vars, std::string endStr, std::string yesStr, int varIndex);
     void ToStringDeclared(std::ostream& out, std::map< RuleParser::Identification, std::string >& vars, int& index);
     std::string GetAnzahl (std::map< RuleParser::Identification, std::string >& vars);
     void ToStringRight(std::ostream &out, const std::string &var, const std::string &indexStr, std::map< Identification, std::string > vars, int &varIndex);
@@ -213,20 +218,37 @@ class ExpressionCPPCode: public Expression
   class MyNode 
   {
     public:
+      Art type;
       Expression *exp;
+      Identification id;
       std::string str;
       
+      std::string strNo;
+      std::string strYes;
+      
       MyNode (Expression *exp, std::string *var = NULL)
-      : exp (exp), str (var ? *var : "")
+      : exp (exp), str (var ? *var : ""), type (RIGHT)
       {
 	
       }
       
       MyNode (std::string *cpp)
-      : str (*cpp), exp (NULL)
+      : str (*cpp), exp (NULL), type (RIGHT)
+      {
+	RIGHT;
+      }
+      
+      MyNode (Expression *exp, std::string *var, std::string *yes, std::string *no = NULL)
+      : str (*var), exp (exp),strYes (yes ? *yes : ";"), strNo (no ? *no : ";")
       {
 	
       }
+      
+      MyNode (Expression *exp, Identification var, std::string *yes, std::string *no = NULL)
+      : str (""), id (var), exp (exp),strYes (yes ? *yes : ";"), strNo (no ? *no : ";")
+      {
+	
+      }      
   };
   private:
     std::list< MyNode > list;

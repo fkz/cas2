@@ -30,7 +30,7 @@ std::ostream& CAS::operator<<(std::ostream &stream, const CAS::Term &term)
   return stream;
 }
 
-Term::Term(const CAS::AbstractSimplifyRuleCollection& c)
+Term::Term(AbstractSimplifyRuleCollection& c)
 : references(1), coll(&c)
 {
 
@@ -39,7 +39,7 @@ Term::Term(const CAS::AbstractSimplifyRuleCollection& c)
 
 Term* SimpleTerm::Clone() const
 {
-  return new SimpleTerm ();
+  return new SimpleTerm (*coll);
 }
 
 bool SimpleTerm::Equals(const CAS::Term& t) const
@@ -101,8 +101,8 @@ TermReference* SimpleTerm::GetChildren(void*& param) const
 }
 
 
-const CAS::AbstractSimplifyRuleCollection* Term::standardCollection = NULL;
-void Term::SetRuleCollection(const CAS::AbstractSimplifyRuleCollection& collection)
+CAS::AbstractSimplifyRuleCollection* Term::standardCollection = NULL;
+void Term::SetRuleCollection(CAS::AbstractSimplifyRuleCollection& collection)
 {
   void *param = NULL;
   TermReference *child;

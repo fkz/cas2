@@ -173,8 +173,25 @@ IntroPart *Rule::ToString(std::ostream& out, std::string name) const
     }
   }
   
+  if (true) //if Debug
+  {
+    out << "#ifdef SHOW_DEBUG\n";
+    out << "for (int i = 0; i < Global::tabs; ++i) std::cout << \" \";\n";
+    out << "std::cout << \"Regel " << name << " anwendbar (auf \" << *param << \")\" << std::endl;\n";
+    out << "++Global::tabs;\n";
+    out << "#endif\n";
+  }
+  
   out << "CAS::TermReference *result;\n";
   right->ToStringRight(out, "result", idStrings, varIndex);
+  if (true)
+  {
+    out << "#ifdef SHOW_DEBUG\n";
+    out << "--Global::tabs;\nfor (int i = 0; i < Global::tabs; ++i) std::cout << \" \";\n";
+    out << "std::cout << \"Regel " << name << " anwenden: \" << *param << \" --> \";\n";
+    out << "if (result)\n   std::cout << *result << std::endl;\nelse   std::cout << \"NULL\" << std::endl;\n";
+    out << "#endif\n";
+  }
   out << "delete param;\n";
   out << "return result;\n";
   out << "}\n";
@@ -258,37 +275,72 @@ void Expression::ToString(std::ostream& out, const std::string &obj, bool isRefe
   out << "void *param" << index << " = NULL;\n";
   if (children)
   {
-    if (children->size() > 0)
+    if (data->isAssociative () && children->size() > 0)
     {
-      out << "CAS::TermReference *refArray" << index << "[" << children->size() << "];\n";
-      int refArrayIndex = 0;
-      for (std::list< Expression* >::const_iterator it = children->begin(); it != children->end(); ++it, ++refArrayIndex)
+      out << "std::list< CAS::TermReference * > refList" << index << ";\n";
+      out << "while (true)\n{\nCAS::TermReference *ref = my" << index << "->GetChildren (param" << index << ");\n";
+      out << "if (ref)\n   refList" << index << ".push_back (ref); else break; }\n";
+      out << "bool finnished" << index << ";\n";
+      for (std::list< Expression* >::const_iterator it = children->begin(); it != children->end(); ++it)
       {
-	out << "refArray" << index << "[" << refArrayIndex << "] = my" << index << "->GetChildren (param" << index << ");\n";
-	out << "if (!refArray" << index << "[" << refArrayIndex << "]) " << endStr << "\n";
-	std::stringstream cobj;
-	cobj << "refArray" << index << "[" << refArrayIndex << "]";
-	(*it)->ToString(out, cobj.str(), true, vars, varIndex, endStr);
+	out << "finnished" << index << " = false;\n";
+	out << "for (std::list< CAS::TermReference * >::iterator it" << index << " = refList" << index << ".begin(); it" << index << " != refList" << index << ".end ();++it" << index << ")\n{\n";
+	std::stringstream str; str << "(*it" << index << ")";
+	(*it)->ToString (out, str.str(), true, vars, varIndex, "continue;");
+	out << "refList" << index << ".erase (it" << index << ");\nfinnished" << index << " = true;\n break;\n}\n";
+	out << "if (!finnished" << index << ") " << endStr << "\n";
       }
-    }
-    if (!children2)
-    {
-      out << "if (my" << index << "->GetChildren (param" << index << ") != NULL) " << endStr << "\n";
+      
+      if (!children2)
+      {
+	out << "if (!refList" << index << ".empty ()) " << endStr << "\n";
+      }
+      else
+      {
+	out << "for (std::list< CAS::TermReference * >::iterator it" << index << " = refList" << index << ".begin(); it" << index << " != refList" << index << ".end ();)\n{\n";
+	std::stringstream str; str << "(*it" << index << ")";
+	std::stringstream conStrStream; conStrStream << "\n{\n  refList" << index << ".erase (it" << index << "++);\ncontinue;\n}\n";
+	for (std::list< ExpressionList* >::iterator it = children2->begin(); it != children2->end(); ++it)
+	{
+	  (*it)->ToString(out, str.str(),  vars, "{}", conStrStream.str(), varIndex);
+	}
+	out << "break;\n}\nif (!refList" << index << ".empty ()) " << endStr << "\n";
+      }
     }
     else
     {
-      out << "while (true)\n";
-      out << "{\n";
-      out << "CAS::TermReference *loc" << index << " = my" << index << "->GetChildren(param" << index << ");\n";
-      out << "if (!loc" << index << ")\n   break;\n";
-      for (std::list< ExpressionList* >::iterator it = children2->begin(); it != children2->end(); ++it)
+      if (children->size() > 0)
       {
-	std::stringstream str; str << "loc" << index;
-	(*it)->ToString (out, str.str(), vars, "continue;", varIndex);
+	out << "CAS::TermReference *refArray" << index << "[" << children->size() << "];\n";
+	int refArrayIndex = 0;
+	for (std::list< Expression* >::const_iterator it = children->begin(); it != children->end(); ++it, ++refArrayIndex)
+	{
+	  out << "refArray" << index << "[" << refArrayIndex << "] = my" << index << "->GetChildren (param" << index << ");\n";
+	  out << "if (!refArray" << index << "[" << refArrayIndex << "]) " << endStr << "\n";
+	  std::stringstream cobj;
+	  cobj << "refArray" << index << "[" << refArrayIndex << "]";
+	  (*it)->ToString(out, cobj.str(), true, vars, varIndex, endStr);
+	}
       }
-      out << "//When this state is reached, the rule does not match\nreturn NULL;\n";
-      out << "}";
-    }
+      if (!children2)
+      {
+	out << "if (my" << index << "->GetChildren (param" << index << ") != NULL) " << endStr << "\n";
+      }
+      else
+      {
+	out << "bool nomatch = false;\nwhile (true)\n";
+	out << "{\n";
+	out << "CAS::TermReference *loc" << index << " = my" << index << "->GetChildren(param" << index << ");\n";
+	out << "if (!loc" << index << ")\n   break;\n";
+	for (std::list< ExpressionList* >::iterator it = children2->begin(); it != children2->end(); ++it)
+	{
+	  std::stringstream str; str << "loc" << index;
+	  (*it)->ToString (out, str.str(), vars, "{}", "continue;", varIndex);
+	}
+	out << "//When this state is reached, the rule does not match\nnomatch=true;break;\n";
+	out << "}\nif (nomatch) " << endStr << "\n";
+      }
+      }
   }
   if (id.isId())
   {
@@ -298,9 +350,18 @@ void Expression::ToString(std::ostream& out, const std::string &obj, bool isRefe
 
 void ExpressionCPPCode::ToStringRight(std::ostream& out, const std::string& obj, std::map< Identification, std::string >& vars, int& varIndex) const
 {
+  int index = ++varIndex;
   out << "{\n";
   for (std::list< MyNode >::const_iterator it = list.begin(); it != list.end(); ++it)
   {
+    if (it->type == LEFT)
+    {
+      it->exp->ToStringDeclared(out, vars, varIndex);
+      out << "{\nbool finnished" << index << " = false;\n  for(;;) {\n";
+      it->exp->ToString (out, it->str.empty() ? vars[it->id] : (it->str == "$" ? obj : it->str), true, vars, varIndex, "break;");
+      out << "}\nif (finnished" << index << ")\n" << it->strYes << "\nelse\n" << it->strNo << "\n}\n";
+      continue;
+    }
     if (it->exp == NULL)
     {
       const std::string &str = it->str;
@@ -438,7 +499,7 @@ void Expression::ToStringRight(std::ostream &out, const std::string& obj, std::m
 }
 
 
-void ExpressionList::ToString(std::ostream& out, const std::string& name, std::map< Identification, std::string >& vars, std::string endStr, int varIndex)
+void ExpressionList::ToString(std::ostream& out, const std::string& name, std::map< Identification, std::string >& vars, std::string endStr, std::string conStr, int varIndex)
 {
   if (!normalId.isId())
     throw new ParseException (RuleParser::ParseException::SEMANTICERROR, "unnamed expression lists not allowd");
@@ -456,9 +517,10 @@ void ExpressionList::ToString(std::ostream& out, const std::string& name, std::m
   }
   else
   {
-    out << "if (true)\n";
+    out << "if (true)\n{\n";
   }
   out << output << ".push_back(" << name << ");\n";
+  out << conStr << "\n}\n";
   out << "else\n";
   out << endStr << "\n";
   out << "}\n";
@@ -519,8 +581,8 @@ const std::string& IntroPart::GetCPPClassName()
   return classname;
 }
 
-IntroPart::IntroPart(Identification id, std::string* classname, std::string* condition, std::string* additionalParam)
-: id(id), classname(*classname), condition(*condition), additionalParam(additionalParam ? *additionalParam : "")
+IntroPart::IntroPart(Identification id, std::string* classname, std::string* condition, std::string* additionalParam, bool a)
+: id(id), classname(*classname), condition(*condition), additionalParam(additionalParam ? *additionalParam : ""), associative(a)
 {
   delete classname;
   delete condition;
@@ -571,9 +633,9 @@ void RuleParser::CreateClass(std::string* classname, int paramcount, std::string
   out << "\n{\n\n}\n";
   out << "public:\n";
   out << "virtual Term* Clone() const\n";
-  out << "{\n   return new " << *classname << "(param0";
+  out << "{\n   return new " << *classname << "(param0->Clone()";
   for (int i = 1; i < paramcount; ++i)
-    out << ",param" << i;
+    out << ",param" << i << "->Clone()";
   out << ");\n}";
   out << "virtual Term* CreateTerm(CAS::TermReference** children) const\n";
   out << "{\nreturn new " << *classname << "(children[0]";
@@ -607,6 +669,10 @@ void RuleParser::CreateClass(std::string* classname, int paramcount, std::string
   for (int i = 1; i < paramcount; ++i)
     out << "<< \",\" << *param" << i << "->get_const()";
   out << "<< \"]\";\n}\n";
+  out << "virtual ~" << *classname << "()\n{\n";
+  for (int i = 0; i < paramcount; ++i)
+    out << "   delete param" << i << ";\n";
+  out << "}\n";
   out << "static " << *classname << " *CreateTerm (CAS::TermReference *p0";
   for (int i = 1; i < paramcount; ++i)
     out << ", CAS::TermReference *p" << i;

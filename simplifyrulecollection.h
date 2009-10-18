@@ -43,74 +43,74 @@ class TermReference;
 class AbstractSimplifyRuleCollection
 {
   public:
-    virtual TermReference *Simplify (Term *t) const = 0;
-    virtual TermReference *Simplify (Add *t) const = 0;
-    virtual TermReference *Simplify (Mul *t) const = 0;
-    virtual TermReference *Simplify (BuildInFunction *t) const = 0;
-    virtual TermReference *Simplify (Derive *t) const = 0;
-    virtual TermReference *Simplify (FunctionChange *t) const = 0;
-    virtual TermReference *Simplify (Number *t) const = 0;
-    virtual TermReference *Simplify (Variable *t) const = 0;
-    virtual TermReference *Simplify (SimpleTerm *t) const = 0;
-    virtual TermReference *Simplify (SimpleUniqueTerm *t) const = 0;
-    virtual TermReference *Simplify (FunctionDefinition *t) const = 0;
-    virtual TermReference *Simplify (FunctionCall *t) const = 0;
-    virtual TermReference *Simplify (Relations *t) const = 0;
+    virtual TermReference *Simplify (Term *t) = 0;
+    virtual TermReference *Simplify (Add *t) = 0;
+    virtual TermReference *Simplify (Mul *t) = 0;
+    virtual TermReference *Simplify (BuildInFunction *t) = 0;
+    virtual TermReference *Simplify (Derive *t) = 0;
+    virtual TermReference *Simplify (FunctionChange *t) = 0;
+    virtual TermReference *Simplify (Number *t) = 0;
+    virtual TermReference *Simplify (Variable *t) = 0;
+    virtual TermReference *Simplify (SimpleTerm *t) = 0;
+    virtual TermReference *Simplify (SimpleUniqueTerm *t) = 0;
+    virtual TermReference *Simplify (FunctionDefinition *t) = 0;
+    virtual TermReference *Simplify (FunctionCall *t) = 0;
+    virtual TermReference *Simplify (Relations *t) = 0;
 };
 
 template<class T>
 class SimplifyRuleCollection: public AbstractSimplifyRuleCollection
 {
   public:
-    virtual TermReference* Simplify(Add* t) const
+    virtual TermReference* Simplify(Add* t)
     {
       return T::Simplify (t);
     }
-    virtual TermReference* Simplify(Mul* t) const
+    virtual TermReference* Simplify(Mul* t)
     {
       return T::Simplify (t);
     }
-    virtual TermReference* Simplify(BuildInFunction* t) const
+    virtual TermReference* Simplify(BuildInFunction* t)
     {
       return T::Simplify (t);
     }
-    virtual TermReference* Simplify(Derive* t) const
+    virtual TermReference* Simplify(Derive* t)
     {
       return T::Simplify (t);
     }
-    virtual TermReference* Simplify(FunctionChange* t) const
+    virtual TermReference* Simplify(FunctionChange* t)
     {
       return T::Simplify (t);
     }
-    virtual TermReference* Simplify(Number* t) const
+    virtual TermReference* Simplify(Number* t)
     {
       return T::Simplify (t);
     }
-    virtual TermReference* Simplify(Variable* t) const
+    virtual TermReference* Simplify(Variable* t)
     {
       return T::Simplify (t);
     }
-    virtual TermReference* Simplify(SimpleTerm* t) const
+    virtual TermReference* Simplify(SimpleTerm* t)
     {
       return T::Simplify (t);
     }
-    virtual TermReference* Simplify(SimpleUniqueTerm* t) const
+    virtual TermReference* Simplify(SimpleUniqueTerm* t)
     {
       return T::Simplify (t);
     }
-    virtual TermReference* Simplify(FunctionDefinition* t) const
+    virtual TermReference* Simplify(FunctionDefinition* t)
     {
       return T::Simplify (t);
     }
-    virtual TermReference* Simplify(FunctionCall* t) const
+    virtual TermReference* Simplify(FunctionCall* t)
     {
       return T::Simplify (t);
     }
-    virtual TermReference* Simplify(Relations* t) const
+    virtual TermReference* Simplify(Relations* t)
     {
       return T::Simplify (t);
     }
-    virtual TermReference* Simplify(Term* t) const
+    virtual TermReference* Simplify(Term* t)
     {
       return T::Simplify (t);
     }
@@ -123,6 +123,12 @@ class NoSimplificationRules
   static TermReference *Simplify (T *t)
   {
     return NULL;
+  }
+  
+  static AbstractSimplifyRuleCollection &GetInstance ()
+  {
+    static SimplifyRuleCollection< NoSimplificationRules > *result = new SimplifyRuleCollection< NoSimplificationRules > ();
+    return *result;
   }
 };
 

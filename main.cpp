@@ -5,7 +5,7 @@
 #include "expandrule.h"
 #include "SimplifyTerm.h"
 #include "transform.h"
-#include "Parser/grammar.tab.hpp"
+#include "Parser/Parser.h"
 
 /*template<class T>
 CAS::TermReference *Create ()
@@ -25,6 +25,9 @@ CAS::TermReference *Create (P1 p1, P2 p2)
 #include <cstdio>
 #include "Regeln/rules.out.cpp"
 //#define TEST0
+#include "termcache.h"
+#include <fstream>
+#include <FlexLexer.h>
 
 
 void test0 ();
@@ -32,7 +35,14 @@ void test1 ();
 void test2 ();
 void test3 ();
 void test4 ();
-void test5 ();
+void test5 (CAS::TermCacheInit &cache);
+
+int yyFlexLexer::yywrap ()
+{
+  return 1;
+}
+
+int Global::tabs = 0;
 
 extern FILE *yyin;
 MySimplifyRules::CreateClass OurTerms;
@@ -40,15 +50,14 @@ MySimplifyRules::CreateClass OurTerms;
 int main (int argc, char **argv)
 {
   std::cout << "Copyright by Fabian Schmitthenner" << std::endl;
-  
   CAS::SimplifyRuleCollection<MySimplifyRules::MyClass> r;
-  CAS::Term::SetStandardRuleCollection(r);
+  CAS::TermCacheInit r2 (&r);
+  CAS::Term::SetStandardRuleCollection(r2);
   
-  #ifdef TEST0
-  test0();
-  #else
-  test5();
-  #endif
+  if (argc == 1)
+    test0();
+  else
+    test5(r2);
 }
 
 void Output (CAS::Term *t)
@@ -97,15 +106,12 @@ void yyparse ();
 void test0()
 {
   std::cout << "------ANFANG-----" << std::endl;
-  yyin = fopen ("calc", "r");
-  if (!yyin)
+  std::ifstream stream ("calc");
+  Parser parser (std::cout, &stream);
+  parser.setDebug(true);
+  for (int i = 0; i < 2; ++i)// (!feof (yyin))
   {
-    std::cout << "Fehler beim Öffnen der Datei" << std::endl;
-    return;
-  }
-  while (!feof (yyin))
-  {
-    yyparse ();
+    parser.parse ();
     std::cout << "\n--------------" << std::endl;
   }
   std::cout << "------ENDE-------" << std::endl;
@@ -144,11 +150,14 @@ void test4 ()
 }
 
 
-void test5 ()
+void test5 (CAS::TermCacheInit& cache)
 {
+  Parser parser (std::cout);
+  parser.setDebug(false);
   while (true)
   {
-    yyparse ();
+    parser.parse();
     std::cout << std::endl <<  "-----------------" << std::endl;
+    cache.GetInfo (std::cout);    
   }
 }

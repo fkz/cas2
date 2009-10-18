@@ -105,7 +105,7 @@ CAS::Hash Relations::GetHashCode() const
 
 void Relations::ToString(std::ostream& stream) const
 {
-  stream << *left << *right;
+  stream << *left << (type == Equality ? "==" : ">") << *right;
 }
 
 bool Relations::Equals(const CAS::Term& t) const
@@ -113,7 +113,10 @@ bool Relations::Equals(const CAS::Term& t) const
   const CAS::Relations* tt = dynamic_cast<const Relations *> (&t);
   if (!tt)
     return false;
-  return type == tt->type && left->Equals(*tt->left) && right->Equals(*tt->right);
+  if (tt->type == Greater)
+    return type == tt->type && left->Equals(*tt->left) && right->Equals(*tt->right);
+  else //if (tt == Equals)
+    return type == tt->type && ((left->Equals(*tt->left) && right->Equals(*tt->right)) || (left->Equals(*tt->right) && right->Equals(*tt->left)));
 }
 
 CAS::Type* Relations::GetType() const
@@ -123,7 +126,7 @@ CAS::Type* Relations::GetType() const
 
 CAS::Term* Relations::Clone() const
 {
-  return new Relations (type, left, right);
+  return new Relations (type, left->Clone(), right->Clone());
 }
 
 CAS::TermReference* Relations::Simplify()
@@ -135,8 +138,10 @@ CAS::TermReference* Relations::Simplify()
     {
       case Equality:
 	result = Boolean::True();
+	break;
       case Greater:
 	result = Boolean::False();
+	break;
       default:
 	assert(0);
     }

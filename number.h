@@ -21,7 +21,8 @@
 #ifndef CAS_NUMBER_H
 #define CAS_NUMBER_H
 
-#include <../../home/fabian/svn/trunk/c++/mathematics/cas2/term.h>
+#include "term.h"
+#include <gmpxx.h>
 
 
 namespace CAS {
@@ -29,8 +30,8 @@ namespace CAS {
 class Number : public CAS::Term
 {
   private:
-    Number (int z) : zahl (z) { }
-    int zahl;
+    Number (const mpz_class &z) : zahl (z) { }
+    mpz_class zahl;
   public:
     virtual CAS::Type* GetType() const;
     virtual TermReference *Simplify();
@@ -38,11 +39,14 @@ class Number : public CAS::Term
     virtual bool Equals(const CAS::Term& t) const;
     virtual void ToString(std::ostream& stream) const;
     virtual Hash GetHashCode() const;
-    static Number *CreateTerm (int number);
+    static Number *CreateTerm (const mpz_class &number);
     virtual Term* CreateTerm(TermReference** children) const;
     virtual TermReference* GetChildren(void*& param) const;
     
-    int GetNumber () const;
+    const mpz_class &GetNumber () const
+    {
+      return zahl;
+    }
 };
 
 class Frac: public CAS::Term

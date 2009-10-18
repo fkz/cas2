@@ -24,11 +24,25 @@
 using namespace CAS;
 
 
-TermReference::TermReference(Term *t)
+TermReference::TermReference(Term *t, CreationFlags flag)
 : term (t)
 {
-  assert (t->references == 1);
-  Simplify();
+  switch (flag)
+  {
+    case New:
+      assert (t->references == 1);
+      Simplify();
+      break;
+    case NotNew:
+      ++t->references;
+      break;
+    case NotNewSimplify:
+      ++t->references;
+      Simplify ();
+      break;
+  }
+  
+    
 }
 
 TermReference::TermReference(const CAS::TermReference &r)
@@ -60,7 +74,7 @@ CAS::Term* CAS::TermReference::get_unconst()
   return term;
 }
 
-void CAS::TermReference::SetRuleCollection(const CAS::AbstractSimplifyRuleCollection& coll)
+void CAS::TermReference::SetRuleCollection(CAS::AbstractSimplifyRuleCollection& coll)
 {
   get_unconst()->SetRuleCollection(coll);
   finnish_get_unconst(true);

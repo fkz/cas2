@@ -97,7 +97,7 @@ CAS::TermReference* ExpandRule::UseRule(const CAS::TermReference *p) const
 	    const Add *add = bif->GetChildren(p)->get_const()->Cast<const Add>();
 	    if (add)
 	    {
-	      int zahl = number->GetNumber();
+	      const mpz_class &zahl = number->GetNumber();
 	      assert (zahl > 0);
 	      
 	      TermReference *expTerm = TermReference::Create< BuildInFunction > (BuildInFunction::Exp,

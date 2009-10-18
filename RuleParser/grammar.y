@@ -4,6 +4,7 @@ this is a grammar file to the parsing projects
 */
 #define YYDEBUG 1
 
+#define SHOW_DEBUG
 #include "expression.h"
 #include <string>
 #include <iostream>
@@ -46,9 +47,10 @@ int yyerror (char *c)
   RuleParser::Intro *intro;
   std::list< RuleParser::ExpressionStringRight * > *expressionbuildins;
   RuleParser::ExpressionCPPCode *expressioncppnode;
+  std::pair< std::string *, std::string *> *stringpair;
 }
 
-%token TYPE ARROW QUESTIONARROW DOTS OR NOT NAMESPACE CLASS NEW
+%token TYPE ARROW QUESTIONARROW DOTS OR NOT NAMESPACE CLASS NEW ASSOC MINUS PLUS EQUAL
 %token <identification> ID
 %token <STRING> STR CPP_CODE
 %token <NUMBER> NUM
@@ -67,6 +69,7 @@ int yyerror (char *c)
 %type <expressionbuildins> buildin_params_right buildin_params_right2
 %type <STRING> eventuelcpp_code
 %type <expressioncppnode> cppcodelist morecppcodelist
+%type <stringpair> equalargs
 
 %%
 
@@ -83,7 +86,8 @@ intro: 				{ $$ = new RuleParser::Intro (); }
 |	intro introSection	{ $$ = $1; $$->AddIntroPart ($2); }
 ;
 
-introSection: TYPE ID ':' STR ';'	{ $$ = new RuleParser::IntroPart ($2, $4); } 
+introSection: TYPE ID ':' STR ';'	{ $$ = new RuleParser::IntroPart ($2, $4); }
+|	TYPE ASSOC ID ':' STR ';'	{ $$ = new RuleParser::IntroPart ($3, $5, new std::string ("true"), NULL, true); } 
 |	TYPE ID ':' STR ',' CPP_CODE ';' { $$ = new RuleParser::IntroPart ($2, $4, $6); }
 |	TYPE ID ':' STR ',' CPP_CODE ',' STR ';' { $$ = new RuleParser::IntroPart ($2, $4, $6, $8); }
 |	TYPE ID ':' STR ',' STR ';'	{ $$ = new RuleParser::IntroPart ($2, $4, NULL, $6); }
@@ -152,7 +156,18 @@ cppcodelist: CPP_CODE morecppcodelist { $$ = $2; $$->push_front (new RuleParser:
 morecppcodelist:  { $$ = new RuleParser::ExpressionCPPCode (); }
 |	morecppcodelist CPP_CODE	{ $$ = $1; $1->push_back (new RuleParser::ExpressionCPPCode::MyNode ($2)); }
 |	morecppcodelist outerrightside	{ $$ = $1; $1->push_back (new RuleParser::ExpressionCPPCode::MyNode ($2)); }
-|	morecppcodelist STR "=" rightside { $$ = $1; $1->push_back (new RuleParser::ExpressionCPPCode::MyNode ($4, $2)); }
+|	morecppcodelist STR '=' outerrightside { $$ = $1; $1->push_back (new RuleParser::ExpressionCPPCode::MyNode ($4, $2)); }
+|	morecppcodelist EQUAL leftside equalargs { $$ = $1; $1->push_back (new RuleParser::ExpressionCPPCode::MyNode ($3, new std::string ("$"), $4->first, $4->second)); } 
+|	morecppcodelist STR EQUAL leftside equalargs { $$ = $1; $1->push_back (new RuleParser::ExpressionCPPCode::MyNode ($4, $2, $5->first, $5->second)); }
+|	morecppcodelist ID EQUAL leftside equalargs { $$ = $1; $1->push_back (new RuleParser::ExpressionCPPCode::MyNode ($4, $2, $5->first, $5->second)); }
+;
+
+equalargs: { $$ = new std::pair< std::string *, std::string *> (NULL, NULL); }
+|	MINUS STR { $$ = new std::pair< std::string *, std::string *> (NULL, $2); }
+|	PLUS STR { $$ = new std::pair< std::string *, std::string *> ($2, NULL); }
+|	MINUS STR PLUS STR { $$ = new std::pair< std::string *, std::string *> ($4, $2); }
+|	PLUS STR MINUS STR { $$ = new std::pair< std::string *, std::string *> ($2, $4); }
+;
 
 buildin_params_right:  { $$ = NULL; }
 |	'<' STR buildin_params_right2 '>' { $$ = $3; $$->push_front (new RuleParser::ExpressionStringRight ($2)); }
