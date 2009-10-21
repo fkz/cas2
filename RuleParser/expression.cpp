@@ -28,6 +28,8 @@ using namespace RuleParser;
 namespace GlobalGrammarOutput
 {
   std::list< std::pair< std::string, int > > classes;
+  std::stringstream begin_stream_header;
+  std::stringstream begin_stream_source;
 }
 
 ParseException::ParseException(ParseException::ErrorTypes type, const std::string& param, int line)
@@ -627,7 +629,11 @@ RuleParser::ExpressionType::ExpressionType(Identification yes, std::string* str)
 void RuleParser::CreateClass(std::string* classname, int paramcount, std::string* type)
 {
   GlobalGrammarOutput::classes.push_back (std::make_pair(*classname, paramcount));
-  std::ostream &out = GlobalGrammarOutput::begin_stream;
+  std::ostream &out = GlobalGrammarOutput::begin_stream_source;
+  std::ostream &outh = GlobalGrammarOutput::begin_stream_header;
+  outh << "namespace " << GlobalGrammarOutput::_namespace << "{\n"
+      <<  "class " << *classname << ";\n};\n";
+  
   out << "namespace " << GlobalGrammarOutput::_namespace << "{\n";
   out << "class " << *classname << ": public CAS::Term\n";
   out << "{\n";

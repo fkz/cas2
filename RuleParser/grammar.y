@@ -16,7 +16,8 @@ namespace GlobalGrammarOutput
 {
   RuleParser::Intro *intros;
   std::list< RuleParser::Rule * > *rules;
-  std::stringstream begin_stream;
+  extern std::stringstream begin_stream_header;
+  extern std::stringstream begin_stream_source;  
   std::string classname;
   std::string _namespace;
   extern int lines;
@@ -77,7 +78,7 @@ alles: prolog intro mainPart { GlobalGrammarOutput::intros = $2; GlobalGrammarOu
 ;
 
 prolog:	other_prolog
-|	CPP_CODE other_prolog	{ GlobalGrammarOutput::begin_stream << (*$1); delete $1; }
+|	CPP_CODE other_prolog	{ GlobalGrammarOutput::begin_stream_header << (*$1); delete $1; }
 
 other_prolog: CLASS STR ';'	{ GlobalGrammarOutput::classname = *$2; delete $2; GlobalGrammarOutput::_namespace = ""; }
 |	NAMESPACE STR ';' CLASS STR ';' { GlobalGrammarOutput::classname = *$5; GlobalGrammarOutput::_namespace = *$2; delete $2; delete $5; }

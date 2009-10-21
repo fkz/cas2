@@ -4,5 +4,5 @@
 #include <operator.h>
 #include <number.h>
 #include <transform.h>
-#include "Regeln/rules.out.cpp"
+#include "Regeln/rules.out.cpp.h"
 extern MySimplifyRules::CreateClass OurTerms;

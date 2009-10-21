@@ -35,6 +35,8 @@ namespace GlobalGrammarOutput
   extern std::list< RuleParser::Rule * > *rules;
   extern int lines;
   extern std::stringstream begin_stream;
+  extern std::stringstream begin_stream_header;
+  extern std::stringstream begin_stream_source;
   extern std::string classname;
   extern std::string _namespace;
   extern std::list< std::pair< std::string, int > > classes;

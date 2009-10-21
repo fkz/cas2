@@ -23,7 +23,7 @@ CAS::TermReference *Create (P1 p1, P2 p2)
   return CAS::TermReference::Create<T> (p1,p2);
 }*/
 #include <cstdio>
-#include "Regeln/rules.out.cpp"
+#include "Regeln/rules.out.cpp.h"
 //#define TEST0
 #include "termcache.h"
 #include <fstream>
@@ -42,7 +42,7 @@ int yyFlexLexer::yywrap ()
   return 1;
 }
 
-int Global::tabs = 0;
+namespace Global { int tabs = 0; };
 
 extern FILE *yyin;
 MySimplifyRules::CreateClass OurTerms;

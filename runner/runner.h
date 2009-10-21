@@ -5,7 +5,7 @@
 #include <KIcon>
 #include <termcache.h>
 #include <simplifyrulecollection.h>
-#include <Regeln/rules.out.cpp>
+#include <Regeln/rules.out.cpp.h>
 
 
 // Define our plasma Runner
