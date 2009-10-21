@@ -123,7 +123,7 @@ inner_paramlist_more: leftside { $$ = new std::list< RuleParser::Expression * > 
 
 operationtype:  { $$ = new RuleParser::ExpressionType (); }
 |	ID { $$ = new RuleParser::ExpressionType ($1); }
-//|	ID CPP_CODE { $$ = new RuleParser::ExpressionType ($1, $2); }
+|	ID '&' CPP_CODE { $$ = new RuleParser::ExpressionType ($1, $3); }
 ;
 
 

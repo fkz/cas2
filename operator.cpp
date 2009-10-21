@@ -332,6 +332,16 @@ Add* Add::CreateTerm(TermReference* t1, TermReference* t2)
   return result;
 }
 
+Add* Add::CreateTerm(TermReference* t1, TermReference* t2, TermReference *t3)
+{
+  Add *result = new Add ();
+  result->push_back (t1);
+  result->push_back (t2);
+  result->push_back (t3);
+  return result;
+}
+
+
 Add::Add ()
 {
   

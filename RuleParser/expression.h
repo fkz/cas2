@@ -25,6 +25,7 @@
 #include <map>
 #include <vector>
 #include <stdexcept>
+#include <sstream>
 
 namespace RuleParser { class Intro; class Rule; };
 
@@ -156,6 +157,30 @@ class ExpressionType
     bool HasType ()
     {
       return id.isId();
+    }
+    std::string GetCondition(const std::map< Identification, std::string > &vars, const std::string &objname)
+    {
+      std::stringstream result;
+      size_t startindex = 0, endindex;
+      while ((endindex = condition.find("$", startindex)) != std::string::npos)
+      {
+	size_t endindex2 = condition.find ("$", endindex+1);
+	if (endindex2 == std::string::npos)
+	  throw new ParseException (RuleParser::ParseException::SEMANTICERROR, "ungerade Anzahl von $");
+	if (endindex2 == endindex + 1)
+	  result << objname;
+	else
+	{
+	  std::string sstr = condition.substr(endindex+1, endindex2-endindex-1);
+	  std::map< Identification, std::string >::const_iterator it = vars.find (Identification::GetIdentification(sstr.c_str(), sstr.length()));
+	  if (it == vars.end())
+	    throw new ParseException (RuleParser::ParseException::NOTDECLARED, sstr);
+	  result << it->second;
+	}
+	startindex = endindex2 + 1;
+      }
+      result << condition.substr(startindex);
+      return result.str();
     }
 };
 

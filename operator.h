@@ -120,6 +120,7 @@ class Add: public Operator
     virtual bool Equals(const CAS::Term& t) const;
     virtual Term* CreateTerm(TermReference** children) const;
     static Add *CreateTerm (CAS::TermReference* t1, CAS::TermReference* t2);
+    static Add *CreateTerm (CAS::TermReference* t1, CAS::TermReference* t2, CAS::TermReference *t3);
     static Add *CreateTerm (TermReference **children, size_t anzahl);
 };
 

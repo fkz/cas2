@@ -114,6 +114,11 @@ class TermReference
     {
       return new TermReference (T::CreateTerm (p1, p2, p3));
     }
+    template<class T, class P1, class P2, class P3, class P4>
+    static TermReference *Create (P1 p1, P2 p2, P3 p3, P4 p4)
+    {
+      return new TermReference (T::CreateTerm (p1, p2, p3, p4));
+    }
     TermReference *GetChildren(void *&arg1) const
     {
       return term->GetChildren(arg1);
@@ -149,6 +154,13 @@ template<class T, class P1, class P2, class P3>
 inline TermReference *Create (P1 p1, P2 p2, P3 p3)
 {
   return TermReference::Create<T>(p1, p2, p3);
+}
+
+
+template<class T, class P1, class P2, class P3, class P4>
+inline TermReference *Create (P1 p1, P2 p2, P3 p3, P4 p4)
+{
+  return TermReference::Create<T>(p1, p2, p3, p4);
 }
 
 

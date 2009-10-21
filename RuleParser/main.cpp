@@ -131,9 +131,11 @@ int main(int argc, char **argv) {
     << "*/\n";
 
     stream << "#pragma once\n";
-    stream << "namespace Global{ extern int tabs; };\n";
     stream << GlobalGrammarOutput::begin_stream.str();
-    
+    stream << "#ifdef SHOW_DEBUG\n";
+    stream << "namespace Global{ extern int tabs; };\n";
+    stream << "#endif\n";
+   
     if (!GlobalGrammarOutput::_namespace.empty())
       stream << "namespace " << GlobalGrammarOutput::_namespace << "{\n";
     stream << "namespace __private{\n";

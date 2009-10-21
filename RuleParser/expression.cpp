@@ -262,6 +262,7 @@ void Expression::ToString(std::ostream& out, const std::string &obj, bool isRefe
     return;
   }
   IntroPart* data = GetType ()->GetData();
+  const std::string &condition = GetType ()->GetCondition (vars, obj);
   const std::string &classname = data->GetCPPClassName();
   out << "const " << classname << " *my" << index << " = ";
   if (isReference)
@@ -271,7 +272,10 @@ void Expression::ToString(std::ostream& out, const std::string &obj, bool isRefe
   out << "if (!my" << index << " || !(";
   std::stringstream l; l << "my" << index; 
   data->GetCondition(out, l.str());
-  out << ")) " << endStr << "\n";
+  out << ")";
+  if (!condition.empty())
+    out << " || !(" << condition << ")";
+  out << ") " << endStr << "\n";
   out << "void *param" << index << " = NULL;\n";
   if (children)
   {
@@ -510,10 +514,16 @@ void ExpressionList::ToString(std::ostream& out, const std::string& name, std::m
   if (type && type->HasType())
   {
     IntroPart* data = type->GetData();
+    std::string condition = type->GetCondition(vars, name);
     out << data->GetCPPClassName () << " *temp = " << name << "->get_const()->Cast< " << data->GetCPPClassName() << " > ();\n";
     out << "if (temp && (";
     data->GetCondition(out, "temp");
-    out << "))\n";
+    out << ")";
+    if (!condition.empty())
+    {
+      out << "&& (" << condition << ")"; 
+    }
+    out << ")\n";
   }
   else
   {
