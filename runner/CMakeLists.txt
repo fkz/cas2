@@ -7,8 +7,9 @@ include(KDE4Defaults)
 add_definitions (${QT_DEFINITIONS} ${KDE4_DEFINITIONS})
 remove_definitions(-DQT_NO_STL)
 include_directories(
-   ${CMAKE_SOURCE_DIR}
+   ${CMAKE_SOURCE_DIR}/kern
    ${CMAKE_BINARY_DIR}
+   ${CMAKE_BINARY_DIR}/Parser
    ${KDE4_INCLUDES}
    ${CMAKE_CURRENT_SOURCE_DIR}/../Parser
    )

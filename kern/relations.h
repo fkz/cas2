@@ -21,7 +21,7 @@
 #ifndef CAS_RELATIONS_H
 #define CAS_RELATIONS_H
 
-#include <../../home/fabian/svn/trunk/c++/mathematics/cas2/term.h>
+#include "term.h"
 #include "termreference.h"
 
 

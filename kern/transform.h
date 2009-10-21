@@ -18,53 +18,43 @@
 
 */
 
-#ifndef CAS_FUNCTIONDEFINITION_H
-#define CAS_FUNCTIONDEFINITION_H
+#ifndef CAS_TRANSFORM_H
+#define CAS_TRANSFORM_H
 
-#include <../../home/fabian/svn/trunk/c++/mathematics/cas2/term.h>
+#include "term.h"
 #include "number.h"
-#include "exp.h"
 
 
 namespace CAS {
 
-class FunctionDefinition : public CAS::Term
+class Transform : public CAS::Term
 {
-  private:
-    TermReference *term;
-    Variable *variable;
-    FunctionDefinition (TermReference *, Variable *);
+  protected:
+    TermReference *child;
+    Transform (TermReference *c);
   public:
-    virtual CAS::Hash GetHashCode() const;
-    virtual void ToString(std::ostream& stream) const;
     virtual bool Equals(const CAS::Term& t) const;
     virtual CAS::Type* GetType() const;
-    virtual CAS::Term* Clone() const;
     virtual CAS::TermReference* Simplify();
-    virtual Term* CreateTerm(CAS::TermReference **children) const;
-    virtual TermReference* GetChildren(void*& param) const;
-    static FunctionDefinition *CreateTerm (TermReference *, Variable *);
+    virtual ~Transform();
+    virtual TermReference* GetChildren(void*& param) const = 0;
 };
 
-class BuildInFunctionDefinition: public Term
+class Derive: public Transform
 {
   private:
-    BuildInFunction::Function func;
-    BuildInFunctionDefinition (BuildInFunction::Function f);
+    TermReference *variable;
+    Derive (TermReference *child, TermReference *variable);
   public:
+    static Derive *CreateTerm (TermReference *child, TermReference *variable);
     virtual Term* Clone() const;
-    virtual bool Equals(const CAS::Term& t) const;
-    virtual Hash GetHashCode() const;
-    virtual Type* GetType() const;
-    virtual TermReference* Simplify();
-    virtual void ToString(std::ostream& stream) const;
-    virtual Term* Transform(TransformType t) const;
     virtual Term* CreateTerm(TermReference** children) const;
     virtual TermReference* GetChildren(void*& param) const;
-    static BuildInFunctionDefinition *GetStandardFunction (BuildInFunction::Function f);
-    
+    virtual Hash GetHashCode() const;
+    virtual void ToString(std::ostream& stream) const;
+    virtual TermReference* Simplify();
 };
 
 }
 
-#endif // CAS_FUNCTIONDEFINITION_H
+#endif // CAS_TRANSFORM_H
