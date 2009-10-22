@@ -7,34 +7,13 @@
 #include "transform.h"
 #include "Parser/Parser.h"
 
-/*template<class T>
-CAS::TermReference *Create ()
-{
-  return CAS::TermReference::Create<T> ();
-}
-template<class T,class P1>
-CAS::TermReference *Create (P1 p1)
-{
-  return CAS::TermReference::Create<T> (p1);
-}
-template<class T,class P1,class P2>
-CAS::TermReference *Create (P1 p1, P2 p2)
-{
-  return CAS::TermReference::Create<T> (p1,p2);
-}*/
 #include <cstdio>
 #include "Regeln/rules.out.cpp.h"
-//#define TEST0
 #include "termcache.h"
 #include <fstream>
 #include <FlexLexer.h>
 
 
-void test0 ();
-void test1 ();
-void test2 ();
-void test3 ();
-void test4 ();
 void test5 (CAS::TermCacheInit &cache);
 
 int yyFlexLexer::yywrap ()
@@ -44,7 +23,6 @@ int yyFlexLexer::yywrap ()
 
 namespace Global { int tabs = 0; };
 
-extern FILE *yyin;
 MySimplifyRules::CreateClass OurTerms;
 
 int main (int argc, char **argv)
@@ -101,54 +79,19 @@ void OutputRule (CAS::TermReference *t, CAS::Rule *rule)
   delete t;
 }
 
-void yyparse ();
-
 void test0()
 {
   std::cout << "------ANFANG-----" << std::endl;
   std::ifstream stream ("calc");
   Parser parser (std::cout, &stream);
   parser.setDebug(true);
-  for (int i = 0; i < 2; ++i)// (!feof (yyin))
+  for (int i = 0; i < 2; ++i)
   {
     parser.parse ();
     std::cout << "\n--------------" << std::endl;
   }
   std::cout << "------ENDE-------" << std::endl;
 };
-
-void test1() {
-    Output (Create<CAS::Add> (Create<CAS::Variable>(2), Create<CAS::Number>(1)));
-}
-
-void test2 ()
-{
-  //Output(Create<CAS::BuildInFunction>(CAS::BuildInFunction::Ln, Create<CAS::BuildInFunction>(CAS::BuildInFunction::Ln, Create<CAS::Number>(1))));
-  //Output(Create<CAS::BuildInFunction>(CAS::BuildInFunction::Ln, Create<CAS::BuildInFunction>(CAS::BuildInFunction::Exp, Create<CAS::Variable>(1))));
-  Output (Create<CAS::Add>(Create<CAS::Variable>(2), Create<CAS::Variable>(2)));
-}
-
-void test3 ()
-{
-  Output (Create<CAS::Add>(Create<CAS::Number>(0), Create<CAS::Variable>(1)));
-  Output (Create<CAS::Derive> (Create<CAS::Add> (Create<CAS::Variable> (1), Create<CAS::Variable> (1)), Create<CAS::Variable> (2)));
-}
-
-void test4 ()
-{
-  CAS::ExpandRule rule;
-  CAS::TermReference *term = Create<CAS::Mul> (Create<CAS::Add> (Create<CAS::Variable> (0), Create<CAS::Variable> (1)),
-					  Create<CAS::Add> (Create<CAS::Variable> (0), Create<CAS::Variable> (2)));
-  OutputRule(term, &rule);
-  
-  CAS::TermReference* addTerm = Create<CAS::Add> (Create<CAS::Variable> (0), Create<CAS::Variable> (1));
-  term = Create<CAS::Mul> (addTerm->Clone(), addTerm->Clone());
-  OutputRule(term, &rule);
-  term = Create<CAS::BuildInFunction> (CAS::BuildInFunction::Exp, Create<CAS::Mul> (Create<CAS::BuildInFunction> (CAS::BuildInFunction::Ln, addTerm->Clone()), Create<CAS::Number> (10)));
-  OutputRule(term, &rule);
-  delete addTerm;
-}
-
 
 void test5 (CAS::TermCacheInit& cache)
 {

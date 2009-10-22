@@ -8,6 +8,7 @@
 #include <QString>
 #include <fstream>
 #include <termcache.h>
+namespace Global { int tabs = 0; };
 
 runner::runner(QObject *parent, const QVariantList& args)
     : Plasma::AbstractRunner(parent, args), r2 (&r)

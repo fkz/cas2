@@ -7,28 +7,23 @@ find_package(GMP REQUIRED)
 
 set (parser_source ${CMAKE_CURRENT_BINARY_DIR}/Parser/parse.cc ${CMAKE_CURRENT_BINARY_DIR}/Parser/words.lex.cpp)
 add_subdirectory(RuleParser)
+add_subdirectory(kern)
 
-
-
-#add_executable(simple main.cpp)
-#target_link_libraries(simple ${GMP_LIBRARY} cas2)
+add_definitions(-fexceptions)
+include_directories(${CMAKE_SOURCE_DIR}/kern ${CMAKE_BINARY_DIR}/Parser ${CMAKE_SOURCE_DIR}/Parser ${CMAKE_BINARY_DIR})
+add_executable(simple main.cpp)
+target_link_libraries(simple ${GMP_LIBRARY} cas2)
 
 
 # Make sure the source is generated before the executable builds.
 
 add_subdirectory(Regeln)
 
-#install(TARGETS cas2 simple
-#	RUNTIME DESTINATION /local/bin
-#        LIBRARY DESTINATION /local/lib
-#        ARCHIVE DESTINATION /local/lib/static
-#)
+install(TARGETS simple
+	DESTINATION bin
+)
 
 find_package (KDE4)
 IF (KDE4_FOUND)
   add_subdirectory(runner)
 ENDIF (KDE4_FOUND)
-
-#install (TARGETS simple
-#	DESTINATION bin)
-add_subdirectory(kern)
