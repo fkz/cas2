@@ -36,33 +36,8 @@ namespace CAS {
 template<class T >
 class SimplifyRuleCollection;
 
-class TermCache
-{
-  private:
-    TermCollectionTemplate< TermReference * > collection;
-  public:
-    TermCache ()  { }
-    TermReference *Simplify (TermReference *ref)
-    {
-      TermCollectionTemplate< TermReference * >::const_iterator it = collection.find(ref);
-      if (it != collection.end())
-      {
-	delete ref;
-	return it->second.second->Clone ();
-      }
-      else
-      {
-	return NULL;
-      }
-    }
-    
-    bool push_back (TermReference *key, TermReference *value)
-    {
-      return collection.push_back(key, value);
-    }
-};
 
-
+//TODO: Threadsicherheit
 class TermCacheInit: public AbstractSimplifyRuleCollection
 {
   private:
@@ -119,6 +94,17 @@ class TermCacheInit: public AbstractSimplifyRuleCollection
   public:
     TermCacheInit (AbstractSimplifyRuleCollection *coll) : coll (coll) {}
     
+    void ClearCache ()
+    {
+      for (TermCollectionTemplate<TermReference *>::const_iterator it = collection.begin(); it != collection.end();++it)
+      {
+	delete it->second.first;
+	if (((int)it->second.second)>4)
+	  delete it->second.second;
+      }
+      collection.clear();
+    }
+    
     virtual TermReference* Simplify(Term* t)
     {
       return DoSimplify (t);
@@ -174,6 +160,10 @@ class TermCacheInit: public AbstractSimplifyRuleCollection
     void GetInfo(std::ostream &arg1)
     {
       collection.GetCollisionsAndOtherData(arg1);
+    }
+    virtual ~TermCacheInit()
+    {
+      ClearCache();
     }
 };
 

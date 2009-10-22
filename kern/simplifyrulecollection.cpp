@@ -22,3 +22,8 @@
 
 using namespace CAS;
 
+
+CAS::AbstractSimplifyRuleCollection::~AbstractSimplifyRuleCollection()
+{
+
+}

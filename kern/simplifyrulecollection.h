@@ -56,6 +56,7 @@ class AbstractSimplifyRuleCollection
     virtual TermReference *Simplify (FunctionDefinition *t) = 0;
     virtual TermReference *Simplify (FunctionCall *t) = 0;
     virtual TermReference *Simplify (Relations *t) = 0;
+    virtual ~AbstractSimplifyRuleCollection();
 };
 
 template<class T>

@@ -8,7 +8,11 @@
 #include <QString>
 #include <fstream>
 #include <termcache.h>
+//einige Definitionen, die eigentlich woanders sein sollten,
+//im Moment aber nur hier Platz haben
 namespace Global { int tabs = 0; };
+MySimplifyRules::CreateClass OurTerms;
+int yyFlexLexer::yywrap () { return 1; }
 
 runner::runner(QObject *parent, const QVariantList& args)
     : Plasma::AbstractRunner(parent, args), r2 (&r)

@@ -7,13 +7,12 @@
 #include "transform.h"
 #include "Parser/Parser.h"
 
-#include <cstdio>
 #include "Regeln/rules.out.cpp.h"
 #include "termcache.h"
 #include <fstream>
 #include <FlexLexer.h>
 
-
+void test0 ();
 void test5 (CAS::TermCacheInit &cache);
 
 int yyFlexLexer::yywrap ()
@@ -99,7 +98,11 @@ void test5 (CAS::TermCacheInit& cache)
   parser.setDebug(false);
   while (true)
   {
-    parser.parse();
+    if (parser.parse() == 1)
+    {
+      cache.ClearCache();
+      std::cout << "cache cleared" << std::endl;
+    }
     std::cout << std::endl <<  "-----------------" << std::endl;
     cache.GetInfo (std::cout);    
   }

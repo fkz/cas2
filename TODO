@@ -6,7 +6,5 @@ Transform an TermReference anpassen
 Parser für Eingabe erstellen
 Factor ?
 Expand weiterverfolgen: Geschwindigkeit verbessern?
-Mul eine ähnliche Funktion wie Add::FindAddEquals hinzufügen
 Hash-Codes zufällig machen -- Untersuchung auf Hash-Collisions; evtl. Hash-Funktion verbessern
-
-Equals-Methode in operator.cpp sicher machen!!
+GMP-Benutzung vervollständigen

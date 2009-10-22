@@ -19,11 +19,11 @@ set(runner_SRCS runner.cpp)
 
 add_definitions(-fexceptions)
 
-kde4_add_plugin(krunner_runner ${runner_SRCS})
-target_link_libraries(krunner_runner
+kde4_add_plugin(krunner_cas_plugin ${runner_SRCS})
+target_link_libraries(krunner_cas_plugin
                       ${KDE4_PLASMA_LIBS} ${KDE4_KDEUI_LIBS} cas2 ${GMP_LIBRARY})
 
-install(TARGETS krunner_runner
+install(TARGETS krunner_cas_plugin
         DESTINATION ${PLUGIN_INSTALL_DIR})
 
 install(FILES runner.desktop

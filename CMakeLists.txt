@@ -14,9 +14,6 @@ include_directories(${CMAKE_SOURCE_DIR}/kern ${CMAKE_BINARY_DIR}/Parser ${CMAKE_
 add_executable(simple main.cpp)
 target_link_libraries(simple ${GMP_LIBRARY} cas2)
 
-
-# Make sure the source is generated before the executable builds.
-
 add_subdirectory(Regeln)
 
 install(TARGETS simple
