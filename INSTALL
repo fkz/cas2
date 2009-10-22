@@ -1,0 +1,30 @@
+To install the files, simple type in the source directory
+
+$  mkdir build
+$  cd build
+$  cmake ..
+$  make
+#  make install
+
+of course, you can specify an other installation directory with cmake -DCMAKE_INSTALL_PREFIX, and not have
+to run install as root.
+
+There are two applications installed:
+  - A simple console application called 'simple' where you can easily type in some equations, formulars, etc.
+  - (only if KDE is installed) a KRunner plugin, where you can also easily type in the same equations after '=',
+    e. g. you can type in '=a+a' which then becomes 2*a
+
+the prerequisites are
+  cmake
+  make
+  a c++ compiler, e.g. gcc
+  gmp see http://gmplib.org
+  bison	see http://www.gnu.org/software/bison/
+  flex see http://flex.sourceforge.net/
+  bisonc++ http://sourceforge.net/projects/bisoncpp/
+
+optional prequesites for an integration in KRunner: 
+  KDE 4 see http://kde.org
+
+the project should be platform independent, but is only tested on linux, yet
+it does not uses any Qt stuff.
