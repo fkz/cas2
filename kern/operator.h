@@ -26,6 +26,7 @@
 #include <map>
 #include <vector>
 #include "termcollection.h"
+#include <gmpxx.h>
 
 namespace CAS {
 class BuildInFunction;
@@ -33,7 +34,7 @@ class BuildInFunction;
 class Operator : public CAS::Term
 {
   protected:
-    typedef int NumberX;
+    typedef mpz_class NumberX;
     TermCollectionTemplate<NumberX> children;
     //Die FindEqual-Funktion darf KEINE Änderungen an children durchführen, die Iteratoren ungültig machen; diese Änderungen sollten
     //ans Ende angestellt werden!

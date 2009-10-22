@@ -150,7 +150,7 @@ Hash CAS::Operator::GetPseudoHashCode(hashes::Hashes hT1, uint32_t data) const
 {
   Hash result (hT1, data);
   for (TermCollectionTemplate<NumberX>::const_iterator it = children.begin(); it != children.end(); ++it)
-    result = result ^ it->first ^ it->second.second;
+    result = result ^ it->first ^ it->second.second.get_si();
   return result;
 }
  
@@ -273,11 +273,11 @@ TermReference *Add::Simplify()
   Where< Number > (outputiterator, &Operator::True);
   if (vect.size() >= 2)
   {
-    int res = 0;
+    mpz_class res = 0;
     for (std::vector< std::pair<TermReference *, NumberX> >::iterator it = vect.begin(); it != vect.end();)
     {
       TermReference *t = it->first;
-      res += t->get_const()->Cast< Number > ()->GetNumber ().get_si() * it->second;
+      res += t->get_const()->Cast< Number > ()->GetNumber () * it->second;
       delete t;
       ++it;
     }
@@ -358,7 +358,7 @@ Add::Add(TermReference** t, size_t anz)
 void Add::push_back(TermReference* arg1)
 {
   const Mul *mul = arg1->get_const()->Cast<const Mul>();
-  int number = 1;
+  mpz_class number = 1;
   if (mul)
   {
     Mul *mymul = arg1->get_unconst()->Cast<Mul>();
@@ -368,7 +368,7 @@ void Add::push_back(TermReference* arg1)
     if (!ref.empty())
     {
       assert (ref.front().second == 1);
-      number = ref.front().first->get_const()->Cast<const Number>()->GetNumber().get_si();
+      number = ref.front().first->get_const()->Cast<const Number>()->GetNumber();
     }
     arg1->finnish_get_unconst(true);
   }
@@ -432,7 +432,7 @@ void Mul::push_back(TermReference* arg1)
     return;
   }
   const BuildInFunction *exp = arg1->get_const()->Cast<const BuildInFunction>();
-  int number = 1;
+  mpz_class number = 1;
   if (exp && exp->GetFunctionEnum() == BuildInFunction::Exp)
   {
     void *p = NULL;
@@ -462,7 +462,7 @@ void Mul::push_back(TermReference* arg1)
 	  }
 	  if (num)
 	  {
-	    number = num->GetNumber().get_si();
+	    number = num->GetNumber();
 	    p = NULL;
 	    TermReference *temp = ln->GetChildren(p)->Clone();
 	    assert (ln->GetChildren(p) == NULL);
@@ -481,7 +481,7 @@ void Mul::push_back(std::pair< TermReference*, Operator::NumberX > arg1)
   if (!children.push_back(arg1.first, arg1.second))
   {
     TermCollectionTemplate<NumberX>::iterator it = children.find (arg1.first);
-    if (! (it->second.second += arg1.second))
+    if (0 == (it->second.second += arg1.second))
       children.erase(it);
   }
 }
@@ -539,12 +539,14 @@ TermReference* Mul::Simplify()
   Where< Number > (outputiterator, ( bool (Operator::*) (TermCollectionTemplate< NumberX >::iterator)) &Mul::ShouldChoose);
   if (vect.size() >= 2)
   {
-    int res = 1;
+    mpz_class res = 1;
     for (std::vector< std::pair< TermReference*, NumberX> >::const_iterator it = vect.begin(); it != vect.end();)
     {
       const std::pair< TermReference*, NumberX >& t = *it;
       ++it;
-      res *= exp (t.first->get_const()->Cast<Number>()->GetNumber().get_si(), t.second);
+      mpz_class temp;
+      __gmpz_pow_ui (temp.__get_mp(), t.first->get_const()->Cast<Number>()->GetNumber().__get_mp(), t.second.get_ui());
+      res *= temp; // exp (t.first->get_const()->Cast<Number>()->GetNumber(), t.second);
       delete t.first;
     }
     if (res == 0)
@@ -563,7 +565,8 @@ TermReference* Mul::Simplify()
   else
     if (!vect.empty())
     {
-      int num = exp (vect.front().first->get_const()->Cast<Number>()->GetNumber().get_si(), vect.front().second);
+      mpz_class num;
+      __gmpz_pow_ui (num.__get_mp(), vect.front().first->get_const()->Cast<Number>()->GetNumber().__get_mp(), vect.front().second.get_ui());
       if (num == 0)
       {
 	delete this;
