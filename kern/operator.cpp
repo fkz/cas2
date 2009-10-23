@@ -25,6 +25,7 @@
 #include "termreference.h"
 #include "termcollection.h"
 #include <iostream>
+#include <gmpxx.h>
 
 using namespace CAS;
 
@@ -537,7 +538,7 @@ TermReference* Mul::Simplify()
       const std::pair< TermReference*, NumberX >& t = *it;
       ++it;
       mpz_class temp;
-      __gmpz_pow_ui (temp.__get_mp(), t.first->get_const()->Cast<Number>()->GetNumber().__get_mp(), t.second.get_ui());
+      __gmpz_pow_ui (temp.get_mpz_t(), t.first->get_const()->Cast<Number>()->GetNumber().get_mpz_t(), t.second.get_ui());
       res *= temp; // exp (t.first->get_const()->Cast<Number>()->GetNumber(), t.second);
       delete t.first;
     }
@@ -558,7 +559,7 @@ TermReference* Mul::Simplify()
     if (!vect.empty())
     {
       mpz_class num;
-      __gmpz_pow_ui (num.__get_mp(), vect.front().first->get_const()->Cast<Number>()->GetNumber().__get_mp(), vect.front().second.get_ui());
+      __gmpz_pow_ui (num.get_mpz_t(), vect.front().first->get_const()->Cast<Number>()->GetNumber().get_mpz_t(), vect.front().second.get_ui());
       if (num == 0)
       {
 	delete this;
