@@ -107,7 +107,8 @@ eventuelcpp_code:  { $$ = NULL; }
 |	CPP_CODE { $$ = $1; }
 ;
 
-leftside: operationtype paramlist name { $$ = new RuleParser::Expression ($1, $2->first, $2->second, $3); delete $2; }
+leftside: operationtype paramlist name { $$ = new RuleParser::Expression ($1, $2->first, $2->second, $3, 0); delete $2; }
+|	'(' NUM ')' operationtype paramlist name { $$ = new RuleParser::Expression ($4, $5->first, $5->second, $6, $2); delete $5; }
 ;
 
 paramlist: { $$ = new std::pair< std::list<RuleParser::Expression *> *, std::list<RuleParser::ExpressionList *> *> (NULL, NULL); }
@@ -147,7 +148,7 @@ rightside: outerrightside { $$ = $1; }
 |	cppcodelist { $$ = $1; }
 ;
 
-outerrightside: operationtype buildin_params_right paramlist_right { $$ = new RuleParser::Expression ($1, $2, $3->first, $3->second); delete $3; }
+outerrightside: operationtype buildin_params_right paramlist_right { $$ = new RuleParser::Expression ($1, $2, $3->first, $3->second, 0); delete $3; }
 |	ID { $$ = new RuleParser::Expression ($1); }
 ;
 

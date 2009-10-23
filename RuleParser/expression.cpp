@@ -201,27 +201,27 @@ IntroPart *Rule::ToString(std::ostream& out, std::string name) const
 }
 
 
-Expression::Expression(ExpressionType* type, std::list< Expression* >* childs, std::list< ExpressionList* >* childs2, Identification id)
-: type(type), children(childs), children2(childs2), id(id), art(LEFT), buildinchilds(NULL)
+Expression::Expression(ExpressionType* type, std::list< Expression* >* childs, std::list< ExpressionList* >* childs2, Identification id, int vid)
+: type(type), children(childs), children2(childs2), id(id), art(LEFT), buildinchilds(NULL), verarbeitungsId(vid)
 {
 }
 
 
-Expression::Expression(ExpressionType* type, std::list< Expression* >* childs, std::list< ExpressionList* >* childs2)
-: type(type), children(childs), children2(childs2), art(LEFT), buildinchilds(NULL)
+Expression::Expression(ExpressionType* type, std::list< Expression* >* childs, std::list< ExpressionList* >* childs2, int vid)
+: type(type), children(childs), children2(childs2), art(LEFT), buildinchilds(NULL), verarbeitungsId(vid)
 {
   id.SetNone ();
 }
 
 
 Expression::Expression(Identification id)
-: id(id), children(NULL), children2(NULL), art(RIGHT), buildinchilds(NULL)
+: id(id), children(NULL), children2(NULL), art(RIGHT), buildinchilds(NULL), verarbeitungsId(0)
 {
 
 }
 
-Expression::Expression(ExpressionType* type, std::list< ExpressionStringRight* >* buildinlist, std::list< Expression* >* childs, std::list< ExpressionList* >* childs2)
-:  type(type), children(childs), children2 (childs2), buildinchilds(buildinlist), art(RIGHT)
+Expression::Expression(ExpressionType* type, std::list< ExpressionStringRight* >* buildinlist, std::list< Expression* >* childs, std::list< ExpressionList* >* childs2, int vid)
+:  type(type), children(childs), children2 (childs2), buildinchilds(buildinlist), art(RIGHT), verarbeitungsId(vid)
 {
   id.SetNone();
 }
@@ -289,6 +289,8 @@ void Expression::ToString(std::ostream& out, const std::string &obj, bool isRefe
       out << "bool finnished" << index << ";\n";
       for (std::list< Expression* >::const_iterator it = children->begin(); it != children->end(); ++it)
       {
+	if ((*it)->GetVerarbeitungsId() != 0)
+	  throw new ParseException (ParseException::SEMANTICERROR, "Assoziative Typen können keine Reihenfolgeänderung haben");
 	out << "finnished" << index << " = false;\n";
 	out << "for (std::list< CAS::TermReference * >::iterator it" << index << " = refList" << index << ".begin(); it" << index << " != refList" << index << ".end ();++it" << index << ")\n{\n";
 	std::stringstream str; str << "(*it" << index << ")";
@@ -319,13 +321,22 @@ void Expression::ToString(std::ostream& out, const std::string &obj, bool isRefe
       {
 	out << "CAS::TermReference *refArray" << index << "[" << children->size() << "];\n";
 	int refArrayIndex = 0;
+	std::map< int, std::list< std::pair< size_t, Expression *> > > iList;
 	for (std::list< Expression* >::const_iterator it = children->begin(); it != children->end(); ++it, ++refArrayIndex)
 	{
 	  out << "refArray" << index << "[" << refArrayIndex << "] = my" << index << "->GetChildren (param" << index << ");\n";
 	  out << "if (!refArray" << index << "[" << refArrayIndex << "]) " << endStr << "\n";
-	  std::stringstream cobj;
-	  cobj << "refArray" << index << "[" << refArrayIndex << "]";
-	  (*it)->ToString(out, cobj.str(), true, vars, varIndex, endStr);
+	  iList[ (*it)->GetVerarbeitungsId() ].push_back(std::make_pair(refArrayIndex, *it));
+	}
+	
+	for (std::map< int, std::list< std::pair< size_t, Expression* > > >::iterator it = iList.begin(); it != iList.end(); ++it)
+	{
+	  for (std::list< std::pair< size_t, Expression* > >::iterator it2 = it->second.begin(); it2 != it->second.end(); ++it2)
+	  {
+	    std::stringstream cobj;
+	    cobj << "refArray" << index << "[" << it2->first << "]";
+	    it2->second->ToString(out, cobj.str(), true, vars, varIndex, endStr);
+	  }
 	}
       }
       if (!children2)
@@ -346,7 +357,7 @@ void Expression::ToString(std::ostream& out, const std::string &obj, bool isRefe
 	out << "//When this state is reached, the rule does not match\nnomatch=true;break;\n";
 	out << "}\nif (nomatch) " << endStr << "\n";
       }
-      }
+    }
   }
   if (id.isId())
   {
@@ -620,7 +631,7 @@ ExpressionType::ExpressionType(Identification id)
 }
 
 RuleParser::ExpressionType::ExpressionType(Identification yes, std::string* str)
-: id (id), condition(*str)
+: id (yes), condition(*str)
 {
   delete str;
 }

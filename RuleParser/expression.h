@@ -14,7 +14,7 @@
 
     You should have received a copy of the GNU General Public License along
     with this program; if not, write to the Free Software Foundation, Inc.,
-    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    51 Franklin Street, Fiie von Ihnen aufgerufene Adresse http://redir.opera.com/speeddials/?id=1 ist zurzeit nicht erreichbar. Bitte überprüfen Sie die korrekte Schreibweise der Webadresse (URL) und versuchen Sie dann die Seite neu zu laden.fth Floor, Boston, MA 02110-1301 USA.
 
 */
 
@@ -26,6 +26,7 @@
 #include <vector>
 #include <stdexcept>
 #include <sstream>
+#include <cassert>
 
 namespace RuleParser { class Intro; class Rule; };
 
@@ -166,6 +167,7 @@ class ExpressionType
       size_t startindex = 0, endindex;
       while ((endindex = condition.find("$", startindex)) != std::string::npos)
       {
+	result << condition.substr (startindex, endindex - startindex);
 	size_t endindex2 = condition.find ("$", endindex+1);
 	if (endindex2 == std::string::npos)
 	  throw new ParseException (RuleParser::ParseException::SEMANTICERROR, "ungerade Anzahl von $");
@@ -182,6 +184,7 @@ class ExpressionType
 	startindex = endindex2 + 1;
       }
       result << condition.substr(startindex);
+      assert (condition.empty() == result.str().empty());
       return result.str();
     }
 };
@@ -216,6 +219,7 @@ class ExpressionStringRight;
 class Expression
 {
   private:
+    int verarbeitungsId;
     ExpressionType *type;
     std::list< ExpressionStringRight * > childrenBuildin;
     std::list<Expression *> *children;
@@ -226,13 +230,17 @@ class Expression
   protected:
     Expression ()  { }
   public:
-    Expression (ExpressionType *type, std::list< Expression *> *childs, std::list< ExpressionList * > *childs2, Identification id);
-    Expression (ExpressionType *type, std::list< Expression *> *childs, std::list< ExpressionList * > *childs2);
-    Expression (ExpressionType *type, std::list< ExpressionStringRight * > *buildinlist, std::list< Expression *> *childs, std::list< ExpressionList * > *childs2);
+    Expression (ExpressionType *type, std::list< Expression *> *childs, std::list< ExpressionList * > *childs2, Identification id, int vid);
+    Expression (ExpressionType *type, std::list< Expression *> *childs, std::list< ExpressionList * > *childs2, int vid);
+    Expression (ExpressionType *type, std::list< ExpressionStringRight * > *buildinlist, std::list< Expression *> *childs, std::list< ExpressionList * > *childs2, int vid);
     Expression (Identification id);
     ExpressionType *GetType () const
     {
       return type;
+    }
+    int GetVerarbeitungsId ()
+    {
+      return verarbeitungsId;
     }
     void ToStringDeclared (std::ostream &s, std::map< RuleParser::Identification, std::string > &vars, int &index);
     void ToString (std::ostream& s, const std::string& obj, bool isReference, std::map< RuleParser::Identification, std::string >& vars, int& varIndex, std::string endStr) const;

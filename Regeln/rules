@@ -114,8 +114,14 @@ inline bool HasX (CAS::TermReference *term, CAS::TermReference *x)
 Solve [Equal[{x},{y}],{z}] %{ $$ $x$->Equals (*$z$) && !HasX ($y$, $z$) || $y$->Equals (*$z$) && !HasX ($x$, $z$) %} --> Equal[x,y];
 Solve [{a},{b}] %{ $$ !HasX ($a$, $b$) %} --> a;
 
-Solve [ Equal[ Exp[ {xterm} ], {noxterm} ], {x} ] %{ $$ HasX ($xterm$, $x$) && !HasX ($noxterm$, $x$) %}
---> Solve [ Equal [ xterm, Ln[ noxterm ] ], x];
+//Solve [ Equal[ Exp[ {xterm} ], {noxterm} ], {x} ] %{ $$ HasX ($xterm$, $x$) && !HasX ($noxterm$, $x$) %}
+//--> Solve [ Equal [ xterm, Ln[ noxterm ] ], x];
+
+Solve[ (1) Equal[ Exp[ Any & %{ HasX ($$, $x$) %}{xterm}] , Any & %{ !HasX ($$, $x$) %}{noxterm}], {x} ] 
+--> Solve [ Equal [xterm, Ln[ noxterm ] ], x];
+
+Solve[ (1) Equal[ Add[ ... Any & %{ HasX ($$, $x$) %}{xterms}, {noxterms}]] {x}]
+--> Solve[ Equal[ Add[ ... xterms], Add
 
 //Any[ ... {x} ] --> Add[ ... i:x {i}]
 
@@ -139,3 +145,4 @@ Lim[Mul[Exp[Mul[Ln[{nenner}], Numberm1]] ... {zaehler}], {x}, {wert}] -->
 Sum[{term},{variable},{anfang},{ende}] %{ $$ $anfang$->Equals(*$ende$) %} --> Set[term, variable, anfang];
 Sum[Add[...{terms}],{variable},{anfang},{ende}] --> Add[...i:terms{Sum[i,variable,anfang,ende]}];
 Sum[{terms},{variable},{anfang},{ende}] %{ $$ !HasX ($terms$, $variable$) %} --> Mul[ terms, Add[ende, Mul[ anfang, Number<"-1">[]], Number<"1">[]]];
+
