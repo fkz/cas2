@@ -260,6 +260,11 @@ int main(int argc, char **argv) {
       stream << "}; //" << GlobalGrammarOutput::_namespace << "\n";
       header << "}; //" << GlobalGrammarOutput::_namespace << "\n";
     }
+    
+    header.close();
+    stream.close();
+    
+    
     return 0;
   }
   catch (RuleParser::ParseException *ex)

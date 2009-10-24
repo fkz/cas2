@@ -528,7 +528,7 @@ void ExpressionList::ToString(std::ostream& out, const std::string& name, std::m
   {
     IntroPart* data = type->GetData();
     std::string condition = type->GetCondition(vars, name);
-    out << data->GetCPPClassName () << " *temp = " << name << "->get_const()->Cast< " << data->GetCPPClassName() << " > ();\n";
+    out << "const " << data->GetCPPClassName () << " *temp = " << name << "->get_const()->Cast< " << data->GetCPPClassName() << " > ();\n";
     out << "if (temp && (";
     data->GetCondition(out, "temp");
     out << ")";
@@ -536,7 +536,7 @@ void ExpressionList::ToString(std::ostream& out, const std::string& name, std::m
     {
       out << "&& (" << condition << ")"; 
     }
-    out << ")\n";
+    out << ")\n{\n";
   }
   else
   {

@@ -1,9 +1,23 @@
-// PlainText //
 %{
 /*
-this file is part of the standard library
-*/
+    <one line to give the program's name and a brief idea of what it does.>
+    Copyright (C) <year>  <name of author>
 
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+*/
 #include <termreference.h>
 #include <operator.h>
 #include <transform.h>
@@ -13,8 +27,7 @@ this file is part of the standard library
 #include <typeinfo>
 #include <iostream>
 #include <relations.h>
-#define SHOW_DEBUG
-
+//#define SHOW_DEBUG
 %}
 
 NAMESPACE "MySimplifyRules";
@@ -41,6 +54,8 @@ TYPE new Lim "Lim" [3] : "CAS::Type::GetBuildInType (CAS::Type::Term)";
 TYPE Error: "CAS::Error";
 TYPE Any: "CAS::Term";
 TYPE new Sum "Sum" [4]: "CAS::Type::GetBuildInType (CAS::Type::Term)";
+TYPE False: "CAS::Boolean", %{ !$->GetBoolean () %}, "false";
+TYPE True: "CAS::Boolean", %{ $->GetBoolean () %}, "true";
 
 //Exponentialfunktionen:
 Exp[Number0[]] --> Number<"1">[];
@@ -120,8 +135,16 @@ Solve [{a},{b}] %{ $$ !HasX ($a$, $b$) %} --> a;
 Solve[ (1) Equal[ Exp[ Any & %{ HasX ($$, $x$) %}{xterm}] , Any & %{ !HasX ($$, $x$) %}{noxterm}], {x} ] 
 --> Solve [ Equal [xterm, Ln[ noxterm ] ], x];
 
-Solve[ (1) Equal[ Add[ ... Any & %{ HasX ($$, $x$) %}{xterms}, {noxterms}]] {x}]
---> Solve[ Equal[ Add[ ... xterms], Add
+Solve[ (1) Equal[ Add[ ... Any & %{ HasX ($$, $x$) %}{xterms}, {noxterms}], Any & %{ !HasX ($$, $x$) %}{eq2} ], {x} ]
+--> Solve [ Equal[ Add[ ... i:xterms { i } ], Add[ eq2, Mul[ Number<"-1">[], Add[ ... i:noxterms { i } ] ] ] ], x ];
+
+Solve[ (1) Equal[ Add[ ... Any & %{ HasX ($$, $x$) %}{xterms}, {noxterms}], Any & %{ HasX ($$, $x$) %}{eq2} ], {x} ]
+--> Solve [ Equal[ Add[ ... i:noxterms { i } ], Add[ eq2, Mul[ Number<"-1">[], Add[ ... i:xterms { i } ] ] ] ], x ];
+
+Equal[ Number{n1}, Number & %{ ! $$->Equals (*$n1$) %} {n2} ] --> False[];
+
+//Solve[ (1) Equal[ Add[ ... Any & %{ HasX ($$, $x$) %}{xterms}, {noxterms}]] {x}]
+//--> Solve[ Equal[ Add[ ... xterms], Add
 
 //Any[ ... {x} ] --> Add[ ... i:x {i}]
 

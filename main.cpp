@@ -13,7 +13,11 @@
 #include <FlexLexer.h>
 
 void test0 ();
+#ifdef CACHE
 void test5 (CAS::TermCacheInit &cache);
+#else
+void test5 ();
+#endif
 
 int yyFlexLexer::yywrap ()
 {
@@ -28,13 +32,20 @@ int main (int argc, char **argv)
 {
   std::cout << "Copyright by Fabian Schmitthenner" << std::endl;
   CAS::SimplifyRuleCollection<MySimplifyRules::MyClass> r;
+#ifdef CACHE  
   CAS::TermCacheInit r2 (&r);
   CAS::Term::SetStandardRuleCollection(r2);
-  
+#else
+  CAS::Term::SetStandardRuleCollection(r);
+#endif
   if (argc == 1)
     test0();
   else
+#ifdef CACHE
     test5(r2);
+#else
+    test5 ();
+#endif
 }
 
 void Output (CAS::Term *t)
@@ -83,7 +94,7 @@ void test0()
   std::cout << "------ANFANG-----" << std::endl;
   std::ifstream stream ("calc");
   Parser parser (std::cout, &stream);
-  parser.setDebug(true);
+  parser.setDebug(false);
   for (int i = 0; i < 2; ++i)
   {
     parser.parse ();
@@ -92,18 +103,29 @@ void test0()
   std::cout << "------ENDE-------" << std::endl;
 };
 
+#ifdef CACHE
 void test5 (CAS::TermCacheInit& cache)
+#else
+void test5 ()
+#endif
 {
   Parser parser (std::cout);
   parser.setDebug(false);
   while (true)
   {
+    #ifdef CACHE
     if (parser.parse() == 1)
     {
       cache.ClearCache();
       std::cout << "cache cleared" << std::endl;
     }
+    #else
+    if (parser.parse () == 1)
+      std::cout << "Fehler" << std::endl;
+    #endif
     std::cout << std::endl <<  "-----------------" << std::endl;
+    #ifdef CACHE
     cache.GetInfo (std::cout);    
+    #endif
   }
 }

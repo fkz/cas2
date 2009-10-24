@@ -55,6 +55,10 @@ class Boolean: public CAS::Term
     virtual Type* GetType() const;
     virtual TermReference* Simplify();
     virtual void ToString(std::ostream& stream) const;
+    static Boolean *CreateTerm (bool b)
+    {
+      return new Boolean (b);
+    }
 };
   
 class Relations : public CAS::Term

@@ -14,7 +14,7 @@
 
 %%
 
-finallyTerm: equalTerm { output << *$1; }
+finallyTerm: equalTerm { output << *$1; delete $1; }
 ;
 
 term: term '^' term { $$ = CAS::TermReference::Create<CAS::BuildInFunction> (CAS::BuildInFunction::Exp, CAS::TermReference::Create<CAS::Mul> ($3, CAS::TermReference::Create<CAS::BuildInFunction> (CAS::BuildInFunction::Ln, $1))); }
