@@ -83,6 +83,7 @@ namespace CAS
 	  std::vector< Term * > children;
 	  void *var = NULL;
 	  Term *term;
+	  //TODO: an neue GetChildren anpassen
 	  while (term = all_it->second.first->GetChildren(var))
 	    children.push_back(term);
 	  

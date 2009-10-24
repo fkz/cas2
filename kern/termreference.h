@@ -46,9 +46,10 @@ class TermReference
 	hash = term->GetHashCode();
 	return true;
       }
-      //references wird nicht erhöht, da das Parent, das ja eigentlich eine Reference ist, in Term::Simplify gelöscht wurde
       term = re->term;
+      ++term->references;
       hash = re->hash;
+      delete re;
       assert (term->references >= 1);
       return true;
     }
@@ -89,7 +90,7 @@ class TermReference
 	return false;
       }
     }
-    TermReference *Clone ()
+    TermReference *Clone () const
     {
       return new TermReference (*this);
     }
@@ -123,6 +124,11 @@ class TermReference
     {
       return term->GetChildren(arg1);
     }
+    TermReference *GetChildrenVar (void *&arg1) const
+    {
+      return term->GetChildrenVar(arg1);
+    } 
+    
     void SetRuleCollection(CAS::AbstractSimplifyRuleCollection& coll);
 };
 
@@ -162,6 +168,66 @@ inline TermReference *Create (P1 p1, P2 p2, P3 p3, P4 p4)
 {
   return TermReference::Create<T>(p1, p2, p3, p4);
 }
+
+class AutoTermReference
+{
+  private:
+    TermReference *ref;
+  public:
+    AutoTermReference (TermReference *t)
+    : ref (t) { }
+    
+    AutoTermReference (const AutoTermReference &t)
+    : ref (t->Clone ()) { }
+    
+    AutoTermReference &operator = (const AutoTermReference &t)
+    {
+      if (ref != NULL)
+	delete ref;
+      ref = t->Clone();
+    }
+    
+    AutoTermReference &operator = (TermReference *t)
+    {
+      if (ref != NULL)
+	delete ref;
+      ref = t;
+    }
+    
+    AutoTermReference ()
+    : ref (NULL) { }
+    
+    TermReference *operator -> ()
+    {
+      return ref;
+    }
+    
+    const TermReference *operator -> () const
+    {
+      return ref;
+    }
+    
+    TermReference &operator * ()
+    {
+      return *ref;
+    }
+    
+    const TermReference &operator * () const
+    {
+      return *ref;
+    }
+    
+    operator bool ()
+    {
+      return ref;
+    }
+    
+    ~AutoTermReference ()
+    {
+      if (ref != NULL)
+	delete ref;
+    }
+};
 
 
 }

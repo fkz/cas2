@@ -90,12 +90,23 @@ Term* Term::Transform(TransformType t) const
   return NULL;
 }
 
+
+TermReference* Term::GetChildren(void*& param) const
+{
+  TermReference* result = GetChildrenVar(param);
+  if (!result)
+    return NULL;
+  else
+    return result->Clone();
+}
+
+
 Term* SimpleTerm::CreateTerm(TermReference** children) const
 {
   return new SimpleTerm ();
 }
 
-TermReference* SimpleTerm::GetChildren(void*& param) const
+TermReference* SimpleTerm::GetChildrenVar(void*& param) const
 {
   return NULL;
 }

@@ -55,6 +55,9 @@ TermReference::TermReference(const CAS::TermReference &r)
 
 TermReference::~TermReference()
 {
+  if (!term)
+    return;
+  assert (term->references > 0);
   if (!--term->references)
   {
     delete term;
@@ -74,7 +77,9 @@ CAS::Term* CAS::TermReference::get_unconst()
   return term;
 }
 
-void CAS::TermReference::SetRuleCollection(CAS::AbstractSimplifyRuleCollection& coll)
+
+
+void TermReference::SetRuleCollection(AbstractSimplifyRuleCollection& coll)
 {
   get_unconst()->SetRuleCollection(coll);
   finnish_get_unconst(true);

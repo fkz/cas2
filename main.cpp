@@ -13,6 +13,7 @@
 #include <FlexLexer.h>
 
 void test0 ();
+void test1 ();
 #ifdef CACHE
 void test5 (CAS::TermCacheInit &cache);
 #else
@@ -39,6 +40,7 @@ int main (int argc, char **argv)
   CAS::Term::SetStandardRuleCollection(r);
 #endif
   if (argc == 1)
+    //test1();
     test0();
   else
 #ifdef CACHE
@@ -89,6 +91,24 @@ void OutputRule (CAS::TermReference *t, CAS::Rule *rule)
   delete t;
 }
 
+CAS::TermReference *CreateLn (CAS::TermReference *t)
+{
+  return Create< CAS::BuildInFunction > (CAS::BuildInFunction::Ln, t);
+}
+
+CAS::TermReference *CreateExp (CAS::TermReference *t)
+{
+  return Create< CAS::BuildInFunction > (CAS::BuildInFunction::Exp, t);
+}
+
+
+void test1 ()
+{
+  TermReference *ref =  CreateExp (Create<CAS::Mul> (CreateLn (Create<CAS::Variable> (0)), Create<CAS::Number> (2)));
+  std::cout << *ref << std::endl;
+  delete ref;
+}
+
 void test0()
 {
   std::cout << "------ANFANG-----" << std::endl;
@@ -121,7 +141,10 @@ void test5 ()
     }
     #else
     if (parser.parse () == 1)
+    {
       std::cout << "Fehler" << std::endl;
+      return;
+    }
     #endif
     std::cout << std::endl <<  "-----------------" << std::endl;
     #ifdef CACHE

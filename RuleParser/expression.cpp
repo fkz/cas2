@@ -130,7 +130,7 @@ RuleParser::Rule::Rule(Expression* left, std::string *cond, Expression* right)
 
 IntroPart *Rule::ToString(std::ostream& out, std::string name) const
 {
-  out << "inline CAS::TermReference *" << name <<  "(const " << left->GetType()->GetData()->GetCPPClassName () << " *param)\n{\n";
+  out << "/*inline */CAS::TermReference *" << name <<  "(const " << left->GetType()->GetData()->GetCPPClassName () << " *param)\n{\n";
   std::map< Identification, std::string > idStrings;
   int varIndex = 0;
   left->ToStringDeclared(out, idStrings, varIndex);
@@ -233,7 +233,7 @@ void Expression::ToStringDeclared(std::ostream& out, std::map< Identification, s
   if (id.isId())
   {
     int myindex = ++index;
-    out << "CAS::TermReference *namedData" << myindex << ";\n";
+    out << "CAS::AutoTermReference namedData" << myindex << ";\n";
     std::stringstream str;
     str << "namedData" << myindex;
     vars.insert(std::make_pair (id, str.str()));
@@ -283,8 +283,8 @@ void Expression::ToString(std::ostream& out, const std::string &obj, bool isRefe
   {
     if (data->isAssociative () && children->size() > 0)
     {
-      out << "std::list< CAS::TermReference * > refList" << index << ";\n";
-      out << "while (true)\n{\nCAS::TermReference *ref = my" << index << "->GetChildren (param" << index << ");\n";
+      out << "std::list< CAS::AutoTermReference > refList" << index << ";\n";
+      out << "while (true)\n{\nCAS::AutoTermReference ref = my" << index << "->GetChildren (param" << index << ");\n";
       out << "if (ref)\n   refList" << index << ".push_back (ref); else break; }\n";
       out << "bool finnished" << index << ";\n";
       for (std::list< Expression* >::const_iterator it = children->begin(); it != children->end(); ++it)
@@ -292,7 +292,7 @@ void Expression::ToString(std::ostream& out, const std::string &obj, bool isRefe
 	if ((*it)->GetVerarbeitungsId() != 0)
 	  throw new ParseException (ParseException::SEMANTICERROR, "Assoziative Typen können keine Reihenfolgeänderung haben");
 	out << "finnished" << index << " = false;\n";
-	out << "for (std::list< CAS::TermReference * >::iterator it" << index << " = refList" << index << ".begin(); it" << index << " != refList" << index << ".end ();++it" << index << ")\n{\n";
+	out << "for (std::list< CAS::AutoTermReference >::iterator it" << index << " = refList" << index << ".begin(); it" << index << " != refList" << index << ".end ();++it" << index << ")\n{\n";
 	std::stringstream str; str << "(*it" << index << ")";
 	(*it)->ToString (out, str.str(), true, vars, varIndex, "continue;");
 	out << "refList" << index << ".erase (it" << index << ");\nfinnished" << index << " = true;\n break;\n}\n";
@@ -305,7 +305,7 @@ void Expression::ToString(std::ostream& out, const std::string &obj, bool isRefe
       }
       else
       {
-	out << "for (std::list< CAS::TermReference * >::iterator it" << index << " = refList" << index << ".begin(); it" << index << " != refList" << index << ".end ();)\n{\n";
+	out << "for (std::list< CAS::AutoTermReference >::iterator it" << index << " = refList" << index << ".begin(); it" << index << " != refList" << index << ".end ();)\n{\n";
 	std::stringstream str; str << "(*it" << index << ")";
 	std::stringstream conStrStream; conStrStream << "\n{\n  refList" << index << ".erase (it" << index << "++);\ncontinue;\n}\n";
 	for (std::list< ExpressionList* >::iterator it = children2->begin(); it != children2->end(); ++it)
@@ -319,7 +319,7 @@ void Expression::ToString(std::ostream& out, const std::string &obj, bool isRefe
     {
       if (children->size() > 0)
       {
-	out << "CAS::TermReference *refArray" << index << "[" << children->size() << "];\n";
+	out << "CAS::AutoTermReference refArray" << index << "[" << children->size() << "];\n";
 	int refArrayIndex = 0;
 	std::map< int, std::list< std::pair< size_t, Expression *> > > iList;
 	for (std::list< Expression* >::const_iterator it = children->begin(); it != children->end(); ++it, ++refArrayIndex)
@@ -341,13 +341,14 @@ void Expression::ToString(std::ostream& out, const std::string &obj, bool isRefe
       }
       if (!children2)
       {
-	out << "if (my" << index << "->GetChildren (param" << index << ") != NULL) " << endStr << "\n";
+	out << "CAS::AutoTermReference mytempchild" << index << " = my" << index << "->GetChildren (param" << index << ");\n";
+	out << "if (mytempchild" << index << " != NULL) " << endStr << "\n";
       }
       else
       {
 	out << "bool nomatch = false;\nwhile (true)\n";
 	out << "{\n";
-	out << "CAS::TermReference *loc" << index << " = my" << index << "->GetChildren(param" << index << ");\n";
+	out << "CAS::AutoTermReference loc" << index << " = my" << index << "->GetChildren(param" << index << ");\n";
 	out << "if (!loc" << index << ")\n   break;\n";
 	for (std::list< ExpressionList* >::iterator it = children2->begin(); it != children2->end(); ++it)
 	{
@@ -557,7 +558,7 @@ void ExpressionList::ToStringDeclared(std::ostream& out, std::map< Identificatio
     int myindex = ++index;
     std::stringstream str;
     str << "namedData" << myindex;
-    out << "std::list< CAS::TermReference * > namedData" << myindex << ";\n";
+    out << "std::list< CAS::AutoTermReference > namedData" << myindex << ";\n";
     vars.insert(std::make_pair(normalId, str.str()));
   }
 }
@@ -570,7 +571,7 @@ std::string ExpressionList::GetAnzahl(std::map< Identification, std::string > &v
 void ExpressionList::ToStringRight(std::ostream& out, const std::string& var, const std::string& indexStr, std::map< Identification, std::string > vars, int& varIndex)
 {
   int index = ++varIndex;
-  out << "for (std::list< CAS::TermReference * >::const_iterator it" << index << " = " << vars[normalId] << ".begin(); it" << index << " != " << vars[normalId] << ".end(); ++it" << index << ", ++" << indexStr << ")\n";
+  out << "for (std::list< CAS::AutoTermReference >::const_iterator it" << index << " = " << vars[normalId] << ".begin(); it" << index << " != " << vars[normalId] << ".end(); ++it" << index << ", ++" << indexStr << ")\n";
   out << "{\n";
   std::string varAndIndex = var + "[" + indexStr + "]";
   std::stringstream thevar; thevar << "(*it" << index << ")";
@@ -676,7 +677,7 @@ void RuleParser::CreateClass(std::string* classname, int paramcount, std::string
   for (int i = 1; i < paramcount; ++i)
     out << "&& param" << i << "->Equals (*tt->param" << i << ")";
   out << ";\n}\n";
-  out << "virtual CAS::TermReference* GetChildren(void*& param) const\n";
+  out << "virtual CAS::TermReference* GetChildrenVar(void*& param) const\n";
   out << "{\n   param = (void *)(((int)param)+1);\n   switch ((int)param)\n   {\n";
   for (int i = 0; i < paramcount; ++i)
     out << "      case " << i+1 << ": return param" << i << ";\n";

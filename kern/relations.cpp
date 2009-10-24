@@ -44,7 +44,7 @@ bool Boolean::Equals(const CAS::Term& t) const
   return b == tt->b;
 }
 
-TermReference* Boolean::GetChildren(void*& param) const
+TermReference* Boolean::GetChildrenVar(void*& param) const
 {
   return NULL;
 }
@@ -81,7 +81,7 @@ Term *Relations::CreateTerm(TermReference** children) const
   return new Relations (type, children[0], children[1]);
 }
 
-CAS::TermReference* Relations::GetChildren(void*& param) const
+CAS::TermReference* Relations::GetChildrenVar(void*& param) const
 {
   if (!param)
   {

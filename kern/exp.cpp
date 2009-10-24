@@ -86,7 +86,7 @@ void FunctionCall::ToString(std::ostream& stream) const
   stream << GetFunctionName () << "(" << *parameter << ")";
 }
 
-TermReference* FunctionCall::GetChildren(void*& param) const
+TermReference* FunctionCall::GetChildrenVar(void*& param) const
 {
   if (!param)
   {
@@ -109,7 +109,8 @@ void BuildInFunction::ToString(std::ostream& stream) const
       children[0] = p->GetChildren(param);
       if (children[0] && (children[1] = p->GetChildren(param)))
       {
-	if (!p->GetChildren (param))
+	TermReference* temp = p->GetChildren (param);
+	if (!temp)
 	{
 	  if (!children[0]->get_const()->Cast<const Number> ())
 	  {
@@ -122,10 +123,15 @@ void BuildInFunction::ToString(std::ostream& stream) const
 	  if (num && ln && ln->func == Ln)
 	  {
 	    stream << *ln->parameter << "^" << num->GetNumber().get_str();
+	    delete children[0];
+	    delete children[1];
 	    return;
 	  }
 	}
+	delete temp;
+	delete children[1];
       }
+      delete children[0];
     }
   }
   CAS::FunctionCall::ToString(stream);
@@ -261,7 +267,11 @@ TermReference* BuildInFunction::Simplify()
       if (tr[0])
       {
 	tr[1] = m->GetChildren(p);
-	if (tr[1] && !m->GetChildren(p))
+	TermReference* temp = NULL;
+	if (tr[1])
+	  temp = m->GetChildren(p);
+	delete temp;
+	if (tr[1] && !temp)
 	{
 	  const Number *number = tr[0]->get_const()->Cast<const Number>();
 	  const BuildInFunction *ln = NULL;
@@ -294,16 +304,22 @@ TermReference* BuildInFunction::Simplify()
 		for (mpz_class i = 0; i < num1_; ++i)
 		  result *= num2_;
 		delete this;
+		delete tr[0];
+		delete tr[1];
 		return TermReference::Create<Number> (result);
 	      }
 	      else if (num1_ < 0 && num2_ == 0)
 	      {
 		delete this;
+		delete tr[0];
+		delete tr[1];
 		return Create<Error> ();
 	      }
 	    }
 	  }
+	  delete tr[1];
 	}
+	delete tr[0];
       }
     }
   }

@@ -67,7 +67,7 @@ Term* Number::CreateTerm(TermReference** children) const
   return new Number (zahl);
 }
 
-TermReference* Number::GetChildren(void*& param) const
+TermReference* Number::GetChildrenVar(void*& param) const
 {
   return NULL;
 }
@@ -126,7 +126,7 @@ Term* Frac::CreateTerm(TermReference** children) const
   return new Frac (zaehler, nenner);
 }
 
-TermReference* Frac::GetChildren(void*& param) const
+TermReference* Frac::GetChildrenVar(void*& param) const
 {
   return NULL;
 }
@@ -179,7 +179,7 @@ Term* Variable::CreateTerm(TermReference** children) const
   return new Variable (id);
 }
 
-TermReference* Variable::GetChildren(void*& param) const
+TermReference* Variable::GetChildrenVar(void*& param) const
 {
   return NULL;
 }

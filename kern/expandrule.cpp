@@ -28,6 +28,7 @@ using namespace CAS;
 
 CAS::TermReference* ExpandRule::UseRule(const CAS::TermReference *p) const
 {
+  //TODO: an neue GetChildren anpassen
   const CAS::Mul *mul = dynamic_cast< const CAS::Mul * > (p->get_const());
   if (mul)
   {

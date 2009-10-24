@@ -41,7 +41,7 @@ class Number : public CAS::Term
     virtual Hash GetHashCode() const;
     static Number *CreateTerm (const mpz_class &number);
     virtual Term* CreateTerm(TermReference** children) const;
-    virtual TermReference* GetChildren(void*& param) const;
+    virtual TermReference* GetChildrenVar(void*& param) const;
     
     const mpz_class &GetNumber () const
     {
@@ -62,7 +62,7 @@ class Frac: public CAS::Term
     virtual TermReference *Simplify();
     virtual void ToString(std::ostream& stream) const;
     virtual Term* CreateTerm(TermReference** children) const;
-    virtual TermReference* GetChildren(void*& param) const;
+    virtual TermReference* GetChildrenVar(void*& param) const;
 };
 
 class Variable: public CAS::Term
@@ -78,7 +78,7 @@ class Variable: public CAS::Term
     virtual TermReference *Simplify();
     virtual void ToString(std::ostream& stream) const;
     virtual Term* CreateTerm(TermReference** children) const;
-    virtual TermReference* GetChildren(void*& param) const;
+    virtual TermReference* GetChildrenVar(void*& param) const;
     static Variable *CreateTerm (int id);
 };
 

@@ -37,7 +37,7 @@ class Transform : public CAS::Term
     virtual CAS::Type* GetType() const;
     virtual CAS::TermReference* Simplify();
     virtual ~Transform();
-    virtual TermReference* GetChildren(void*& param) const = 0;
+    virtual TermReference* GetChildrenVar(void*& param) const = 0;
 };
 
 class Derive: public Transform
@@ -49,7 +49,7 @@ class Derive: public Transform
     static Derive *CreateTerm (TermReference *child, TermReference *variable);
     virtual Term* Clone() const;
     virtual Term* CreateTerm(TermReference** children) const;
-    virtual TermReference* GetChildren(void*& param) const;
+    virtual TermReference* GetChildrenVar(void*& param) const;
     virtual Hash GetHashCode() const;
     virtual void ToString(std::ostream& stream) const;
     virtual TermReference* Simplify();

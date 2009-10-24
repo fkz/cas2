@@ -67,7 +67,7 @@ Ln[Number1[]] --> Number<"0">[];
 Diff[{x},{y}] %{ $$ $x$->Equals (*$y$) %} --> Number<"1">[];
 Diff[Add[ ... {x} ],{y}] --> Add[ ... i:x { Diff[i,y] }];
 Diff[Number,{x}] --> Number<"0">[];
-Diff[Mul[ ... {mul}], {x}] --> Add[ ... i:mul { Mul[ ... y:mul { %{ if ($y$ != $i$) %} y %{ else %} Diff[y,x]  } ] } ];
+Diff[Mul[ ... {mul}], {x}] --> Add[ ... i:mul { Mul[ ... y:mul { %{ if (&$y$ != &$i$) %} y %{ else %} Diff[y,x]  } ] } ];
 Diff[Exp[{x}],{y}] --> Mul[Exp[x], Diff[x,y]];
 Diff[Ln[{x}],{y}] --> Mul[Exp[Mul[Ln[x], Number<"-1">[]]],Diff[x,y]];
 
@@ -108,14 +108,14 @@ Fakultaet[Number{num}] -->
 %} Number<"res">[];
 
 %{
-inline bool HasX (CAS::TermReference *term, CAS::TermReference *x)
+inline bool HasX (const CAS::AutoTermReference &term, const CAS::AutoTermReference &x)
 {
-  if (term->Equals (x))
+  if (term->Equals (*x))
      return true;
   void *param = NULL;
   while (true)
   {
-    CAS::TermReference *ref = term->GetChildren (param);
+    CAS::AutoTermReference ref = term->GetChildren (param);
     if (!ref)
       break;
     if (HasX (ref, x))

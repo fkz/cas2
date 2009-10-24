@@ -44,7 +44,7 @@ class FunctionCall: public Term
     virtual Type *GetType() const;
     virtual TermReference *Simplify();
     virtual void ToString(std::ostream& stream) const;
-    virtual TermReference* GetChildren(void*& param) const;
+    virtual TermReference* GetChildrenVar(void*& param) const;
     ~FunctionCall ();
 };
   

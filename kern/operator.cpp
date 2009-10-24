@@ -165,6 +165,7 @@ void Operator::PseudoToString(std::ostream& stream, const std::string& op) const
     stream << *ref;
   while (ref)
   {
+    delete ref;
     ref = GetChildren(p);
     if (ref)
       stream << op << *ref;
@@ -202,15 +203,31 @@ TermReference* Operator::GetChildren(void*& param) const
   }
 }
 
+TermReference* Operator::GetChildrenVar(void*& param) const
+{
+  TermCollectionTemplate<NumberX>::const_iterator *it;
+  if (!param)
+    param = it = new TermCollectionTemplate<NumberX>::const_iterator (children.begin());
+  else
+    it = (TermCollectionTemplate<NumberX>::const_iterator *)param;
+  if (*it != children.end())
+    return (*it)->second.first;
+  else
+  {
+    delete it;
+    return NULL;
+  }
+}
+
+
 TermReference* Add::GetElement(std::multimap< Hash, std::pair< TermReference*, Operator::NumberX > >::const_iterator arg1) const
 {
   if (arg1->second.second == 1)
   {
-    return arg1->second.first;
+    return arg1->second.first->Clone();
   }
   else
   {
-    //TODO: Speicherleck. Beseitige dies, indem die Konvention von GetChildren umgeändert wird zur Erhöhung des Referenzzählers
     return Create<Mul> (Create<Number> (arg1->second.second), arg1->second.first->Clone ());
   }
 }
@@ -297,6 +314,7 @@ TermReference *Add::Simplify()
 	children.insert(std::make_pair (vect.front().first->GetHashCode(), vect.front()));
       else
       {
+	delete vect.front().first;
 	assert (result == This() || ! result);
 	result = This();
       }
@@ -377,6 +395,7 @@ void Add::push_back(TermReference* arg1)
   if (!children.push_back(arg1, number))
   {
     children.find(arg1)->second.second += number;
+    delete arg1;
   }
 }
 
@@ -385,6 +404,7 @@ void Add::push_back(std::pair< TermReference*, Operator::NumberX > arg1)
   if (!children.push_back(arg1.first, arg1.second))
   {
     children.find(arg1.first)->second.second += arg1.second;
+    delete arg1.first;
   }
 }
 
@@ -397,9 +417,9 @@ Term* Mul::Clone() const
 TermReference* Mul::GetElement(std::multimap< Hash, std::pair< TermReference*, Operator::NumberX > >::const_iterator arg1) const
 {
   if (arg1->second.second == 1)
-    return arg1->second.first;
+    return arg1->second.first->Clone();
   //Speicherleck!!
-  return Create<BuildInFunction> (BuildInFunction::Exp, Create<Mul> (Create<BuildInFunction> (BuildInFunction::Ln, arg1->second.first), Create<Number> (arg1->second.second)));
+  return Create<BuildInFunction> (BuildInFunction::Exp, Create<Mul> (Create<BuildInFunction> (BuildInFunction::Ln, arg1->second.first->Clone()), Create<Number> (arg1->second.second)));
 }
 
 
@@ -437,7 +457,8 @@ void Mul::push_back(TermReference* arg1)
   if (exp && exp->GetFunctionEnum() == BuildInFunction::Exp)
   {
     void *p = NULL;
-    const Mul *mul = exp->GetChildren(p)->get_const()->Cast<const Mul>();
+    TermReference* mulRef = exp->GetChildren(p);
+    const Mul *mul = mulRef->get_const()->Cast<const Mul>();
     assert (exp->GetChildren(p) == NULL);
     TermReference *mul_children[2];
     p = NULL;
@@ -447,7 +468,9 @@ void Mul::push_back(TermReference* arg1)
       if (mul_children[0])
       {
 	mul_children[1] = mul->GetChildren(p);
-	if (mul_children[1] && mul->GetChildren(p) == NULL)
+	TermReference* mulnext = mul->GetChildren(p);
+	delete mulnext;
+	if (mul_children[1] && mulnext == NULL)
 	{
 	  const BuildInFunction *ln = mul_children[0]->get_const()->Cast<const BuildInFunction>();
 	  const Number *num = NULL;
@@ -465,14 +488,17 @@ void Mul::push_back(TermReference* arg1)
 	  {
 	    number = num->GetNumber();
 	    p = NULL;
-	    TermReference *temp = ln->GetChildren(p)->Clone();
+	    TermReference *temp = ln->GetChildren(p);
 	    assert (ln->GetChildren(p) == NULL);
 	    delete arg1;
 	    arg1 = temp;
 	  }
 	}
+	delete mul_children[1];
       }
+      delete mul_children[0];
     }
+    delete mulRef;
   }
   push_back(std::make_pair(arg1, number));
 }
@@ -483,7 +509,11 @@ void Mul::push_back(std::pair< TermReference*, Operator::NumberX > arg1)
   {
     TermCollectionTemplate<NumberX>::iterator it = children.find (arg1.first);
     if (0 == (it->second.second += arg1.second))
+    {
+      delete it->second.first;
       children.erase(it);
+    }
+    delete arg1.first;
   }
 }
 
@@ -522,9 +552,7 @@ CAS::Mul::Mul()
 }
 
 TermReference* Mul::Simplify()
-{
-  mpq_class c (10);
-  
+{  
   TermReference *result = SimplifyEx<Mul> () ? This() : NULL;
   
   std::vector< std::pair< TermReference *, NumberX > > vect;
@@ -562,6 +590,7 @@ TermReference* Mul::Simplify()
       __gmpz_pow_ui (num.get_mpz_t(), vect.front().first->get_const()->Cast<Number>()->GetNumber().get_mpz_t(), vect.front().second.get_ui());
       if (num == 0)
       {
+	delete vect.front().first;
 	delete this;
 	return Create<Number> (0);
       }
@@ -573,6 +602,7 @@ TermReference* Mul::Simplify()
       }
       else
       {
+	delete vect.front().first;
 	assert (result == This() || ! result);
 	result = This();
       }

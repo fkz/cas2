@@ -25,7 +25,7 @@
 
 using namespace CAS;
 
-CAS::TermReference* Transform::GetChildren(void*& param) const
+CAS::TermReference* Transform::GetChildrenVar(void*& param) const
 {
   if (!param)
   {
@@ -84,7 +84,7 @@ Derive::Derive(TermReference* child, TermReference* variable)
   
 }
 
-TermReference* Derive::GetChildren(void*& param) const
+TermReference* Derive::GetChildrenVar(void*& param) const
 {
   switch ((int)param)
   {
@@ -113,6 +113,7 @@ TermReference* Derive::Simplify()
 {
   
   /*
+  TODO: An neue GetChildren anpassen oder einfach Kommentar löschen
   if (child->Equals(variable))
   {
     delete this;
