@@ -27,7 +27,7 @@
 #include <typeinfo>
 #include <iostream>
 #include <relations.h>
-//#define SHOW_DEBUG
+#define SHOW_DEBUG
 %}
 
 NAMESPACE "MySimplifyRules";

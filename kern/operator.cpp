@@ -211,7 +211,7 @@ TermReference* Operator::GetChildrenVar(void*& param) const
   else
     it = (TermCollectionTemplate<NumberX>::const_iterator *)param;
   if (*it != children.end())
-    return (*it)->second.first;
+    return ((*it)++)->second.first;
   else
   {
     delete it;

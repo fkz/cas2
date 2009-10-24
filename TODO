@@ -1,10 +1,8 @@
-Speicherlecks bereinigen
+Speicherlecks bereinigen -- schon viel getan, aber sicher immer noch Bedarf
 Ableitungen vervollständigen
 Integrieren
 Lösen von Gleichungen
-Transform an TermReference anpassen
-Parser für Eingabe erstellen
 Factor ?
-Expand weiterverfolgen: Geschwindigkeit verbessern?
-Hash-Codes zufällig machen -- Untersuchung auf Hash-Collisions; evtl. Hash-Funktion verbessern
-GMP-Benutzung vervollständigen
+Expand weiterverfolgen: Geschwindigkeit verbessern? -- naja, eigentlich schon sehr gut
+Untersuchung auf Hash-Collisions; evtl. Hash-Funktion verbessern
+GMP-Benutzung vervollständigen -- naja, auch schon ziemlich vollständig; aber statt gmpz_class sollte auf gmpq_class geupdated werden

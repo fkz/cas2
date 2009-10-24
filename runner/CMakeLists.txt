@@ -12,6 +12,7 @@ include_directories(
    ${CMAKE_BINARY_DIR}/Parser
    ${KDE4_INCLUDES}
    ${CMAKE_CURRENT_SOURCE_DIR}/../Parser
+   ${CMAKE_BINARY_DIR}/kern
    )
 
 # We add our source code here

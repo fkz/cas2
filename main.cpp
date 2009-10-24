@@ -12,6 +12,8 @@
 #include <fstream>
 #include <FlexLexer.h>
 
+#define CACHE
+
 void test0 ();
 void test1 ();
 #ifdef CACHE
@@ -138,6 +140,7 @@ void test5 ()
     {
       cache.ClearCache();
       std::cout << "cache cleared" << std::endl;
+      return;
     }
     #else
     if (parser.parse () == 1)

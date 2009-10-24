@@ -10,7 +10,7 @@ add_subdirectory(RuleParser)
 add_subdirectory(kern)
 
 add_definitions(-fexceptions)
-include_directories(${CMAKE_SOURCE_DIR}/kern ${CMAKE_BINARY_DIR}/Parser ${CMAKE_SOURCE_DIR}/Parser ${CMAKE_BINARY_DIR})
+include_directories(${CMAKE_SOURCE_DIR}/kern ${CMAKE_BINARY_DIR}/Parser ${CMAKE_SOURCE_DIR}/Parser ${CMAKE_BINARY_DIR} ${CMAKE_BINARY_DIR}/kern)
 add_executable(simple main.cpp)
 target_link_libraries(simple ${GMP_LIBRARY} cas2)
 

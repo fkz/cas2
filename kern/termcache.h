@@ -69,6 +69,7 @@ class TermCacheInit: public AbstractSimplifyRuleCollection
 	    it->second.second = result->Clone();
 	  else
 	    it->second.second = (TermReference *)2;
+	  delete ref;
 	  return result;
 	}
 	else if (it->second.second == (TermReference *)3)
@@ -78,9 +79,11 @@ class TermCacheInit: public AbstractSimplifyRuleCollection
 	}
 	else
 	{
+	  delete ref;
 	  if (it->second.second == (TermReference *)2)
 	    return NULL;
 	  //std::cout << "Cache: " << *ref << " --> " << *it->second.second << std::endl; 
+	  delete t;
 	  return it->second.second->Clone ();
 	}
       }
@@ -88,6 +91,7 @@ class TermCacheInit: public AbstractSimplifyRuleCollection
       collection.push_back(key, NULL);
       Term::SetStandardRuleCollection(standard);
       ref->SetRuleCollection(temp);
+      delete t;
       return ref;
     }
     
@@ -99,7 +103,7 @@ class TermCacheInit: public AbstractSimplifyRuleCollection
       for (TermCollectionTemplate<TermReference *>::const_iterator it = collection.begin(); it != collection.end();++it)
       {
 	delete it->second.first;
-	if (((int)it->second.second)>4)
+	if (((size_t)it->second.second)>4)
 	  delete it->second.second;
       }
       collection.clear();

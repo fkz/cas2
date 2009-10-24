@@ -185,6 +185,7 @@ class AutoTermReference
       if (ref != NULL)
 	delete ref;
       ref = t->Clone();
+      return *this;
     }
     
     AutoTermReference &operator = (TermReference *t)
@@ -192,6 +193,7 @@ class AutoTermReference
       if (ref != NULL)
 	delete ref;
       ref = t;
+      return *this;
     }
     
     AutoTermReference ()
