@@ -17,6 +17,6 @@ int main (int argc, char **argv)
     output << str << " = ";
     size_t size;
     random.read((char*)&size, sizeof(size));
-    output << size << ",\n";    
+    output << std::hex << "0x" << size << ",\n";    
   }
 }
