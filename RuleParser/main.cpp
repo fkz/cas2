@@ -46,7 +46,7 @@ void WriteLicence (std::ostream &stream, const std::string &originalfile)
   
   stream << "/*\n"
   << "<one line to give the program's name and a brief idea of what it does.>\n"
-  << "Copyright (C) <year>  <name of author>\n"
+  << "Copyright (C) 2009  Fabian Schmitthenner\n"
   << "\n"
   << "This program is free software; you can redistribute it and/or modify\n"
   << "it under the terms of the GNU General Public License as published by\n"
