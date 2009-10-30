@@ -116,7 +116,7 @@ void BuildInFunction::ToString(std::ostream& stream) const
 	  {
 	    TermReference *temp = children[0];
 	    children[0] = children[1];
-	    children[1] = children[0];
+	    children[1] = temp;
 	  }
 	  const Number *num = children[0]->get_const()->Cast<const Number>();
 	  const BuildInFunction *ln = children[1]->get_const()->Cast<const BuildInFunction>();
