@@ -28,6 +28,7 @@ whitespace {delim}+
 					     ++GlobalGrammarOutput::lines;
 					return CPP_CODE; }
 "//"[^\n]* { /**/ }
+"/*"([^\*]|\n)*(\*[^/]([^\*]|\n)*)*"*/" { /* mehrzeiliger Kommenatr */ }
 [0-9]+ {
   int result = 0;
   for (int i = 0; i != yyleng; ++i)
