@@ -83,7 +83,9 @@ class Operator : public CAS::Term
 	const Operator *op = static_cast< const Operator * > (it->first->get_const());
 	for (TermCollectionTemplate<NumberX>::const_iterator it2 = op->children.begin(); it2 != op->children.end(); ++it2)
 	{
-	  push_back (std::make_pair(it2->second.first->Clone(), it2->second.second));
+	  //TODO:BUG: für multiplikation muss es statt xx * yy heißen: xx ^ yy (!!)
+	  // kritischer Fehler!!
+	  push_back (std::make_pair(it2->second.first->Clone(), it2->second.second * it->second));
 	}
 	delete it->first;
       }

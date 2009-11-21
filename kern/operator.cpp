@@ -445,6 +445,11 @@ Mul::Mul(TermReference** t, size_t anz)
 
 void Mul::push_back(TermReference* arg1)
 {
+  if (children.begin() != children.end() && children.begin()->second.first->get_const()->Cast<Error>())
+  {
+    delete arg1;
+    return;
+  }
   if (arg1->get_const()->Cast<const Error>())
   {
     for (TermCollectionTemplate<NumberX>::const_iterator it = children.begin(); it != children.end(); ++it)

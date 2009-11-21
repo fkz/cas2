@@ -377,6 +377,7 @@ void ExpressionCPPCode::ToStringRight(std::ostream& out, const std::string& obj,
       it->exp->ToStringDeclared(out, vars, varIndex);
       out << "{\nbool finnished" << index << " = false;\n  for(;;) {\n";
       it->exp->ToString (out, it->str.empty() ? vars[it->id] : (it->str == "$" ? obj : it->str), true, vars, varIndex, "break;");
+      out << "finnished" << index << " = true;\nbreak;\n"; //TODO: überprüfe, ob Änderung richtig war
       out << "}\nif (finnished" << index << ")\n" << it->strYes << "\nelse\n" << it->strNo << "\n}\n";
       continue;
     }
