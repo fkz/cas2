@@ -55,7 +55,7 @@ TermReference::TermReference(const CAS::TermReference &r)
 
 TermReference::~TermReference()
 {
-  if (!term)
+  if (!this || !term)
     return;
   assert (term->references > 0);
   if (!--term->references)

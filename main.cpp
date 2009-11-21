@@ -43,7 +43,7 @@ int main (int argc, char **argv)
 #endif
   if (argc == 1)
     //test1();
-    test0();
+    test1();
   else
 #ifdef CACHE
     test5(r2);
@@ -106,7 +106,7 @@ CAS::TermReference *CreateExp (CAS::TermReference *t)
 
 void test1 ()
 {
-  TermReference *ref =  CreateExp (Create<CAS::Mul> (CreateLn (Create<CAS::Variable> (0)), Create<CAS::Number> (2)));
+  TermReference *ref =  CreateExp (Create<CAS::Mul> (CreateLn (Create<CAS::Variable> (0)), Create<CAS::Variable> (2)));
   std::cout << *ref << std::endl;
   delete ref;
 }

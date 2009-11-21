@@ -30,8 +30,8 @@ namespace CAS {
 class Number : public CAS::Term
 {
   private:
-    Number (const mpz_class &z) : zahl (z) { }
-    mpz_class zahl;
+    Number (const mpq_class &z) : zahl (z) { }
+    mpq_class zahl;
   public:
     virtual CAS::Type* GetType() const;
     virtual TermReference *Simplify();
@@ -39,11 +39,11 @@ class Number : public CAS::Term
     virtual bool Equals(const CAS::Term& t) const;
     virtual void ToString(std::ostream& stream) const;
     virtual Hash GetHashCode() const;
-    static Number *CreateTerm (const mpz_class &number);
+    static Number *CreateTerm (const mpq_class &number);
     virtual Term* CreateTerm(TermReference** children) const;
     virtual TermReference* GetChildrenVar(void*& param) const;
     
-    const mpz_class &GetNumber () const
+    const mpq_class &GetNumber () const
     {
       return zahl;
     }

@@ -51,7 +51,7 @@ void Number::ToString(std::ostream& stream) const
   stream << zahl.get_str();
 }
 
-Number* Number::CreateTerm(const mpz_class& number)
+Number* Number::CreateTerm(const mpq_class& number)
 {
   return new Number (number);
 }
@@ -59,7 +59,7 @@ Number* Number::CreateTerm(const mpz_class& number)
 
 Hash Number::GetHashCode() const
 {
-  return Hash (hashes::Number, zahl.get_si());
+  return Hash (hashes::Number, zahl.get_den ().get_si() ^ zahl.get_num ().get_si());
 }
 
 Term* Number::CreateTerm(TermReference** children) const

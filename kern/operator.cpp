@@ -150,8 +150,9 @@ bool Operator::Equals(const CAS::Term& t) const
 Hash CAS::Operator::GetPseudoHashCode(hashes::Hashes hT1, uint32_t data) const
 {
   Hash result (hT1, data);
+  NumberX a;
   for (TermCollectionTemplate<NumberX>::const_iterator it = children.begin(); it != children.end(); ++it)
-    result = result ^ it->first ^ it->second.second.get_si();
+    result = result ^ it->first ^ it->second.second.get_num().get_si() ^ it->second.second.get_den().get_si();
   return result;
 }
  
@@ -291,7 +292,7 @@ TermReference *Add::Simplify()
   Where< Number > (outputiterator, &Operator::True);
   if (vect.size() >= 2)
   {
-    mpz_class res = 0;
+    mpq_class res = 0;
     for (std::vector< std::pair<TermReference *, NumberX> >::iterator it = vect.begin(); it != vect.end();)
     {
       TermReference *t = it->first;
@@ -377,7 +378,7 @@ Add::Add(TermReference** t, size_t anz)
 void Add::push_back(TermReference* arg1)
 {
   const Mul *mul = arg1->get_const()->Cast<const Mul>();
-  mpz_class number = 1;
+  mpq_class number = 1;
   if (mul)
   {
     Mul *mymul = arg1->get_unconst()->Cast<Mul>();
@@ -453,7 +454,7 @@ void Mul::push_back(TermReference* arg1)
     return;
   }
   const BuildInFunction *exp = arg1->get_const()->Cast<const BuildInFunction>();
-  mpz_class number = 1;
+  mpq_class number = 1;
   if (exp && exp->GetFunctionEnum() == BuildInFunction::Exp)
   {
     void *p = NULL;
@@ -558,17 +559,47 @@ TermReference* Mul::Simplify()
   std::vector< std::pair< TermReference *, NumberX > > vect;
   std::back_insert_iterator< std::vector< std::pair< TermReference *, NumberX > > > outputiterator (vect);
   Where< Number > (outputiterator, ( bool (Operator::*) (TermCollectionTemplate< NumberX >::iterator)) &Mul::ShouldChoose);
-  if (vect.size() >= 2)
+  if (vect.size() >= 1)
   {
-    mpz_class res = 1;
+    mpq_class res = 1;
     for (std::vector< std::pair< TermReference*, NumberX> >::const_iterator it = vect.begin(); it != vect.end();)
     {
       const std::pair< TermReference*, NumberX >& t = *it;
       ++it;
-      mpz_class temp;
-      __gmpz_pow_ui (temp.get_mpz_t(), t.first->get_const()->Cast<Number>()->GetNumber().get_mpz_t(), t.second.get_ui());
-      res *= temp; // exp (t.first->get_const()->Cast<Number>()->GetNumber(), t.second);
-      delete t.first;
+      if (t.second.get_den() == 1)
+      {
+	signed long pot = t.second.get_num().get_si();
+	unsigned long potN = pot > 0 ? pot : -pot;
+	if (pot != 0)
+	{
+	  mpz_class zaehler, nenner;
+	  __gmpz_pow_ui (zaehler.get_mpz_t(), t.first->get_const()->Cast<Number>()->GetNumber().get_num().get_mpz_t(), potN);
+	  __gmpz_pow_ui (nenner.get_mpz_t(), t.first->get_const()->Cast<Number>()->GetNumber().get_den().get_mpz_t(), potN);
+	  mpq_class temp;
+	  //TODO: verhindere, dass nach operator / gekürzt wird, da zaehler und nenner ohnehin teilerfremd sind
+	  if (pot > 0)
+	  {
+	    temp = zaehler;
+	    temp /= nenner;
+	  }
+	  else
+	  {
+	    temp = nenner;
+	    temp /= zaehler;
+	  }
+	  res *= temp;
+	}
+	else
+	  //nichts zu tun, da x^0=1 und a*1=a ist
+	  ;
+	delete t.first;
+      }
+      else
+      {
+	//ziehe die Wurzel (führt evtl. zu nichtrationalen Zahlen)
+	//TODO: füge Berechnung hierfür ein
+	delete t.first;
+      }
     }
     if (res == 0)
     {
@@ -583,11 +614,11 @@ TermReference* Mul::Simplify()
     assert (result == This() || ! result );
     result = This();
   }
-  else
+  /*else
     if (!vect.empty())
     {
       mpz_class num;
-      __gmpz_pow_ui (num.get_mpz_t(), vect.front().first->get_const()->Cast<Number>()->GetNumber().get_mpz_t(), vect.front().second.get_ui());
+      __gmpz_pow_ui (num.get_mpz_t(), vect.front().first->get_const()->Cast<Number>()->GetNumber().get_mpq_t(), vect.front().second.get_ui());
       if (num == 0)
       {
 	delete vect.front().first;
@@ -606,7 +637,7 @@ TermReference* Mul::Simplify()
 	assert (result == This() || ! result);
 	result = This();
       }
-    }
+    }*/
     
   assert (result == This () || !result);
   if (children.empty())

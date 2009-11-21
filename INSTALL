@@ -7,7 +7,7 @@ $  make
 #  make install
 
 of course, you can specify an other installation directory with cmake -DCMAKE_INSTALL_PREFIX, and not have
-to run install as root.
+to run make install as root.
 
 There are two applications installed:
   - A simple console application called 'simple' where you can easily type in some equations, formulars, etc.
@@ -17,7 +17,7 @@ There are two applications installed:
 the prerequisites are
   cmake
   make
-  a c++ compiler, e.g. gcc
+  a c++ compiler like gcc
   gmp see http://gmplib.org
   bison	see http://www.gnu.org/software/bison/
   flex see http://flex.sourceforge.net/

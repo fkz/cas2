@@ -39,7 +39,7 @@ class Rule: public RuleCollection
 {
   public:
     virtual Type *GetCorrespondingType () const = 0;
-    //gibt NULL zurück, falls die Regel nicht angewandt werden konnte; sonst gibt es ein (weiteres) Term * zurück
+    ///gibt NULL zurück, falls die Regel nicht angewandt werden konnte; sonst gibt es ein (weiteres) Term * zurück
     virtual TermReference *UseRule (const TermReference *) const = 0;
     virtual TermReference* UseRule(const CAS::TermReference* , void*& param) const;
 };

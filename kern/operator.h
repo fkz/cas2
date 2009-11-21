@@ -34,18 +34,19 @@ class BuildInFunction;
 class Operator : public CAS::Term
 {
   protected:
-    typedef mpz_class NumberX;
+    typedef mpq_class NumberX;
     TermCollectionTemplate<NumberX> children;
-    //Die FindEqual-Funktion darf KEINE Änderungen an children durchführen, die Iteratoren ungültig machen; diese Änderungen sollten
-    //ans Ende angestellt werden!
+    ///Die FindEqual-Funktion darf KEINE Änderungen an children durchführen, die Iteratoren ungültig machen; diese Änderungen sollten
+    ///ans Ende angestellt werden!
     void FindEquals (void (Operator::*) (CAS::TermReference*, int));
     Operator ();
     Operator (const TermCollectionTemplate<NumberX>& c);
     Hash GetPseudoHashCode (CAS::hashes::Hashes hT1, uint32_t data) const;
     void PseudoToString (std::ostream &stream, const std::string &op) const;
     
+  public:
     template<class C, class _It> 
-    void Where (_It output_iterator, bool (Operator::*predicate) (TermCollectionTemplate<NumberX>::iterator C))
+    void Where (_It output_iterator, bool (Operator::*predicate) (TermCollectionTemplate<NumberX>::iterator h))
     {
       for (TermCollectionTemplate<NumberX>::iterator it = children.begin(); it != children.end();)
       {
@@ -89,7 +90,7 @@ class Operator : public CAS::Term
       return !refs.empty();
     }
     
-    //Vereinfachungsmethoden:
+    ///Vereinfachungsmethoden:
     std::pair<TermReference *, NumberX> GetSingleObject ();
     
     virtual TermReference *GetElement(TermCollectionTemplate<NumberX>::const_iterator arg1) const = 0;

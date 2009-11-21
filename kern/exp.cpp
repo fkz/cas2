@@ -296,24 +296,57 @@ TermReference* BuildInFunction::Simplify()
 	    const Number *num2 = ln->parameter->get_const()->Cast<const Number>();
 	    if (num2)
 	    {
-	      const mpz_class &num1_ = number->GetNumber();
-	      const mpz_class &num2_ = num2->GetNumber();
-	      if (num1_ >= 0)
+	      const mpq_class &num1_ = number->GetNumber();
+	      const mpq_class &num2_ = num2->GetNumber();
+	      if (num1_.get_den() == 1 && num2_ != 0)
 	      {
-		mpz_class result = 1;
-		for (mpz_class i = 0; i < num1_; ++i)
-		  result *= num2_;
+		mpz_class zaehler, nenner;
+		signed long spot = num1_.get_num().get_si();
+		if (spot == 0)
+		{
+		  delete this;
+		  delete tr[0];
+		  delete tr[1];
+		  return Create<Number> (1);
+		}
+		unsigned long upot = spot > 0 ? spot : -spot;
+		__gmpz_pow_ui (zaehler.get_mpz_t(), num2_.get_num().get_mpz_t(), upot);
+		__gmpz_pow_ui (nenner.get_mpz_t(), num2_.get_den().get_mpz_t(), upot);
+		mpq_class result;
+		if (spot > 0)
+		{
+		  result = zaehler;
+		  result /= nenner;
+		}
+		else
+		{
+		  result = nenner;
+		  result /= zaehler;
+		}
 		delete this;
 		delete tr[0];
 		delete tr[1];
 		return TermReference::Create<Number> (result);
 	      }
+	      else if (num1_ >= 0 && num2_ == 0)
+	      {
+		//0^0
+		delete this;
+		delete tr[0];
+		delete tr[1];
+		return Create<Number> (1);
+	      }
 	      else if (num1_ < 0 && num2_ == 0)
 	      {
+		//--> 0/0
 		delete this;
 		delete tr[0];
 		delete tr[1];
 		return Create<Error> ();
+	      }
+	      else
+	      {
+		//TODO: implementiere Funktion: (unrationale (also reelle) Zahlen werden erzeugt)
 	      }
 	    }
 	  }

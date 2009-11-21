@@ -36,8 +36,8 @@ class FunctionCall: public Term
   public:
     //Der Rückgabetyp wird nicht gelöscht
     //gibt ein Term mit Typ "FunctionDefinition" zurück
-    //GetFunction() gibt ein Objekt zurück, dass bis zur Destruktion von FunctionCall existiert und
-    //nicht vom Aufrufer zerstört werden sollte
+    ///GetFunction() gibt ein Objekt zurück, dass bis zur Destruktion von FunctionCall existiert und
+    ///nicht vom Aufrufer zerstört werden sollte
     virtual const Term *GetFunction () const = 0;
   public:
     virtual bool Equals(const CAS::Term& t) const;

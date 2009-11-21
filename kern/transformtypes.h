@@ -9,7 +9,7 @@ namespace Transforms
 {
   //alle Typen
   const TransformType Simplify = 0;
-  
+  //
   //Term
   
   //FunctionDefinition  

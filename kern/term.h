@@ -46,7 +46,7 @@ class Term
     AbstractSimplifyRuleCollection *coll;
   public:
     Term (CAS::AbstractSimplifyRuleCollection &c = *standardCollection);
-    /*
+    /**
       Vereinfacht den Term. Falls keine Vereinfachung stattgefunden hat, gibt NULL (0) zurück, sonst
       das vereinfachte Objekt. Falls result != NULL && result != this ist this danach undefiniert!!!
       Sicherer Code sollte also in etwa schreiben:
@@ -78,11 +78,11 @@ class Term
       return (TermReference *)1;
     }
     
-    //gibt einen transformierten Term, wie z. B. die Ableitung, Umkehrfunktion o. a. zurück
-    //oder NULL (bei falschem Gebrauch oder Nichtexistenz)
+    ///gibt einen transformierten Term, wie z. B. die Ableitung, Umkehrfunktion o. a. zurück
+    ///oder NULL (bei falschem Gebrauch oder Nichtexistenz)
     virtual Term *Transform (TransformType t) const;
-    //berechne alle möglichen Terme, die nicht weiter "vereinfacht" werden können (durch Regeln)
-    //setzt voraus, dass vorher Simplify aufgerufen wurde!
+    ///berechne alle möglichen Terme, die nicht weiter "vereinfacht" werden können (durch Regeln)
+    ///setzt voraus, dass vorher Simplify aufgerufen wurde!
     template<class T>
     T *Cast ()
     {
@@ -98,7 +98,7 @@ class Term
     template<class _It, class _outIt>
     bool SimplifyWithRules (_It rule_begin, _It rule_end, _outIt output);
     
-    //Vereinfache den Term und alle seine Kinder
+    ///Vereinfache den Term und alle seine Kinder
     template<class _It, class _outIt>    
     bool SimplifyChildsWithRules (_It rule_begin, _It rule_end, _outIt output);
     
@@ -188,8 +188,8 @@ class SimpleUniqueTerm: public Term
     }
 };
 
-//the NaN-Object
-//Problem: Caching führt zu langen Listen von "verschiedenen" Error-Objekten, da Error niemals gleich sind.
+///the NaN-Object
+///Problem: Caching führt zu langen Listen von "verschiedenen" Error-Objekten, da Error niemals gleich sind.
 class Error: public Term
 {
   public:
