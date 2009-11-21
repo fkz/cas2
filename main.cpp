@@ -12,6 +12,106 @@
 #include <fstream>
 #include <FlexLexer.h>
 
+/**
+@author Fabian Schmitthenner
+
+
+@mainpage 
+
+@section sec1 Einleitung
+
+Dieses Projekt umfasst ein Computer Algebra System mit seinen Eigenschaften:
+- genaues Rechnen (mittels <a href="http://gmplib.org">GMP</a>)
+- symbolisches Rechnen
+
+@section sec2 Compiling
+
+Das Projekt wird mit Hilfe von <a href="http://cmake.org">cmake</a> compiliert.
+Als Abhängigkeit wird im Wesentlichen nur <a href="http://gmplib.org">GNU GMP</a> benötigt.
+Des weiteren wird für ein KRunner-Plugin noch KDE 4 benötigt.
+
+Zum Compilen müssen dann nur noch folgende Anweisungen eingegeben werden
+
+<pre>
+  mkdir build
+  cd build
+  cmake ..
+  make
+  make install
+</pre>
+
+Falls das KDE-Plugin installiert wurde, muss noch kbuildsycoca4 aufgerufen werden, sowie krunner neu gestartet werden.
+
+Weitere Argumente für das Installationsverzeichnis (-DCMAKE_INSTALL_PREFIX=xxx) oder die Compile-Variante
+(-DCMAKE_BUILD_TYPE=debug oder release) etc. können an cmake übergeben werden.
+
+@section sec3 Benutzung
+
+Als Endprodukt werden 2 Programme geliefert, ein Kommandozeilenprogramm mit Namen simple sowie das KDE-Plugin (falls vorhanden).
+Nach dem Start von simple kann eine Berechnung eingegeben werden. Die gleiche Rechnung kann auch in KRunner
+(Start mit Alt+F2) nach einem Gleichheitszeichen ("=") gestartet werden.
+
+@section sec4 Regeln
+
+Durch Regeln können neue Funktionalitäten hinzugefügt werden, ohne den Source-Code zu verändern. Aus den Regeln wird dann
+dynamisch C++-Code erzeugt. Bis jetzt muss dann noch das ganze Projekt neu compiliert werden; in einer späteren Version
+soll das ganze Plugin-basiert sein. Die Regeln haben folgende Form:
+
+<pre>
+Start --> End
+</pre>
+  
+Einige Regeln sind im Verzeichnis Regeln gespeichert. Hier sind auch Beispiele gespeichert.
+
+
+@section sec5 english part
+
+@subsection sec5start Overview
+this project is a computer algebra system. For instance, you can
+- do symbolic calculation
+-- expand formulas like (a+b)^3 --> a^3+3ab^2+3a^2b+b^3
+-- differentiate e.g. d/dx e^(5*x) --> 5*e^(5*x)
+-- solve simple equations, like a+5=3 --> a=2
+-- calculate limits
+
+- do exact calculation (with support of GMP)
+-- e.g. calculate 100! exactly
+
+and more.
+
+@subsection sec5use Using
+Therefor, two programs are installed
+- simple  -- a simple command line frontend
+- (ONLY KDE 4) krunner_cas_plugin.so -- a plugin for krunner. You can type in =<your equation> in the krunner menu
+
+the syntax is as follows
+
++ * - / ^                 as normal, two add, multiplicate, subtract, dividade and potentate
+a b ... z                 low letters are variable names
+diff(term,variable)       differentiate the term
+Set[term,term1,term2]     replace all term1 in term with term2
+Expand[term]              Expand the term
+Factor[term]              Factors the term (not yet working)
+Lim[term,variable,value]  calculates the limit of term, when variable goes to value
+
+@subsection sec5rules Rules
+the project has its own rule based language, you can add new operators and simplification rules to support more things.
+Look into the subdirectorys RuleParser and Regeln.
+
+A rule looks like follows
+
+<pre>&lt;start term&gt; --> &lt;end term&gt; ;</pre>
+
+an example rule is
+
+<pre>Exp[ Ln[ {x} ] ] --> x;</pre>
+
+
+And of cause, you can hack the source code.
+
+
+*/
+
 #define CACHE
 
 void test0 ();
