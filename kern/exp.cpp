@@ -248,6 +248,12 @@ Term* NormalFunctionCall::CreateTerm(TermReference** children) const
 
 TermReference* BuildInFunction::Simplify()
 {
+  if (parameter->get_const()->Cast<const Error>())
+  {
+    delete this;
+    return Create<Error> ();
+  }
+  
   if (func == Exp)
   {
     /*const CAS::Number* n = dynamic_cast< const Number * > (parameter->get_const());
