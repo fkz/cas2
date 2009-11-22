@@ -76,12 +76,7 @@ Diff[Variable{x},Variable{y}] --> Number<"0">[];
 
 //Setzen
 Set[{x},{y},{z}] %{ $$ $x$->Equals (*$y$) %} --> z;
-Set[Add[ ... {x}],{y},{z}] --> Add[ ... i:x { Set[i,y,z] } ];
-Set[Mul[ ... {x}],{y},{z}] --> Mul[ ... i:x { Set[i,y,z] } ];
-Set[Number{num},{x},{y}] --> num;
-Set[Variable{var},{x},{y}] --> var;
-Set[Exp[{x}], {y}, {z}] --> Exp[Set[x,y,z]];
-Set[Ln[{x}],{y},{z}] --> Ln[Set[x,y,z]];
+Set[{x},{y},{z}] --> i:x { Set[i,y,z] };
 
 //Ausklammern
 Expand[Mul[Add[ ... {add}] ... {mul}]] --> Add[ ... i:add { Expand[Mul[ i ... y:mul {y} ]] } ];
@@ -153,10 +148,11 @@ Equal[ Number{n1}, Number & %{ ! $$->Equals (*$n1$) %} {n2} ] --> False[];
 
 
 
+Lim[Error,{x},{y}] --> Error[];
 
 Lim[{term},{x},{wert}] --> %{ //HERE IS THIS RULE
 %}
-  Set[term, x, wert]
+  Set[ i:term { Lim[i,x,wert] }, x, wert]
   == Error{abc} ++ "return NULL;";
 
 Lim[Mul[Exp[Mul[Ln[{nenner}], Numberm1]] ... {zaehler}], {x}, {wert}] -->
@@ -167,6 +163,8 @@ Lim[Mul[Exp[Mul[Ln[{nenner}], Numberm1]] ... {zaehler}], {x}, {wert}] -->
    "zaehler" == Number0 -- "return NULL;"
    "nenner" == Number0 -- "return NULL;"
    Lim[Mul[Exp[Mul[Ln[Diff[nenner,x]], Number<"-1">[]]], Diff[Mul[ ... i:zaehler {i}],x] ], x, wert];
+
+Lim[{x},{y},{z}] --> Error[];
 
 Sum[{term},{variable},{anfang},{ende}] %{ $$ $anfang$->Equals(*$ende$) %} --> Set[term, variable, anfang];
 Sum[Add[...{terms}],{variable},{anfang},{ende}] --> Add[...i:terms{Sum[i,variable,anfang,ende]}];

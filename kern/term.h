@@ -62,10 +62,7 @@ class Term
     virtual Hash GetHashCode () const = 0;
     virtual TermReference *GetChildren (void *&param) const;
     virtual TermReference *GetChildrenVar (void *&param) const = 0;
-    virtual bool IsCacheable ()
-    {
-      return true;
-    }
+    virtual bool IsCacheable () const;
     virtual Term *CreateTerm(TermReference** children) const = 0;
     virtual ~Term () {}
     
@@ -229,7 +226,7 @@ class Error: public Term
     {
       return new Error ();
     }
-    virtual bool IsCacheable()
+    virtual bool IsCacheable() const
     {
       return false;
     }

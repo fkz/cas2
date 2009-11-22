@@ -100,6 +100,23 @@ TermReference* Term::GetChildren(void*& param) const
     return result->Clone();
 }
 
+bool Term::IsCacheable() const
+{
+  void *param = NULL;
+  while (true)
+  {
+    TermReference* temp = GetChildrenVar(param);
+    if (temp)
+    {
+      if (!temp->get_const()->IsCacheable())
+	return false;
+    }
+    else
+      return false;
+  }
+}
+
+
 
 Term* SimpleTerm::CreateTerm(TermReference** children) const
 {

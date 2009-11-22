@@ -582,6 +582,30 @@ void ExpressionList::ToStringRight(std::ostream& out, const std::string& var, co
   out << "}\n";
 }
 
+void ExpressionChildren::ToStringRight(std::ostream& out, const std::string& var, std::map< Identification, std::string >& vars, int& varIndex) const
+{
+  int index = ++varIndex;
+  const std::string &nId = vars[normalId];
+  out << "std::list< CAS::AutoTermReference > children" << index << ";\nvoid *param" << index << " = NULL;\n"
+      << "const CAS::Term *normal" << index << " = " << nId << "->get_const ();\n";
+  out << "while (true)\n{\n";
+  out << "CAS::TermReference *local" << index << " = normal" << index << "->GetChildren (param" << index << ");\n";
+  out << "if (local" << index << ") children" << index << ".push_back (local" << index << "); else break;\n";
+  out << "}\n";
+  out << "CAS::TermReference **childrenArray" << index << " = new CAS::TermReference * [ children" << index << ".size() ];\n";
+  out << "CAS::TermReference **itA" << index << " = childrenArray" << index << ";\n";
+  out << "std::list< CAS::AutoTermReference >::const_iterator itL" << index << " = children" << index << ".begin();\n";
+  out << "for (; itL" << index << " != children" << index << ".end(); ++itL" << index << ", ++itA" << index << ")\n{\n";
+  std::stringstream thevar; thevar << "(*itL" << index << ")";
+  std::stringstream retvar; retvar << "(*itA" << index << ")";
+  vars.insert (std::make_pair (localId, thevar.str ()));
+  expr->ToStringRight (out, retvar.str(), vars, varIndex);
+  vars.erase (localId);
+  out << "}\n";
+  out << var << " = new CAS::TermReference (normal" << index << "->CreateTerm (childrenArray" << index << "));\n";
+  
+}
+
 
 
 

@@ -330,6 +330,18 @@ class CPlusPlusCode: public Rule
     virtual IntroPart *ToString (std::ostream &s, std::string name) const { s << str; return NULL; }
 };
 
+class ExpressionChildren: public Expression
+{
+  private:
+    Identification localId;
+    Identification normalId;
+    Expression *expr;
+  public:
+    ExpressionChildren(Identification local, Identification normal, Expression *expr)
+    : localId(local), normalId(normal), expr(expr) { }
+    virtual void ToStringRight(std::ostream& out, const std::string& var, std::map< RuleParser::Identification, std::string >& vars, int& varIndex) const;
+};
+
 }
 
 #endif // RULEPARSER_EXPRESSION_H

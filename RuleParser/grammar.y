@@ -146,6 +146,7 @@ name:	{ $$.SetNone (); }
 
 rightside: outerrightside { $$ = $1; }
 |	cppcodelist { $$ = $1; }
+|	ID ':' ID '{' rightside '}'  { $$ = new RuleParser::ExpressionChildren ($1, $3, $5); }
 ;
 
 outerrightside: operationtype buildin_params_right paramlist_right { $$ = new RuleParser::Expression ($1, $2, $3->first, $3->second, 0); delete $3; }
