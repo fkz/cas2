@@ -133,7 +133,10 @@ MySimplifyRules::CreateClass OurTerms;
 
 int main (int argc, char **argv)
 {
-  std::cout << "Copyright by Fabian Schmitthenner" << std::endl;
+  std::cout << "Copyright (C) 2009 Fabian Schmitthenner" << std::endl;
+  std::cout << "License GPLv2+: GNU GPL version 2 or later <http://gnu.org/licenses/gpl.html>" << std::endl;
+  std::cout << "This is free software: you are free to change and redistribute it." << std::endl;
+  std::cout << "There is NO WARRANTY, to the extent permitted by law." << std::endl;
   CAS::SimplifyRuleCollection<MySimplifyRules::MyClass> r;
 #ifdef CACHE  
   CAS::TermCacheInit r2 (&r);

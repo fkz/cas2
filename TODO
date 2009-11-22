@@ -1,8 +1,4 @@
 Speicherlecks bereinigen -- schon viel getan, aber sicher immer noch Bedarf
-Ableitungen vervollständigen
 Integrieren
 Lösen von Gleichungen
 Factor ?
-Expand weiterverfolgen: Geschwindigkeit verbessern? -- naja, eigentlich schon sehr gut
-Untersuchung auf Hash-Collisions; evtl. Hash-Funktion verbessern
-GMP-Benutzung vervollständigen -- naja, auch schon ziemlich vollständig; aber statt gmpz_class sollte auf gmpq_class geupdated werden
