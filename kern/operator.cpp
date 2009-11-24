@@ -395,7 +395,7 @@ void Add::push_back(TermReference* arg1)
   
   if (!children.push_back(arg1, number))
   {
-    std::multimap< Hash, std::pair< TermReference*, Type > >::const_iterator it = children.find(arg1);
+    TermCollectionTemplate<NumberX>::iterator it = children.find(arg1);
     if ((it->second.second += number) == 0)
     {
       delete it->second.first;
