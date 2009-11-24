@@ -342,6 +342,19 @@ class ExpressionChildren: public Expression
     virtual void ToStringRight(std::ostream& out, const std::string& var, std::map< RuleParser::Identification, std::string >& vars, int& varIndex) const;
 };
 
+class ExpressionString: public Expression
+{
+  private:
+    std::string str;
+  public:
+    
+    ExpressionString(std::string *str) : str (*str) { delete str; }
+    virtual void ToStringRight(std::ostream& s, const std::string& obj, std::map< Identification, std::string >& vars, int& varIndex) const
+    {
+      s << obj << " = " << str << ";\n";
+    }
+};
+
 }
 
 #endif // RULEPARSER_EXPRESSION_H

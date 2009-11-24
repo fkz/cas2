@@ -108,12 +108,14 @@ bool Term::IsCacheable() const
     TermReference* temp = GetChildrenVar(param);
     if (temp)
     {
-      while (GetChildrenVar(param));
       if (!temp->get_const()->IsCacheable())
+      {
+	while (GetChildrenVar(param));
 	return false;
+      }
     }
     else
-      return false;
+      return true;
   }
 }
 

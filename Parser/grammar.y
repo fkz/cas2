@@ -1,12 +1,14 @@
 %union{
   int Number;
+  std::string *Number2;
   CAS::TermReference *Term;
   std::string *STRING;
 }
 
 %token          LN EXP E DIFF
 %token <STRING>    STR
-%token <Number> DIGIT VARIABLE 
+%token <Number> VARIABLE
+%token <Number2> DIGIT 
 %type  <Term> term literal addTerm mulTerm equalTerm
 %nonassoc '^'
 %start finallyTerm
@@ -14,7 +16,7 @@
 
 %%
 
-finallyTerm: equalTerm { output << *$1; delete $1; }
+finallyTerm: equalTerm { output << *$1; AddTerm ($1); }
 ;
 
 term: term '^' term { $$ = CAS::TermReference::Create<CAS::BuildInFunction> (CAS::BuildInFunction::Exp, CAS::TermReference::Create<CAS::Mul> ($3, CAS::TermReference::Create<CAS::BuildInFunction> (CAS::BuildInFunction::Ln, $1))); }
@@ -41,12 +43,14 @@ equalTerm: addTerm '=' addTerm { $$ = CAS::Create<CAS::Relations> (CAS::Relation
     |	addTerm		       { $$ = $1; }
 ;
 
-literal: DIGIT { $$ = CAS::TermReference::Create<CAS::Number> ($1); }
+literal: DIGIT { $$ = CAS::TermReference::Create<CAS::Number> (*$1); delete $1; }
        | EXP '(' addTerm ')' { $$ = CAS::TermReference::Create<CAS::BuildInFunction> (CAS::BuildInFunction::Exp, $3); }
        | LN  '(' addTerm ')' { $$ = CAS::TermReference::Create<CAS::BuildInFunction> (CAS::BuildInFunction::Ln, $3); }
        | E { $$ = CAS::TermReference::Create<CAS::BuildInFunction> (CAS::BuildInFunction::Exp, CAS::TermReference::Create<CAS::Number> (1)); }
        | VARIABLE { $$ = CAS::TermReference::Create<CAS::Variable> ($1); }
        | DIFF '(' addTerm ',' addTerm ')' { $$ = CAS::TermReference::Create<CAS::Derive> ($3, $5); }
+       | '%' DIGIT '%' { $$ = CreateOldTerm (*$2); delete $2; }
+       | '%' '%'   { $$ = CreateOldTerm ("-1"); }
 ;
 
 /*%%

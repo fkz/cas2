@@ -24,7 +24,7 @@ e    {return ParserBase::E;   }
 diff {return ParserBase::DIFF; }
 {id} {yylval.Number = installId (yytext, yyleng); return ParserBase::VARIABLE; }
 [A-Z]{id} {yylval.STRING = new std::string (yytext, yyleng); return ParserBase::STR; }
-{number} {yylval.Number = getNumber (yytext, yyleng); return ParserBase::DIGIT; }
+{number}(\/{number})? {yylval.Number2 = new std::string (yytext, yyleng); return ParserBase::DIGIT; }
 . { return *yytext; }
 
 %%
@@ -32,15 +32,4 @@ diff {return ParserBase::DIFF; }
 int installId (const char *str, size_t length)
 {
   return *str - 'a';
-}
-
-int getNumber (const char *str, size_t length)
-{
-  int result = 0;
-  for (const char *it = str; str + length != it; ++it)
-  {
-    result *= 10;
-    result += *it - '0';
-  }
-  return result;
 }

@@ -1,4 +1,8 @@
 Speicherlecks bereinigen -- schon viel getan, aber sicher immer noch Bedarf
 Integrieren
 Lösen von Gleichungen
-Factor ?
+Factor
+
+Kommandozeilenclient verbessern: <- (linke Pfeiltaste) erlauben, evtl. Tab-Verfollständigung für Funktionsnamen, Benutzung von
+vorangegangenen Variablen
+Plug-In-basierte Struktur für Regeln

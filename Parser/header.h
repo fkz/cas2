@@ -6,3 +6,5 @@
 #include <transform.h>
 #include "Regeln/rules.out.cpp.h"
 extern MySimplifyRules::CreateClass OurTerms;
+CAS::TermReference *CreateOldTerm (const std::string &zahl);
+void AddTerm (const CAS::TermReference *);

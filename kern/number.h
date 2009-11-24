@@ -40,6 +40,7 @@ class Number : public CAS::Term
     virtual void ToString(std::ostream& stream) const;
     virtual Hash GetHashCode() const;
     static Number *CreateTerm (const mpq_class &number);
+    static Number *CreateTerm (const std::string &number, bool shouldCanonicalize = true);
     virtual Term* CreateTerm(TermReference** children) const;
     virtual TermReference* GetChildrenVar(void*& param) const;
     
@@ -49,21 +50,6 @@ class Number : public CAS::Term
     }
 };
 
-class Frac: public CAS::Term
-{
-  private:
-    int zaehler, nenner;
-    Frac (int z, int n) : zaehler(z), nenner(n) { }
-  public:
-    virtual Term* Clone() const;
-    virtual bool Equals(const CAS::Term& t) const;
-    virtual Hash GetHashCode() const;
-    virtual Type* GetType() const;
-    virtual TermReference *Simplify();
-    virtual void ToString(std::ostream& stream) const;
-    virtual Term* CreateTerm(TermReference** children) const;
-    virtual TermReference* GetChildrenVar(void*& param) const;
-};
 
 class Variable: public CAS::Term
 {

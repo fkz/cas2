@@ -56,6 +56,15 @@ Number* Number::CreateTerm(const mpq_class& number)
   return new Number (number);
 }
 
+Number* Number::CreateTerm(const std::string& number, bool shouldCanonicalize)
+{
+  mpq_class n (number);
+  if (shouldCanonicalize)
+    n.canonicalize();
+  return new Number (n);
+}
+
+
 
 Hash Number::GetHashCode() const
 {
@@ -67,70 +76,11 @@ Term* Number::CreateTerm(TermReference** children) const
   return new Number (zahl);
 }
 
+
 TermReference* Number::GetChildrenVar(void*& param) const
 {
   return NULL;
 }
-
-
-
-
-Term* Frac::Clone() const
-{
-  return new Frac (zaehler, nenner);
-}
-
-bool Frac::Equals(const CAS::Term& t) const
-{
-  const Frac *ct = dynamic_cast<const Frac *> (&t);
-  if (!ct) return false;
-  return ct->zaehler == zaehler && ct->nenner == nenner;
-}
-
-Hash Frac::GetHashCode() const
-{
-  return Hash (hashes::Frac, zaehler ^ nenner);
-}
-
-Type* Frac::GetType() const
-{
-  return Type::GetBuildInType(Type::Term);
-}
-
-int ggT (int a, int b)
-{
-  while (b)
-  {
-    int mod = a % b;
-    a = b;
-    b = mod;
-  }
-  return a;
-}
-
-TermReference *Frac::Simplify()
-{
-  int t = ggT (zaehler > 0 ? zaehler : -zaehler, nenner);
-  zaehler /= t;
-  nenner /= t;
-  return (t != 1) ? This() : NULL;
-}
-
-void Frac::ToString(std::ostream& stream) const
-{
-  stream << "(" << zaehler << "/" << nenner << ")";
-}
-
-Term* Frac::CreateTerm(TermReference** children) const
-{
-  return new Frac (zaehler, nenner);
-}
-
-TermReference* Frac::GetChildrenVar(void*& param) const
-{
-  return NULL;
-}
-
 
 
 Term* Variable::Clone() const

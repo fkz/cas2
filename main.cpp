@@ -112,7 +112,7 @@ And of cause, you can hack the source code.
 
 */
 
-#define CACHE
+//#define CACHE
 
 void test0 ();
 void test1 ();
@@ -156,7 +156,7 @@ int main (int argc, char **argv)
 }
 
 void Output (CAS::Term *t)
-{
+{  
   std::cout << "Term(Hash:" << t->GetHashCode() << "): " << *t << std::endl;
   CAS::TermReference* temp = t->Simplify();
   if (temp)
@@ -228,6 +228,30 @@ void test0()
   std::cout << "------ENDE-------" << std::endl;
 };
 
+std::vector< const CAS::TermReference * > terms;
+
+CAS::TermReference *CreateOldTerm (const std::string &zahl)
+{
+  if (zahl == "-1")
+    return terms.back()->Clone ();
+  std::stringstream z (zahl);
+  unsigned int zz; z >> zz;
+  if (terms.size() > zz)
+  {
+    return terms[zz]->Clone();
+  }
+  else
+  {
+    throw new std::out_of_range ("index out of range");
+  }
+}
+
+void AddTerm (const CAS::TermReference *r)
+{
+  std::cout << "  %" << terms.size() << "%";
+  terms.push_back(r);
+}
+
 #ifdef CACHE
 void test5 (CAS::TermCacheInit& cache)
 #else
@@ -236,6 +260,7 @@ void test5 ()
 {
   Parser parser (std::cout);
   parser.setDebug(false);
+  unsigned int index = 0;
   while (true)
   {
     #ifdef CACHE

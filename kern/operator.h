@@ -148,6 +148,7 @@ class Mul: public Operator
     virtual bool Equals(const CAS::Term& t) const;
     virtual void ToString(std::ostream& stream) const;
     static Mul *CreateTerm (CAS::TermReference* t1, CAS::TermReference* t2);
+    static Mul *CreateTerm (CAS::TermReference* t1, CAS::TermReference* t2, CAS::TermReference *t3);
     static Mul *CreateTerm (CAS::TermReference **children, size_t anzahl);
     virtual Term* CreateTerm(CAS::TermReference** children) const;
     virtual TermReference* Simplify();

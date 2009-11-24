@@ -36,6 +36,9 @@ template<class Type = uint8_t>
 class TermCollectionTemplate;
 typedef TermCollectionTemplate<> TermCollection;
 
+/**
+* die Basisklasse, von der alle Terme, Gleichungen, Variablen, Zahlen, etc. abgeleitet sind
+*/
 class Term
 {
   private:
@@ -78,8 +81,6 @@ class Term
     ///gibt einen transformierten Term, wie z. B. die Ableitung, Umkehrfunktion o. a. zurück
     ///oder NULL (bei falschem Gebrauch oder Nichtexistenz)
     virtual Term *Transform (TransformType t) const;
-    ///berechne alle möglichen Terme, die nicht weiter "vereinfacht" werden können (durch Regeln)
-    ///setzt voraus, dass vorher Simplify aufgerufen wurde!
     template<class T>
     T *Cast ()
     {
@@ -92,6 +93,9 @@ class Term
       return dynamic_cast < const T * > (this);
     }
     
+    ///berechne alle möglichen Terme, die nicht weiter "vereinfacht" werden können (durch Regeln)
+    ///setzt voraus, dass vorher Simplify aufgerufen wurde!
+    ///TODO: momentan nicht funktionsfähig, da durch andere Methoden ersetzt; wird evtl. einfach gelöscht werden
     template<class _It, class _outIt>
     bool SimplifyWithRules (_It rule_begin, _It rule_end, _outIt output);
     

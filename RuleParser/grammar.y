@@ -90,7 +90,9 @@ intro: 				{ $$ = new RuleParser::Intro (); }
 introSection: TYPE ID ':' STR ';'	{ $$ = new RuleParser::IntroPart ($2, $4); }
 |	TYPE ASSOC ID ':' STR ';'	{ $$ = new RuleParser::IntroPart ($3, $5, new std::string ("true"), NULL, true); } 
 |	TYPE ID ':' STR ',' CPP_CODE ';' { $$ = new RuleParser::IntroPart ($2, $4, $6); }
+|	TYPE ASSOC ID ':' STR ',' CPP_CODE ';' { $$ = new RuleParser::IntroPart ($3, $5, $7, NULL, true); }
 |	TYPE ID ':' STR ',' CPP_CODE ',' STR ';' { $$ = new RuleParser::IntroPart ($2, $4, $6, $8); }
+|	TYPE ASSOC ID ':' STR ',' CPP_CODE ',' STR ';' { $$ = new RuleParser::IntroPart ($3, $5, $7, $9, true); }
 |	TYPE ID ':' STR ',' STR ';'	{ $$ = new RuleParser::IntroPart ($2, $4, NULL, $6); }
 |	TYPE NEW ID STR '[' NUM ']' ':' STR ';' { std::string str = *$4; $$ = new RuleParser::IntroPart ($3, $4); RuleParser::CreateClass (&str, $6, $9); }
 ;
@@ -147,6 +149,7 @@ name:	{ $$.SetNone (); }
 rightside: outerrightside { $$ = $1; }
 |	cppcodelist { $$ = $1; }
 |	ID ':' ID '{' rightside '}'  { $$ = new RuleParser::ExpressionChildren ($1, $3, $5); }
+|	STR { $$ = new RuleParser::ExpressionString ($1); }
 ;
 
 outerrightside: operationtype buildin_params_right paramlist_right { $$ = new RuleParser::Expression ($1, $2, $3->first, $3->second, 0); delete $3; }

@@ -14,6 +14,15 @@ namespace Global { int tabs = 0; };
 MySimplifyRules::CreateClass OurTerms;
 int yyFlexLexer::yywrap () { return 1; }
 
+CAS::TermReference *CreateOldTerm (const std::string &zahl)
+{
+  throw new std::runtime_error ("not supported");
+}
+void AddTerm (const CAS::TermReference *p)
+{
+  delete p;
+}
+
 runner::runner(QObject *parent, const QVariantList& args)
     : Plasma::AbstractRunner(parent, args), r2 (&r)
 {

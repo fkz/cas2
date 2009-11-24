@@ -54,7 +54,17 @@ CLASS { return CLASS; }
 "?->" { return QUESTIONARROW; }
 "||" { return OR; }
 ! { return NOT; }
-\"[^\"]*\" {  yylval.STRING = new std::string (yytext+1, yyleng-2); return STR;  }
+(\"[^\"]*\")+ {  yylval.STRING = new std::string (yytext+1, yyleng-2);
+  size_t start = 0;
+  while (true)
+  {
+    size_t index = yylval.STRING->find ('"', start);
+    if (index == std::string::npos)
+      break;
+    yylval.STRING->erase (index, 1);
+    start = index + 1;
+  }
+  return STR;  }
 [a-zA-Z][a-zA-Z0-9]* { yylval.identification = RuleParser::Identification::GetIdentification (yytext, yyleng); return ID; }
 . { return *yytext; }
 

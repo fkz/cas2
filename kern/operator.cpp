@@ -540,6 +540,16 @@ Mul *Mul::CreateTerm(TermReference* t1, TermReference* t2)
   return result;
 }
 
+Mul* Mul::CreateTerm(TermReference* t1, TermReference* t2, TermReference* t3)
+{
+  Mul *result = new Mul ();
+  result->push_back(t1);
+  result->push_back(t2);
+  result->push_back(t3);
+  return result;
+}
+
+
 Term* Mul::CreateTerm(TermReference** children) const
 {
   return new Mul (children, this->children.size());
