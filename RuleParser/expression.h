@@ -37,6 +37,7 @@ namespace GlobalGrammarOutput
   extern int lines;
   extern std::stringstream begin_stream;
   extern std::stringstream begin_stream_header;
+  extern std::stringstream begin_stream_header2;
   extern std::stringstream begin_stream_source;
   extern std::string classname;
   extern std::string _namespace;
@@ -216,6 +217,21 @@ class ExpressionList
 
 class ExpressionStringRight;
 
+class AbstractExpressionRight
+{
+  public:
+    virtual ~AbstractExpressionRight () { }
+    virtual void ToStringRight (std::ostream &s, const std::string &obj, std::map< RuleParser::Identification, std::string > &vars, int &varIndex) const = 0;
+};
+
+class AbstractExpressionLeft
+{
+  public:
+    virtual ~AbstractExpressionLeft ()  { }
+    virtual void ToStringDeclared (std::ostream &s, std::map< RuleParser::Identification, std::string > &vars, int &index) = 0;
+    virtual void ToString (std::ostream& s, const std::string& obj, bool isReference, std::map< RuleParser::Identification, std::string >& vars, int& varIndex, std::string endStr) const = 0;
+};
+
 class Expression
 {
   private:
@@ -307,6 +323,13 @@ class ExpressionStringRight
     {
       return str;
     }
+};
+
+class AbstractRule
+{
+  public:
+    virtual ~AbstractRule () { }
+    virtual IntroPart *ToString (std::ostream& s, std::string name) const = 0;
 };
 
 class Rule

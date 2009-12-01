@@ -6,6 +6,7 @@
 #include <fstream>
 #include <sstream>
 #include <typeinfo>
+#include <string.h>
 
 int yyparse ();
 extern FILE *yyin;
@@ -65,13 +66,20 @@ void WriteLicence (std::ostream &stream, const std::string &originalfile)
   << "*/\n";
 }
 
+std::string ExtractFileName (const std::string &str)
+{
+  size_t index = str.find_last_of ("/\\");
+  if (index == std::string::npos)
+    return str;
+  else
+    return str.substr(index+1);
+}
+
 int main(int argc, char **argv) {
-  
-  //BUG: Vergleich von C-Strings mit Zeichenkettenliteralen führt zu undefiniertem Verhalten!
   std::map<ParamTypes, std::string> params;
   for (int i = 1; i < argc; ++i)
   {
-    if (argv[i] == "--help" || argv[i] == "-h")
+    if (!strcmp (argv[i], "--help") || !strcmp (argv[i], "-h"))
       params[ParamTypes::HELP];
     else if (argv[i][0] == '-' && argv[i][1] == 'o' && argv[i][2] == 0)
     {
@@ -125,26 +133,37 @@ int main(int argc, char **argv) {
     std::map< ParamTypes, std::string >::const_iterator output = params.find (ParamTypes::OUTPUT);
     std::ofstream stream;
     std::ofstream header;
+    std::ofstream header2;
     std::string headername;
+    std::string headername2;
     if (output != params.end())
     {
       std::cout << "write output to file " << output->second << std::endl;
       stream.open (output->second.c_str());
       headername = output->second + ".h";
+      headername2 = output->second + "_classes.h";
       header.open ((output->second + ".h").c_str());
+      header2.open ((output->second + "_classes.h").c_str());
     }
     else
     {
       stream.open ((it->second + ".out.cpp").c_str());
       header.open ((it->second + ".out.h").c_str());
       headername = it->second + ".out.h";
+      headername2 = it->second + "_classes.out.h";
+      header2.open ((it->second + "_classes.out.h").c_str());
     }
+    
+    header2 << "#include \"kern/termreference.h\"\nnamespace " << GlobalGrammarOutput::_namespace << "{\n";
+    header2 << GlobalGrammarOutput::begin_stream_header2.str() << "};\n";
+    header2.close();
     
     WriteLicence(stream, it->second);
     WriteLicence(header, it->second);
     header << "#pragma once\n";
-    stream << "#include \"" << headername << "\"\n";
-
+    stream << "#include \"" << ExtractFileName (headername) << "\"\n";
+    header << "#include \"" << ExtractFileName (headername2) << "\"\n";
+    
     stream << GlobalGrammarOutput::begin_stream_source.str();
     header << GlobalGrammarOutput::begin_stream_header.str();
     stream << "#ifdef SHOW_DEBUG\n";

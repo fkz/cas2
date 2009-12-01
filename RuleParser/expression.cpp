@@ -30,6 +30,7 @@ namespace GlobalGrammarOutput
   std::list< std::pair< std::string, int > > classes;
   std::stringstream begin_stream_header;
   std::stringstream begin_stream_source;
+  std::stringstream begin_stream_header2;
 }
 
 ParseException::ParseException(ParseException::ErrorTypes type, const std::string& param, int line)
@@ -667,72 +668,70 @@ void RuleParser::CreateClass(std::string* classname, int paramcount, std::string
 {
   GlobalGrammarOutput::classes.push_back (std::make_pair(*classname, paramcount));
   std::ostream &out = GlobalGrammarOutput::begin_stream_source;
-  std::ostream &outh = GlobalGrammarOutput::begin_stream_header;
-  outh << "namespace " << GlobalGrammarOutput::_namespace << "{\n"
-      <<  "class " << *classname << ";\n};\n";
+  std::ostream &outh = GlobalGrammarOutput::begin_stream_header2;
+  //outh << "namespace " << GlobalGrammarOutput::_namespace << "{\n"
+  outh    <<  "class " << *classname << ": public CAS::Term\n ";
   
-  out << "namespace " << GlobalGrammarOutput::_namespace << "{\n";
-  out << "class " << *classname << ": public CAS::Term\n";
-  out << "{\n";
-  out << "private:\n";
+  outh << "{\n";
+  outh << "private:\n";
   for (int i = 0; i < paramcount; ++i)
-    out << "CAS::TermReference *param" << i << ";\n";
-  out << *classname << "(CAS::TermReference *p0";
+    outh << "CAS::TermReference *param" << i << ";\n";
+  outh << *classname << "(CAS::TermReference *p0";
   for (int i = 1; i < paramcount; ++i)
-    out << ", CAS::TermReference *p" << i;
-  out << "): param0 (p0)\n";
+    outh << ", CAS::TermReference *p" << i;
+  outh << "): param0 (p0)\n";
   for (int i = 1; i < paramcount; ++i)
-    out << ", param" << i << "(p" << i << ")";
-  out << "\n{\n\n}\n";
-  out << "public:\n";
-  out << "virtual Term* Clone() const\n";
-  out << "{\n   return new " << *classname << "(param0->Clone()";
+    outh << ", param" << i << "(p" << i << ")";
+  outh << "\n{\n\n}\n";
+  outh << "public:\n";
+  outh << "virtual Term* Clone() const\n";
+  outh << "{\n   return new " << *classname << "(param0->Clone()";
   for (int i = 1; i < paramcount; ++i)
-    out << ",param" << i << "->Clone()";
-  out << ");\n}";
-  out << "virtual Term* CreateTerm(CAS::TermReference** children) const\n";
-  out << "{\nreturn new " << *classname << "(children[0]";
+    outh << ",param" << i << "->Clone()";
+  outh << ");\n}";
+  outh << "virtual Term* CreateTerm(CAS::TermReference** children) const\n";
+  outh << "{\nreturn new " << *classname << "(children[0]";
   for (int i = 1; i < paramcount; ++i)
-    out << ",children[" << i << "]";
-  out << ");\n}\n";
-  out << "virtual bool Equals(const CAS::Term& t) const\n";
-  out << "{\n   const " << *classname << " *tt = t.Cast<const " << *classname << "> ();\n";
-  out << "   if (!tt) return false;\n";
-  out << "   return param0->Equals (*tt->param0)";
+    outh << ",children[" << i << "]";
+  outh << ");\n}\n";
+  outh << "virtual bool Equals(const CAS::Term& t) const\n";
+  outh << "{\n   const " << *classname << " *tt = t.Cast<const " << *classname << "> ();\n";
+  outh << "   if (!tt) return false;\n";
+  outh << "   return param0->Equals (*tt->param0)";
   for (int i = 1; i < paramcount; ++i)
-    out << "&& param" << i << "->Equals (*tt->param" << i << ")";
-  out << ";\n}\n";
-  out << "virtual CAS::TermReference* GetChildrenVar(void*& param) const\n";
-  out << "{\n   param = (void *)(((int)param)+1);\n   switch ((int)param)\n   {\n";
+    outh << "&& param" << i << "->Equals (*tt->param" << i << ")";
+  outh << ";\n}\n";
+  outh << "virtual CAS::TermReference* GetChildrenVar(void*& param) const\n";
+  outh << "{\n   param = (void *)(((int)param)+1);\n   switch ((int)param)\n   {\n";
   for (int i = 0; i < paramcount; ++i)
-    out << "      case " << i+1 << ": return param" << i << ";\n";
-  out << "      default: return NULL;\n";
-  out << "    }\n}";
-  out << "virtual CAS::Hash GetHashCode() const\n";
-  out << "{\n   return CAS::Hash (CAS::hashes::Extended, 7268)";
+    outh << "      case " << i+1 << ": return param" << i << ";\n";
+  outh << "      default: return NULL;\n";
+  outh << "    }\n}";
+  outh << "virtual CAS::Hash GetHashCode() const\n";
+  outh << "{\n   return CAS::Hash (CAS::hashes::Extended, 7268)";
   for (int i = 0; i < paramcount; ++i)
-    out << " ^ param" << i << "->GetHashCode ()";
-  out << ";\n}\n";
-  out << "virtual CAS::Type* GetType() const\n";
-  out << "{\n   return " << *type << ";\n}\n";
-  out << "virtual CAS::TermReference* Simplify()\n";
-  out << "{\n   return coll->Simplify (this);\n}\n";
-  out << "virtual void ToString(std::ostream& stream) const\n{\n";
-  out << " stream << \"" << *classname << "[\" << *param0";
+    outh << " ^ param" << i << "->GetHashCode ()";
+  outh << ";\n}\n";
+  outh << "virtual CAS::Type* GetType() const\n";
+  outh << "{\n   return " << *type << ";\n}\n";
+  outh << "virtual CAS::TermReference* Simplify()\n";
+  outh << "{\n   return coll->Simplify (this);\n}\n";
+  outh << "virtual void ToString(std::ostream& stream) const\n{\n";
+  outh << " stream << \"" << *classname << "[\" << *param0";
   for (int i = 1; i < paramcount; ++i)
-    out << "<< \",\" << *param" << i << "->get_const()";
-  out << "<< \"]\";\n}\n";
-  out << "virtual ~" << *classname << "()\n{\n";
+    outh << "<< \",\" << *param" << i << "->get_const()";
+  outh << "<< \"]\";\n}\n";
+  outh << "virtual ~" << *classname << "()\n{\n";
   for (int i = 0; i < paramcount; ++i)
-    out << "   delete param" << i << ";\n";
-  out << "}\n";
-  out << "static " << *classname << " *CreateTerm (CAS::TermReference *p0";
+    outh << "   delete param" << i << ";\n";
+  outh << "}\n";
+  outh << "static " << *classname << " *CreateTerm (CAS::TermReference *p0";
   for (int i = 1; i < paramcount; ++i)
-    out << ", CAS::TermReference *p" << i;
-  out << ")\n{\n   return new " << *classname << " (p0";
+    outh << ", CAS::TermReference *p" << i;
+  outh << ")\n{\n   return new " << *classname << " (p0";
   for (int i = 1; i < paramcount; ++i)
-    out << ", p" << i;
-  out << ");\n}\n";
-  out << "};\n";
-  out << "}; //" << GlobalGrammarOutput::_namespace << "\n";
+    outh << ", p" << i;
+  outh << ");\n}\n";
+  outh << "};\n";
+  //outh << "}; //" << GlobalGrammarOutput::_namespace << "\n";
 }
