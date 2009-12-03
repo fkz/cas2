@@ -1,0 +1,3 @@
+Renew the whole layout of these files to a more simple object orientated syntax
+use bison(c)++ and flex++ instead of bison, flex.
+make include's of files possible
