@@ -46,6 +46,7 @@ ASSOC { return ParserBase::ASSOC; }
 TYPE { return ParserBase::TYPE; }
 new { return ParserBase::NEW; }
 NAMESPACE { return ParserBase::NAMESPACE; }
+PLUGIN_NAME { return ParserBase::PLUGIN_NAME; }
 CLASS { return ParserBase::CLASS; }
 {whitespace} { /* do nothing */ }
 \n { ++lines; }

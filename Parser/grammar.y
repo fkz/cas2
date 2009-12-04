@@ -22,10 +22,10 @@ finallyTerm: equalTerm { output << *$1; AddTerm ($1); }
 term: term '^' term { $$ = CAS::TermReference::Create<CAS::BuildInFunction> (CAS::BuildInFunction::Exp, CAS::TermReference::Create<CAS::Mul> ($3, CAS::TermReference::Create<CAS::BuildInFunction> (CAS::BuildInFunction::Ln, $1))); }
     |  literal { $$ = $1; }
     | '(' addTerm ')' { $$ = $2; }
-    | STR '[' equalTerm ']' { $$ = OurTerms.Create (*$1, $3); delete $1; if (!$$) throw PARSE_ABORT__; }
-    | STR '[' equalTerm ',' addTerm ']' { $$ = OurTerms.Create (*$1, $3, $5); delete $1; if (!$$) throw PARSE_ABORT__; }
-    | STR '[' equalTerm ',' addTerm ',' addTerm ']' { $$ = OurTerms.Create (*$1, $3, $5, $7); delete $1; if (!$$) throw PARSE_ABORT__; }
-    | STR '[' equalTerm ',' addTerm ',' addTerm ',' addTerm ']' { $$ = OurTerms.Create (*$1, $3, $5, $7, $9); delete $1; if (!$$) throw PARSE_ABORT__; }
+    | STR '[' equalTerm ']' { $$ = OurTerms->Create (*$1, $3); delete $1; if (!$$) throw PARSE_ABORT__; }
+    | STR '[' equalTerm ',' addTerm ']' { $$ = OurTerms->Create (*$1, $3, $5); delete $1; if (!$$) throw PARSE_ABORT__; }
+    | STR '[' equalTerm ',' addTerm ',' addTerm ']' { $$ = OurTerms->Create (*$1, $3, $5, $7); delete $1; if (!$$) throw PARSE_ABORT__; }
+    | STR '[' equalTerm ',' addTerm ',' addTerm ',' addTerm ']' { $$ = OurTerms->Create (*$1, $3, $5, $7, $9); delete $1; if (!$$) throw PARSE_ABORT__; }
 ;
 
 mulTerm: term { $$ = $1; }

@@ -25,7 +25,7 @@
 
 %debug
 
-%token TYPE ARROW QUESTIONARROW DOTS OR NOT NAMESPACE CLASS NEW ASSOC MINUS PLUS EQUAL
+%token TYPE ARROW QUESTIONARROW DOTS OR NOT NAMESPACE CLASS NEW ASSOC MINUS PLUS EQUAL PLUGIN_NAME
 %token <identification> ID
 %token <STRING> STR CPP_CODE
 %token <NUMBER> NUM
@@ -58,8 +58,13 @@ prolog:	other_prolog
 |	CPP_CODE other_prolog	{ begin_stream_header << (*$1); delete $1; }
 ;
 
-other_prolog: CLASS STR ';'	{ classname = *$2; delete $2; _namespace = ""; }
-|	NAMESPACE STR ';' CLASS STR ';' { classname = *$5; _namespace = *$2; delete $2; delete $5; }
+other_prolog: CLASS STR ';' plugin_prolog	{ classname = *$2; delete $2; _namespace = ""; }
+|	NAMESPACE STR ';' CLASS STR ';' plugin_prolog { classname = *$5; _namespace = *$2; delete $2; delete $5; }
+;
+
+plugin_prolog:
+|       PLUGIN_NAME STR ';' { plugin_name = *$2; delete $2; }
+  
 ;
 
 intro: 				{  }

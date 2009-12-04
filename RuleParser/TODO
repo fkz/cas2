@@ -1,3 +1,23 @@
-Renew the whole layout of these files to a more simple object orientated syntax
-use bison(c)++ and flex++ instead of bison, flex.
 make include's of files possible
+
+planned output format:
+
+  input: file.rule
+  output:
+    file.rule.generated -- generated file to provide access for compilation issues for include's etc.
+    file.rule.generated.h -- file to include to know defined types and so on
+    file.rule.generated.cpp -- file, which has to be compiled
+    output/name.cpp -- file with simplify rules
+    output/name_classes.h -- file which contains classes defined in file.rule
+    output/name.h -- file which contains the classes 
+    output/name_plugin.cpp -- file which creates the links needed for the plugin
+
+plugin structure:
+
+  the following links have to be provided:
+   for a plugin named PLUGIN_NAME:
+
+  extern "C" CreateClass *PLUGIN_NAMEClass ();
+  extern "C" SimplifyClass *PLUGIN_NAMESimplify ();
+
+the memory management has to be done from the sources then.

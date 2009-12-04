@@ -223,37 +223,6 @@ class IdentificationExpressionRight: public AbstractExpressionRight
     virtual void ToStringRight(std::ostream& s, const std::string& obj, std::map< Identification, std::string >& vars, int& varIndex) const;
 };
 
-/*class Expression
-{
-  private:
-    int verarbeitungsId;
-    ExpressionType *type;
-    std::list< ExpressionStringRight * > childrenBuildin;
-    std::list<Expression *> *children;
-    std::list<ExpressionList *> *children2;
-    std::list<ExpressionStringRight * > *buildinchilds;
-    Identification id;
-    Art art;
-  protected:
-    Expression ()  { }
-  public:
-    Expression (ExpressionType *type, std::list< Expression *> *childs, std::list< ExpressionList * > *childs2, Identification id, int vid);
-    Expression (ExpressionType *type, std::list< Expression *> *childs, std::list< ExpressionList * > *childs2, int vid);
-    Expression (ExpressionType *type, std::list< ExpressionStringRight * > *buildinlist, std::list< Expression *> *childs, std::list< ExpressionList * > *childs2, int vid);
-    Expression (Identification id);
-    ExpressionType *GetType () const
-    {
-      return type;
-    }
-    int GetVerarbeitungsId ()
-    {
-      return verarbeitungsId;
-    }
-    void ToStringDeclared (std::ostream &s, std::map< RuleParser::Identification, std::string > &vars, int &index);
-    void ToString (std::ostream& s, const std::string& obj, bool isReference, std::map< RuleParser::Identification, std::string >& vars, int& varIndex, std::string endStr) const;
-    virtual void ToStringRight (std::ostream &s, const std::string &obj, std::map< RuleParser::Identification, std::string > &vars, int &varIndex) const;
-};*/
-
 class ExpressionCPPCode: public AbstractExpressionRight
 {
   public:
@@ -344,17 +313,6 @@ class NormalRule: public AbstractRule
     virtual IntroPart* ToString(std::ostream& s, std::string name) const;
     NormalRule (AbstractExpressionLeft *left, std::string *condition, AbstractExpressionRight *right);
 };
-
-/*class Rule
-{
-  private:
-    Expression *left;
-    Expression *right;
-    std::string condition;
-  public:
-    Rule (Expression *left, std::string *condition, Expression *right);
-    virtual IntroPart *ToString (std::ostream& s, std::string name) const;
-};*/
 
 class CPlusPlusCode: public AbstractRule
 {

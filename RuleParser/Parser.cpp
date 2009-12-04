@@ -194,7 +194,7 @@ void Parser::WriteFiles(const std::string &originalfilename, const std::string &
     header << "   return __private::Simplify (t);\n";
     header << "}\n";
     header << "}; //class " << classname << "\n";
-    header << "class CreateClass\n{\npublic:";
+    header << "class CreateClass:public CAS::AbstractCreateClass\n{\npublic:";
     for (int i = 1; i != 5; ++i)
     {
       header << "CAS::TermReference *Create (const std::string &name, CAS::TermReference *child0";
@@ -228,6 +228,16 @@ void Parser::WriteFiles(const std::string &originalfilename, const std::string &
     {
       stream << "}; //" << _namespace << "\n";
       header << "}; //" << _namespace << "\n";
+    }
+    
+    //Write Plugin-Code
+    if (!plugin_name.empty ())
+    {
+      std::string namespace_prefix = _namespace.empty() ? "" : (_namespace + "::");
+      stream << "extern \"C\" CAS::AbstractCreateClass *" << plugin_name << "CreateClass ()\n{\n"
+      << "return new " << namespace_prefix << "CreateClass ();\n}\n";
+      stream << "extern \"C\" CAS::AbstractSimplifyRuleCollection *" << plugin_name << "SimplifyClass ()\n{\n"
+	    << "   return new CAS::SimplifyRuleCollection< " << namespace_prefix << classname << " > ();\n}\n";
     }
 }
 

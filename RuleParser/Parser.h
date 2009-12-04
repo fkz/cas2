@@ -24,6 +24,7 @@ class Parser: public ParserBase
     std::stringstream begin_stream_source;  
     std::string classname;
     std::string _namespace;
+    std::string plugin_name;
     ErrorList problems;
       
       MyLexer lexer;

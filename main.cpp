@@ -7,10 +7,11 @@
 #include "transform.h"
 #include "Parser/Parser.h"
 
-#include "Regeln/rules.out.cpp.h"
 #include "termcache.h"
 #include <fstream>
 #include <FlexLexer.h>
+
+#include <dlfcn.h>
 
 /**
 @author Fabian Schmitthenner
@@ -129,15 +130,29 @@ int yyFlexLexer::yywrap ()
 
 namespace Global { int tabs = 0; };
 
-MySimplifyRules::CreateClass OurTerms;
+CAS::AbstractCreateClass *OurTerms;
 
 int main (int argc, char **argv)
 {
+  //load library
+  dlerror();
+  void *handle = dlopen ("libmyrules.so", RTLD_LAZY);
+  if (handle == NULL)
+  {
+    std::cout << "could not load library: error: " << dlerror() << std::endl;
+    return 2;
+  }
+  void *createclass = dlsym (handle, "BasicStuffCreateClass");
+  void *simplifyrulecollection = dlsym (handle, "BasicStuffSimplifyClass");
+  
+  OurTerms = ((CAS::AbstractCreateClass * (*) ())createclass)();
+  CAS::AbstractSimplifyRuleCollection *rulecollection = ((CAS::AbstractSimplifyRuleCollection * (*) ())simplifyrulecollection)();
+   
   std::cout << "Copyright (C) 2009 Fabian Schmitthenner" << std::endl;
   std::cout << "License GPLv2+: GNU GPL version 2 or later <http://gnu.org/licenses/gpl.html>" << std::endl;
   std::cout << "This is free software: you are free to change and redistribute it." << std::endl;
   std::cout << "There is NO WARRANTY, to the extent permitted by law." << std::endl;
-  CAS::SimplifyRuleCollection<MySimplifyRules::MyClass> r;
+  CAS::AbstractSimplifyRuleCollection &r = *rulecollection;
 #ifdef CACHE  
   CAS::TermCacheInit r2 (&r);
   CAS::Term::SetStandardRuleCollection(r2);
@@ -153,6 +168,7 @@ int main (int argc, char **argv)
 #else
     test5 ();
 #endif
+  dlclose(handle);
 }
 
 void Output (CAS::Term *t)
@@ -211,6 +227,10 @@ void test1 ()
 {
   TermReference *ref =  CreateExp (Create<CAS::Mul> (CreateLn (Create<CAS::Variable> (0)), Create<CAS::Variable> (2)));
   std::cout << *ref << std::endl;
+  for (int i = 0; i < 10000000000; ++i)
+  {
+    
+  }
   delete ref;
 }
 

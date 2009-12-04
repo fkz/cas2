@@ -10,9 +10,9 @@ add_subdirectory(RuleParser)
 add_subdirectory(kern)
 
 add_definitions(-fexceptions)
-include_directories(${CMAKE_SOURCE_DIR}/kern ${CMAKE_BINARY_DIR}/Parser ${CMAKE_SOURCE_DIR}/Parser ${CMAKE_BINARY_DIR} ${CMAKE_BINARY_DIR}/kern)
+include_directories(${CMAKE_SOURCE_DIR}/kern ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR}/Parser ${CMAKE_SOURCE_DIR}/Parser ${CMAKE_BINARY_DIR} ${CMAKE_BINARY_DIR}/kern)
 add_executable(simple main.cpp)
-target_link_libraries(simple ${GMP_LIBRARY} cas2)
+target_link_libraries(simple ${GMP_LIBRARY} libdl.so cas2 parser)
 
 add_subdirectory(Regeln)
 
@@ -22,5 +22,5 @@ install(TARGETS simple
 
 find_package (KDE4)
 IF (KDE4_FOUND)
-  add_subdirectory(runner)
+  #add_subdirectory(runner)
 ENDIF (KDE4_FOUND)

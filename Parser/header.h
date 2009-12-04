@@ -4,7 +4,8 @@
 #include <operator.h>
 #include <number.h>
 #include <transform.h>
-#include "Regeln/rules.out.cpp.h"
-extern MySimplifyRules::CreateClass OurTerms;
+#include <abstractcreateclass.h>
+#include <relations.h>
+extern CAS::AbstractCreateClass *OurTerms;
 CAS::TermReference *CreateOldTerm (const std::string &zahl);
 void AddTerm (const CAS::TermReference *);

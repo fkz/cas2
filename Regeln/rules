@@ -27,11 +27,13 @@
 #include <typeinfo>
 #include <iostream>
 #include <relations.h>
-#define SHOW_DEBUG
+#include <abstractcreateclass.h>
+//#define SHOW_DEBUG
 %}
 
 NAMESPACE "MySimplifyRules";
 CLASS "MyClass";
+PLUGIN_NAME "BasicStuff";
 
 TYPE ASSOC Add: "CAS::Add";
 TYPE ASSOC Mul: "CAS::Mul";
@@ -69,7 +71,7 @@ Ln[Number1[]] --> Number<"0">[];
 Diff[{x},{y}] %{ $$ $x$->Equals (*$y$) %} --> Number<"1">[];
 Diff[Add[ ... {x} ],{y}] --> Add[ ... i:x { Diff[i,y] }];
 Diff[Number,{x}] --> Number<"0">[];
-Diff[Mul[ ... {mul}], {x}] --> Add[ ... i:mul { Mul[ ... y:mul { %{ if (&$y$ != &$i$) %} y %{ else %} Diff[y,x]  } ] } ];
+//TODO: why does this not function?? Diff[Mul[ ... {mul}], {x}] --> Add[ ... i:mul { Mul[ ... y:mul { %{ if (&$y$ != &$i$) %} y %{ else %} Diff[y,x]  } ] } ];
 Diff[Exp[{x}],{y}] --> Mul[Exp[x], Diff[x,y]];
 Diff[Ln[{x}],{y}] --> Mul[Exp[Mul[Ln[x], Number<"-1">[]]],Diff[x,y]];
 Diff[Variable{x},Variable{y}] --> Number<"0">[];
