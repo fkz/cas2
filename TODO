@@ -3,6 +3,9 @@ Integrieren
 Lösen von Gleichungen
 Factor
 
-Kommandozeilenclient verbessern: <- (linke Pfeiltaste) erlauben, evtl. Tab-Verfollständigung für Funktionsnamen, Benutzung von
-vorangegangenen Variablen
-Plug-In-basierte Struktur für Regeln
+Kommandozeilenclient verbessern: <- (linke Pfeiltaste) erlauben, evtl. Tab-Verfollständigung für Funktionsnamen, Fehlerbehandlung statt Programmabsturz
+Plug-In-basierte Struktur auf runner übertragen, das ganze platformunabhängiger machen (momentan wird dlopen/dlsym/dlclose/dlerror benutzt)
+Parser in Klasse packen, statt global zu arbeiten; Transfer nach Bison++/Flex++ etwa wie bei RuleParser
+RuleParser-Struktur klarer gestalten, z. B. durch AbstractExpressionLeft, AbstractExpressionRight-Klassen; statt alles in der Expression Klasse zu haben
+Das Finden der passenden Rule-Regeln, und zwar zunächst das Herausfinden des Typs in O(1), allerhöchstens aber O(log n) statt wie momentan O(n) durchführen
+

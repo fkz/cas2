@@ -26,6 +26,10 @@
 
 namespace CAS {
 
+/**
+* repräsentiert eine Referenz auf ein CAS::Term. Durch Referenzzählung wird der Term zerstört, sobald der letzte
+* TermReference, der auf ihn zeigt, zerstört wurde.
+*/
 class TermReference
 {
   private:
@@ -74,10 +78,18 @@ class TermReference
     {
       return Equals (&r2);
     }
+    /**
+     gibt den konstanten zugrunde liegende Term zurück. Durch die Unveränderlichkeit müssen keine anderen Terme gesperrt werden.
+    */
     const Term *get_const () const
     {
       return term;
     }
+    /**
+    * gibt einen Term als nicht konstant zurück. Nach der Veränderung dieses Terms sollte immer finnish_get_unconst aufgerufen werden,
+    * um TermReference zu veranlassen, seine Informationen über den Term (wie z. B. seinen Hash-Code) zu erneuern. Falls es mehrere Referenzen
+    * auf Term gab, wird hiermit zunächst ein eigenständiger Term (über CAS::Term::Clone) erzeugt.
+    */
     Term *get_unconst ();
     bool finnish_get_unconst (bool simplify = true)
     {
@@ -95,6 +107,10 @@ class TermReference
       return new TermReference (*this);
     }
     
+    /**
+    * T muss von CAS::Term abgeleitet sein. Create erzeugt dann einen Term über die statische Elementfunktion T::CreateTerm,
+    * die ein CAS::Term zurückgeben muss. Zurückgegeben wird dann ein TermReference, der darauf zeigt.
+    */
     template<class T>
     static TermReference *Create ()
     {

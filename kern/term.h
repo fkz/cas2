@@ -38,6 +38,8 @@ typedef TermCollectionTemplate<> TermCollection;
 
 /**
 * die Basisklasse, von der alle Terme, Gleichungen, Variablen, Zahlen, etc. abgeleitet sind
+* Wenn ein CAS::Term benutzt wird, sollte es immer von einem CAS::TermReference umschlossen werden,
+* dass sich für die Freigabe des von CAS::Term gehaltenen Speichers kümmert.
 */
 class Term
 {
