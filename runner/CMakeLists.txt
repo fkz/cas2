@@ -22,7 +22,7 @@ add_definitions(-fexceptions)
 
 kde4_add_plugin(krunner_cas_plugin ${runner_SRCS})
 target_link_libraries(krunner_cas_plugin
-                      ${KDE4_PLASMA_LIBS} ${KDE4_KDEUI_LIBS} cas2 ${GMP_LIBRARY})
+                      ${KDE4_PLASMA_LIBS} ${KDE4_KDEUI_LIBS} cas2 parser libdl.so)
 
 install(TARGETS krunner_cas_plugin
         DESTINATION ${PLUGIN_INSTALL_DIR})

@@ -8,10 +8,11 @@
 #include <QString>
 #include <fstream>
 #include <termcache.h>
+#include <dlfcn.h>
 //einige Definitionen, die eigentlich woanders sein sollten,
 //im Moment aber nur hier Platz haben
 namespace Global { int tabs = 0; };
-MySimplifyRules::CreateClass OurTerms;
+CAS::AbstractCreateClass * OurTerms;
 int yyFlexLexer::yywrap () { return 1; }
 
 CAS::TermReference *CreateOldTerm (const std::string &zahl)
@@ -24,13 +25,28 @@ void AddTerm (const CAS::TermReference *p)
 }
 
 runner::runner(QObject *parent, const QVariantList& args)
-    : Plasma::AbstractRunner(parent, args), r2 (&r)
+    : Plasma::AbstractRunner(parent, args)
 {
     Q_UNUSED(args);
     setObjectName("runner");
+    
+    dlerror();
+    void *handle = dlopen ("libmyrules.so", RTLD_LAZY);
+    if (handle == NULL)
+    {
+      throw std::runtime_error ("could not load library: error: " + std::string (dlerror()));
+      
+    }
+    void *createclass = dlsym (handle, "BasicStuffCreateClass");
+    void *simplifyrulecollection = dlsym (handle, "BasicStuffSimplifyClass");
+    
+    OurTerms = ((CAS::AbstractCreateClass * (*) ())createclass)();
+    r = ((CAS::AbstractSimplifyRuleCollection * (*) ())simplifyrulecollection)();
+    
     //TODO: r2 ist nicht thread-safe; da es als statische Variable allerdings mehrfach aufgerufen werden kann,
     //      stellt dies ein Problem dar
-    CAS::Term::SetStandardRuleCollection(r2);
+    r2 = new TermCacheInit (r);
+    CAS::Term::SetStandardRuleCollection(*r2);
 
 }
 

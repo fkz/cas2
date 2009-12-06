@@ -5,7 +5,6 @@
 #include <KIcon>
 #include <termcache.h>
 #include <simplifyrulecollection.h>
-#include <Regeln/rules.out.cpp.h>
 
 
 // Define our plasma Runner
@@ -13,8 +12,8 @@ class runner : public Plasma::AbstractRunner {
     Q_OBJECT
 
   private:
-    CAS::SimplifyRuleCollection<MySimplifyRules::MyClass> r;
-    CAS::TermCacheInit r2;
+    CAS::AbstractSimplifyRuleCollection *r;
+    CAS::TermCacheInit *r2;
 
 public:
     // Basic Create/Destroy
