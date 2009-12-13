@@ -71,7 +71,8 @@ Ln[Number1[]] --> Number<"0">[];
 Diff[{x},{y}] %{ $$ $x$->Equals (*$y$) %} --> Number<"1">[];
 Diff[Add[ ... {x} ],{y}] --> Add[ ... i:x { Diff[i,y] }];
 Diff[Number,{x}] --> Number<"0">[];
-//TODO: why does this not function?? Diff[Mul[ ... {mul}], {x}] --> Add[ ... i:mul { Mul[ ... y:mul { %{ if (&$y$ != &$i$) %} y %{ else %} Diff[y,x]  } ] } ];
+//TODO: why does this not function?? 
+Diff[Mul[ ... {mul}], {x}] --> Add[ ... i:mul { Mul[ ... y:mul { %{ if (&$y$ != &$i$) %} = y %{ else %} = Diff[y,x]  } ] } ];
 Diff[Exp[{x}],{y}] --> Mul[Exp[x], Diff[x,y]];
 Diff[Ln[{x}],{y}] --> Mul[Exp[Mul[Ln[x], Number<"-1">[]]],Diff[x,y]];
 Diff[Variable{x},Variable{y}] --> Number<"0">[];
@@ -102,7 +103,7 @@ Fakultaet[Number{num}] -->
   mpz_class res = 1;
   for (mpz_class i = 1; i <= n; ++i)
     res *= i;  
-%} Number<"res">[];
+%} =Number<"res">[];
 
 %{
 inline bool HasX (const CAS::AutoTermReference &term, const CAS::AutoTermReference &x)
@@ -151,7 +152,7 @@ Lim[Error,{x},{y}] --> Error[];
 
 Lim[{term},{x},{wert}] --> %{ //HERE IS THIS RULE
 %}
-  Set[ i:term { Lim[i,x,wert] }, x, wert]
+  =Set[ i:term { Lim[i,x,wert] }, x, wert]
   == Error{abc} ++ "return NULL;";
 
 Lim[Mul[Exp[Mul[Ln[{nenner}], Numberm1]] ... {zaehler}], {x}, {wert}] -->
@@ -161,7 +162,7 @@ Lim[Mul[Exp[Mul[Ln[{nenner}], Numberm1]] ... {zaehler}], {x}, {wert}] -->
    %{ CAS::TermReference *nenner; %} "nenner" = Set[nenner, x, wert]
    "zaehler" == Number0 -- "return NULL;"
    "nenner" == Number0 -- "return NULL;"
-   Lim[Mul[Exp[Mul[Ln[Diff[nenner,x]], Number<"-1">[]]], Diff[Mul[ ... i:zaehler {i}],x] ], x, wert];
+   = Lim[Mul[Exp[Mul[Ln[Diff[nenner,x]], Number<"-1">[]]], Diff[Mul[ ... i:zaehler {i}],x] ], x, wert];
 
 Lim[{x},{y},{z}] --> Error[];
 
@@ -171,7 +172,7 @@ Sum[{terms},{variable},{anfang},{ende}] %{ $$ !HasX ($terms$, $variable$) %} -->
 
 Sum[{term},{variable},{anfang},{ende}] --> %{ %}
    anfang == Number0 ++ "return NULL;"
-   Add[ Mul[ Number<"-1">[], Sum[term, variable, Number<"0">[], Add[anfang, Number<"-1">[]]] ], Sum[ term, variable, Number<"0">[], ende] ];
+   = Add[ Mul[ Number<"-1">[], Sum[term, variable, Number<"0">[], Add[anfang, Number<"-1">[]]] ], Sum[ term, variable, Number<"0">[], ende] ];
 
 Sum[{x},{y},Number0,{ende}] %{ $$ $x$->Equals (*$y$) %} --> Mul[ ende, Add[ende, Number<"1">[] ], Number<"""1/2""">[] ];
 Sum[ (1) Exp[Mul[Ln[{z}],Any & %{ $$->Equals (*$i2$) %}{i}]], {i2}, Number0, {ende}] --> 
@@ -182,12 +183,12 @@ Sum[ (1) Exp[Mul[Ln[{z}],Any & %{ $$->Equals (*$i2$) %}{i}]], {i2}, Number0, {en
 
 Sum[{term},{variable},Number{anfang},Number{ende}] --> 
 %{ %}
-  Number<"0">[]
+  = Number<"0">[]
 %{
   for (mpq_class it = $anfang$->get_const ()->Cast<const CAS::Number>()->GetNumber (); it <= $ende$->get_const()->Cast<const CAS::Number> ()->GetNumber (); ++it)
   {
 %}
-  Add["result", Set[term, variable, Number<"it">[]]]
+  = Add["result", Set[term, variable, Number<"it">[]]]
 %{
   }
 %};
@@ -198,4 +199,4 @@ Floor[Number{x}] -->
     mpz_class tr;
     mpz_fdiv_q (tr.get_mpz_t(), rat.get_num().get_mpz_t(), rat.get_den ().get_mpz_t());
  %}
-  Number<"tr">[];
+  = Number<"tr">[];

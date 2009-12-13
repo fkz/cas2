@@ -153,7 +153,7 @@ cppcodelist: CPP_CODE morecppcodelist { $$ = $2; $$->push_front (new RuleParser:
 
 morecppcodelist:  { $$ = new RuleParser::ExpressionCPPCode (); }
 |	morecppcodelist CPP_CODE	{ $$ = $1; $1->push_back (new RuleParser::ExpressionCPPCode::MyNode ($2)); }
-|	morecppcodelist outerrightside	{ $$ = $1; $1->push_back (new RuleParser::ExpressionCPPCode::MyNode ($2)); }
+|	morecppcodelist '=' outerrightside	{ $$ = $1; $1->push_back (new RuleParser::ExpressionCPPCode::MyNode ($3)); }
 |	morecppcodelist STR '=' outerrightside { $$ = $1; $1->push_back (new RuleParser::ExpressionCPPCode::MyNode ($4, $2)); }
 |	morecppcodelist EQUAL leftside equalargs { $$ = $1; $1 ->push_back (new RuleParser::ExpressionCPPCode::MyNode ($3, new std::string ("\044"), $4->first, $4->second)); } 
 |	morecppcodelist STR EQUAL leftside equalargs { $$ = $1; $1->push_back (new RuleParser::ExpressionCPPCode::MyNode ($4, $2, $5->first, $5->second)); }
