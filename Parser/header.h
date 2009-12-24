@@ -6,6 +6,7 @@
 #include <transform.h>
 #include <abstractcreateclass.h>
 #include <relations.h>
+#include <table.h>
 extern CAS::AbstractCreateClass *OurTerms;
 CAS::TermReference *CreateOldTerm (const std::string &zahl);
 void AddTerm (const CAS::TermReference *);

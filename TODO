@@ -8,4 +8,4 @@ Plug-In-basierte Struktur auf runner übertragen, das ganze platformunabhängige
 Parser in Klasse packen, statt global zu arbeiten; Transfer nach Bison++/Flex++ etwa wie bei RuleParser
 RuleParser-Struktur klarer gestalten, z. B. durch AbstractExpressionLeft, AbstractExpressionRight-Klassen; statt alles in der Expression Klasse zu haben
 Das Finden der passenden Rule-Regeln, und zwar zunächst das Herausfinden des Typs in O(1), allerhöchstens aber O(log n) statt wie momentan O(n) durchführen
-
+Add Support for other output variants

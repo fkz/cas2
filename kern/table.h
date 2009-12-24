@@ -32,6 +32,13 @@ class Table : public CAS::Term
     TermReference *term, *variable, *from, *to;
     Table (TermReference *term, TermReference *variable, TermReference *from, TermReference *to);
   public:
+    class TableType : public CAS::Type
+    {
+      public:
+	virtual bool Equals(const CAS::Type& t) const;
+	static TableType *Instance ();
+    };
+    
     virtual Term* Clone() const;
     virtual Term* CreateTerm(TermReference** children) const;
     virtual bool Equals(const CAS::Term& t) const;
@@ -40,6 +47,8 @@ class Table : public CAS::Term
     virtual Type* GetType() const;
     virtual TermReference* Simplify();
     virtual void ToString(std::ostream& stream) const;
+    
+    static Term *CreateTerm (TermReference *term, TermReference *variable, TermReference *from, TermReference *to);
 };
 
 }

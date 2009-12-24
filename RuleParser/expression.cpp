@@ -25,14 +25,6 @@
 
 using namespace RuleParser;
 
-namespace GlobalGrammarOutput
-{
-  std::list< std::pair< std::string, int > > classes;
-  std::stringstream begin_stream_header;
-  std::stringstream begin_stream_source;
-  std::stringstream begin_stream_header2;
-}
-
 RuleParser::NormalRule::NormalRule(AbstractExpressionLeft *left, std::string *cond, AbstractExpressionRight* right)
 : left(left), right(right), condition(cond ? *cond : "")
 {

@@ -25,6 +25,8 @@ namespace CAS {
 
 class Type
 {
+  protected:
+    Type () {}
   public:
     enum BuildInTypes
     {
