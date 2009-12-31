@@ -168,6 +168,8 @@ int main (int argc, char **argv)
 #else
     test5 ();
 #endif
+  delete OurTerms;
+  delete rulecollection;
   dlclose(handle);
 }
 
@@ -227,10 +229,10 @@ void test1 ()
 {
   TermReference *ref =  CreateExp (Create<CAS::Mul> (CreateLn (Create<CAS::Variable> (0)), Create<CAS::Variable> (2)));
   std::cout << *ref << std::endl;
-  for (int i = 0; i < 10000000000; ++i)
+  /*for (int i = 0; i < 10000000000; ++i)
   {
     
-  }
+  }*/
   delete ref;
 }
 
