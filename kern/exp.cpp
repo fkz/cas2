@@ -23,6 +23,7 @@
 #include "termreference.h"
 #include "operator.h"
 #include "term.h"
+#include "error.h"
 
 using namespace CAS;
 
@@ -248,10 +249,32 @@ Term* NormalFunctionCall::CreateTerm(TermReference** children) const
 
 TermReference* BuildInFunction::Simplify()
 {
-  if (parameter->get_const()->Cast<const Error>())
   {
-    delete this;
-    return Create<Error> ();
+    const Error *error;
+    if (error = parameter->get_const()->Cast<const Error>())
+    {
+      switch (error->GetArt ())
+      {
+	case Error::Unknown:
+	  delete this;
+	  return Create< Error > (Error::Unknown);
+	case Error::Infinity:
+	  assert (func == Exp || func == Ln);
+	  delete this;
+	  return Create< Error > (Error::Infinity);
+	case Error::minusInfinity:
+	  if (func == Exp)
+	  {
+	    delete this;
+	    return Create< Number > (0);
+	  }
+	  if (func == Ln)
+	  {
+	    //TODO: das Ergebnis ist die komplexe Zahl PI*I+Infinity; lasse Ln(-Infinity) symbolisch stehen
+	  }
+	  break;
+      }
+    }
   }
   
   if (func == Exp)
@@ -348,7 +371,7 @@ TermReference* BuildInFunction::Simplify()
 		delete this;
 		delete tr[0];
 		delete tr[1];
-		return Create<Error> ();
+		return Create<Error> (Error::Unknown);
 	      }
 	      else
 	      {
@@ -360,6 +383,15 @@ TermReference* BuildInFunction::Simplify()
 	}
 	delete tr[0];
       }
+    }
+  }
+  else if (func == Ln)
+  {
+    const CAS::Number* num = parameter->get_const()->Cast< const Number >();
+    if (num && num->GetNumber() == 0)
+    {
+      delete this;
+      return Create< Error > (Error::minusInfinity);
     }
   }
   TermReference *result = coll->Simplify(this);

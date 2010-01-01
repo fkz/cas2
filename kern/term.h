@@ -191,53 +191,6 @@ class SimpleUniqueTerm: public Term
     }
 };
 
-///the NaN-Object
-///Problem: Caching führt zu langen Listen von "verschiedenen" Error-Objekten, da Error niemals gleich sind.
-class Error: public Term
-{
-  public:
-    virtual Term* Clone() const
-    {
-      return new Error ();
-    }
-    virtual Term* CreateTerm(TermReference** children) const
-    {
-      return new Error ();
-    }
-    virtual bool Equals(const CAS::Term& t) const
-    {
-      return false;
-    }
-    virtual TermReference* GetChildrenVar(void*& param) const
-    {
-      return NULL;
-    }
-    virtual Hash GetHashCode() const
-    {
-      return Hash (hashes::Error, 0);
-    }
-    virtual Type* GetType() const
-    {
-      return Type::GetBuildInType(Type::Term);
-    }
-    virtual TermReference* Simplify()
-    {
-      return NULL;
-    }
-    virtual void ToString(std::ostream& stream) const
-    {
-      stream << "ERROR";
-    }
-    static Error *CreateTerm ()
-    {
-      return new Error ();
-    }
-    virtual bool IsCacheable() const
-    {
-      return false;
-    }
-};
-
 }
 
 //#include "term_templates.cpp"

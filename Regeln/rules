@@ -28,6 +28,7 @@
 #include <iostream>
 #include <relations.h>
 #include <abstractcreateclass.h>
+#include <error.h>
 //#define SHOW_DEBUG
 %}
 
@@ -148,7 +149,7 @@ Equal[ Number{n1}, Number & %{ ! $$->Equals (*$n1$) %} {n2} ] --> False[];
 
 
 
-Lim[Error,{x},{y}] --> Error[];
+Lim[Error{e},{x},{y}] --> e;
 
 Lim[{term},{x},{wert}] --> %{ //HERE IS THIS RULE
 %}
@@ -164,7 +165,7 @@ Lim[Mul[Exp[Mul[Ln[{nenner}], Numberm1]] ... {zaehler}], {x}, {wert}] -->
    "nenner" == Number0 -- "return NULL;"
    = Lim[Mul[Exp[Mul[Ln[Diff[nenner,x]], Number<"-1">[]]], Diff[Mul[ ... i:zaehler {i}],x] ], x, wert];
 
-Lim[{x},{y},{z}] --> Error[];
+Lim[{x},{y},{z}] --> Error<"Error::Unknown">[];
 
 Sum[{term},{variable},{anfang},{ende}] %{ $$ $anfang$->Equals(*$ende$) %} --> Set[term, variable, anfang];
 Sum[Add[...{terms}],{variable},{anfang},{ende}] --> Add[...i:terms{Sum[i,variable,anfang,ende]}];
