@@ -28,6 +28,8 @@ std::vector< std::string> RuleParser::Identification::dict_other;
 
 void RuleParser::DefinitionList::AddDefinition(RuleParser::AbstractDefinition* def)
 {
+  if (def == NULL)
+    return;
   assert (def->parent == NULL);
   Identification id = def->GetID();
   std::map< Identification, AbstractDefinition* >::iterator it = introparts.find (id);
@@ -88,3 +90,14 @@ RuleParser::Identification RuleParser::Identification::GetIdentification(const c
   result.id = index;
   return result;
 }
+
+void RuleParser::DefinitionList::AddDefinitionList(RuleParser::DefinitionList &dl)
+{
+  for (std::map< Identification, AbstractDefinition* >::const_iterator it = dl.introparts.begin(); it != dl.introparts.end(); ++it)
+  {
+    it->second->parent = NULL;
+    AddDefinition(it->second);
+  }
+  dl.introparts.clear();
+}
+

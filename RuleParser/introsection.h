@@ -108,6 +108,8 @@ class DefinitionList
       }
       return it->second;
     }
+    
+    void AddDefinitionList(DefinitionList &dl);
 };
 
 };

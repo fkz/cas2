@@ -34,7 +34,7 @@ class Parser: public ParserBase
 	    
     public:
       Parser (std::istream *input_stream)
-      : lexer(input_stream, NULL)
+      : lexer(input_stream, NULL), is_included(false)
       {
 	
       }
@@ -63,6 +63,10 @@ class Parser: public ParserBase
         void errorRecovery();
         int lookup(bool recovery);
         void nextToken();
+	
+	bool is_included;
+	void IncludeTypes (const std::string &filename);
+	void IncludeRules (const std::string &filename);
 };
 
 inline void Parser::error(char const *msg)

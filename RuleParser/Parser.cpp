@@ -1,5 +1,6 @@
 #include "Parser.h"
 #include "errors.h"
+#include <fstream>
 
 using namespace RuleParser;
 
@@ -97,6 +98,11 @@ void WriteHead (std::ostream &stream, const std::string &originalfile)
 
 void Parser::WriteFiles(const std::string &originalfilename, const std::string &headername, const std::string &headername2, std::ostream& cppfile, std::ostream& hfile, std::ostream& hfile2)
 {
+  if (is_included)
+  {
+    throw ParseException (RuleParser::ParseException::SEMANTICERROR, "the file cannot be accessed because it's only allowed for included access");
+  }
+  
   //Aliase:
   std::ostream &stream = cppfile;
   std::ostream &header = hfile;
@@ -240,4 +246,28 @@ void Parser::WriteFiles(const std::string &originalfilename, const std::string &
 	    << "   return new CAS::SimplifyRuleCollection< " << namespace_prefix << classname << " > ();\n}\n";
     }
 }
+
+
+void Parser::IncludeTypes(const std::string& filename)
+{
+  std::ifstream input (filename.c_str());
+  Parser include (&input);
+  if (include.parse() == PARSE_ABORT__)
+  {
+    throw;
+  }
+  definitions.AddDefinitionList (include.definitions);
+}
+
+void Parser::IncludeRules(const std::string& filename)
+{
+  std::ifstream input (filename.c_str());
+  Parser include (&input);
+  if (include.parse () == PARSE_ABORT__)
+    throw;
+  
+  rules.splice(rules.end(), include.rules);
+}
+
+
 

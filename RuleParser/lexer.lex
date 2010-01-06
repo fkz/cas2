@@ -48,6 +48,9 @@ new { return ParserBase::NEW; }
 NAMESPACE { return ParserBase::NAMESPACE; }
 PLUGIN_NAME { return ParserBase::PLUGIN_NAME; }
 CLASS { return ParserBase::CLASS; }
+"include_types" { return Parser::INCLUDE_TYPES; }
+"include_rules" { return Parser::INCLUDE_RULES; }
+included { return Parser::INCLUDED; }
 {whitespace} { /* do nothing */ }
 \n { ++lines; }
 \.\.\. {  return ParserBase::DOTS; }
