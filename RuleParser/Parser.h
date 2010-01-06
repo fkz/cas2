@@ -15,7 +15,8 @@ namespace RuleParser{
 class Parser: public ParserBase
 {
   private:
-    DefinitionList definitions;
+    DefinitionList *mydefinitions;
+    DefinitionList &definitions;
     std::list< RuleParser::AbstractRule * > rules;
     std::list< std::pair< std::string, int > > classes;
       
@@ -33,10 +34,15 @@ class Parser: public ParserBase
       void CreateClass (std::string *classname, int paramcount, std::string *type);
 	    
     public:
-      Parser (std::istream *input_stream)
-      : lexer(input_stream, NULL), is_included(false)
+      Parser (std::istream *input_stream, DefinitionList *list = NULL)
+      : lexer(input_stream, NULL), is_included(false), mydefinitions(list ? NULL : new DefinitionList ()), definitions(list ? *list : *mydefinitions)
       {
 	
+      }
+      
+      ~Parser ()
+      {
+	delete mydefinitions;
       }
       
       int ActualLine ()

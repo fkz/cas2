@@ -262,7 +262,7 @@ void Parser::IncludeTypes(const std::string& filename)
 void Parser::IncludeRules(const std::string& filename)
 {
   std::ifstream input (filename.c_str());
-  Parser include (&input);
+  Parser include (&input, &definitions);
   if (include.parse () == PARSE_ABORT__)
     throw;
   
