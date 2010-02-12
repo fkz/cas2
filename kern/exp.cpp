@@ -24,6 +24,7 @@
 #include "operator.h"
 #include "term.h"
 #include "error.h"
+#include "Constants.h"
 
 using namespace CAS;
 
@@ -249,33 +250,16 @@ Term* NormalFunctionCall::CreateTerm(TermReference** children) const
 
 TermReference* BuildInFunction::Simplify()
 {
+  if (parameter->get_const()->Cast<const Unknown>())
   {
-    const Error *error;
-    if (error = parameter->get_const()->Cast<const Error>())
-    {
-      switch (error->GetArt ())
-      {
-	case Error::Unknown:
-	  delete this;
-	  return Create< Error > (Error::Unknown);
-	case Error::Infinity:
-	  assert (func == Exp || func == Ln);
-	  delete this;
-	  return Create< Error > (Error::Infinity);
-	case Error::minusInfinity:
-	  if (func == Exp)
-	  {
-	    delete this;
-	    return Create< Number > (0);
-	  }
-	  if (func == Ln)
-	  {
-	    //TODO: das Ergebnis ist die komplexe Zahl PI*I+Infinity; lasse Ln(-Infinity) symbolisch stehen
-	  }
-	  break;
-      }
-    }
+    delete this;
+    return Create< Unknown > ();
   }
+  /*const Limit *limit;
+  if (limit = parameter->get_const()->Cast<const Limit>())
+  {
+    //this should be simplified by external rules
+  }*/
   
   if (func == Exp)
   {
@@ -359,11 +343,12 @@ TermReference* BuildInFunction::Simplify()
 	      }
 	      else if (num1_ >= 0 && num2_ == 0)
 	      {
+		bool is0 = num1_ == 0;
 		//0^0
 		delete this;
 		delete tr[0];
 		delete tr[1];
-		return Create<Number> (1);
+		return Create<Number> (is0 ? 1 : 0);
 	      }
 	      else if (num1_ < 0 && num2_ == 0)
 	      {
@@ -371,7 +356,14 @@ TermReference* BuildInFunction::Simplify()
 		delete this;
 		delete tr[0];
 		delete tr[1];
-		return Create<Error> (Error::Unknown);
+		return Create<Unknown> ();
+	      }
+	      else if (num1_ == 1)
+	      {
+		delete this;
+		delete tr[0];
+		delete tr[1];
+		return Create< Number > (1);
 	      }
 	      else
 	      {
@@ -385,15 +377,15 @@ TermReference* BuildInFunction::Simplify()
       }
     }
   }
-  else if (func == Ln)
+  /*else if (func == Ln)
   {
     const CAS::Number* num = parameter->get_const()->Cast< const Number >();
     if (num && num->GetNumber() == 0)
     {
       delete this;
-      return Create< Error > (Error::minusInfinity);
+      return Create< Limit > (Create< Pi > ());
     }
-  }
+  }*/
   TermReference *result = coll->Simplify(this);
   if (!result)
     return CAS::FunctionCall::Simplify();

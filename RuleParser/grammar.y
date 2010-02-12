@@ -79,6 +79,7 @@ introSection: TYPE ID ':' STR ';'	{ $$ = new RuleParser::IntroPart ($2, $4); }
 |	TYPE ASSOC ID ':' STR ',' CPP_CODE ',' STR ';' { $$ = new RuleParser::IntroPart ($3, $5, $7, $9, true); }
 |	TYPE ID ':' STR ',' STR ';'	{ $$ = new RuleParser::IntroPart ($2, $4, NULL, $6); }
 |	TYPE NEW ID STR '[' NUM ']' ':' STR ';' { std::string str = _namespace + "::" + *$4;  $$ = new RuleParser::IntroPart ($3, &str); CreateClass ($4, $6, $9); delete $4; }
+|	TYPE NEW ASSOC ID STR '[' NUM ']' ':' STR ';' { std::string str = _namespace + "::" + *$5;  $$ = new RuleParser::IntroPart ($4, &str, new std::string ("true"), NULL, true); CreateClass ($5, $7, $10); delete $5; }
 |	INCLUDE_TYPES STR ';' { IncludeTypes (*$2); delete $2; $$ = NULL; }
 |	INCLUDE_RULES STR ';' { IncludeRules (*$2); delete $2; $$ = NULL; }
 ;

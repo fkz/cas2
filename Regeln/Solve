@@ -1,0 +1,50 @@
+included;
+
+%{
+bool HasX (const TermReference &term, const TermReference &var)
+{
+  if (term.Equals (var))
+    return true;
+  const Term *t = term.get_const ();
+  void *param = NULL;
+  while (true)
+  {
+    const TermReference *child = t->GetChildren (param);
+    if (!child)
+      return false;
+    if (HasX (*child, var))
+    {
+      delete child;
+      while (child = t->GetChildren (param))
+	delete child;
+      return true;
+    }
+    delete child;
+  }
+}
+%}
+
+
+//Gleichungen ohne x
+Solve[ (1) Any & %{ !HasX (*$$, *$y$) %} {x}, {y} ] --> x;
+
+//Gleichungen mit x auf einer Seite
+Solve[ (1) Equal[ Any & %{ $$->Equals (*$x$) %}, Any & %{ !HasX (*$$, *$x$) %} ]{eq}, {x} ] --> eq;
+
+//Gleichungen mit Add ink. x auf einer Seite
+Solve[ (1) Equal[ Add[ ... Any & %{ HasX (*$$, *$x$) %} {xterms}, {noxterms} ], Any & %{ !HasX (*$$, *$x$) %} {right} ], {x} ] %{ $$ !$xterms$.empty () %}
+ --> Solve[ Equal[ Add[ ... i: xterms {i} ], Add[ right ... i:noxterms {Mul[ Number<"-1">[], i ]} ] ], x ];
+
+Solve[ (1) Equal[ Add[ ... Any & %{ HasX (*$$, *$x$) %} {xterms}, {noxterms} ], Any & %{ HasX (*$$, *$x$) %} {right} ], {x} ] %{ $$ !$xterms$.empty () %}
+ --> Solve[ Equal[ Add[ ... i: noxterms {i} ], Add[ right ... i:xterms {Mul[ Number<"-1">[], i ]} ] ], x ];
+
+Solve[ (1) Equal[ Mul[ ... Any & %{ HasX (*$$, *$x$) %} {xterms}, {noxterms} ], Any & %{ !HasX (*$$, *$x$) %} {right} ], {x} ] %{ $$ !$xterms$.empty () %}
+ --> Solve[ Or[ Equal[ Mul[ ... i:xterms {i} ], Mul[ right, Exp[ Mul[ Number<"-1">[], Ln[ Mul[ ... i:noxterms { i } ] ] ] ] ] ], And[ Equal[ right, Number<"0">[]], Equal[ Mul[ ... i:noxterms {i}], Number<"0">[]]  ] ], x ];
+
+Solve[ (1) Equal[ Mul[ ... Any & %{ HasX (*$$, *$x$) %} {xterms}, {noxterms} ], Any & %{ HasX (*$$, *$x$) %} {right} ], {x} ] %{ $$ !$xterms$.empty () %}
+ --> Solve[ Or[ Equal[ Mul[ ... i:noxterms {i} ], Mul[ right, Exp[ Mul[ Number<"-1">[], Ln[ Mul[ ... i:xterms { i } ] ] ] ] ] ], And[ Equal[ right, Number<"0">[]], Equal[ Mul[ ... i:xterms {i}], Number<"0">[]]  ] ], x ];
+
+Solve[ Or[ {a}, {b} ], {x} ] --> Or[ Solve[ a, x], Solve[ b, x] ];
+
+Solve[ (1) Equal[ Exp[ Any & %{ HasX (*$$, *$x$) %}{xterm} ], Any & %{ !HasX (*$$, *$x$) %} {noxterm} ], {x} ] --> Solve[ Equal[ xterm, Ln[ noxterm ] ], x ];
+Solve[ (1) Equal[ Ln[ Any & %{ HasX (*$$, *$x$) %}{xterm} ], Any & %{ !HasX (*$$, *$x$) %} {noxterm} ], {x} ] --> Solve[ Equal[ xterm, Exp[ noxterm ] ], x ];

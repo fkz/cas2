@@ -1,0 +1,9 @@
+included;
+
+Diff[{x},{y}] %{ $$ $x$->Equals (*$y$) %} --> Number<"1">[];
+Diff[Add[ ... {x} ],{y}] --> Add[ ... i:x { Diff[i,y] }];
+Diff[Number,{x}] --> Number<"0">[];
+Diff[Mul[ ... {mul}], {x}] --> Add[ ... i:mul { Mul[ ... y:mul { %{ if (&$y$ != &$i$) %} = y %{ else %} = Diff[y,x]  } ] } ];
+Diff[Exp[{x}],{y}] --> Mul[Exp[x], Diff[x,y]];
+Diff[Ln[{x}],{y}] --> Mul[Exp[Mul[Ln[x], Number<"-1">[]]],Diff[x,y]];
+Diff[Variable{x},Variable{y}] --> Number<"0">[];

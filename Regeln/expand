@@ -1,0 +1,35 @@
+
+included;
+
+//Expand
+Expand[Mul[Add[ ... {add}] ... {mul}]] --> Add[ ... i:add { Expand[Mul[ i ... y:mul {y} ]] } ];
+Expand[Add[ ... {x}]] --> Add[ ... i:x { Expand[i] } ];
+Expand[Exp[Mul[Ln[Add[... {add}]], Number{num}]]]
+  --> Add[ ... i:add { Expand[Mul[ i, Exp[Mul[Ln[Add[ ... y:add {y}]], 
+  %{ $$ = CAS::Create<CAS::Number> ($num$->get_const()->Cast<const CAS::Number> ()->GetNumber () - 1); %}]]]]}]; 
+Expand[Mul[ ... {x} ]] --> NoExpand[ Mul[ ... i:x { Expand[i] } ] ];
+NoExpand[Mul[Add ... {mul}]{x}] --> Expand[x];
+NoExpand[{x}] --> x;
+Expand[{x}] --> i:x { Expand[i] };
+
+//Solve
+
+
+And[ Equal[ {x}, {c} ], Any & %{ HasX (*$$, *$x$) %} { right } ] --> And[ Equal[ x, c], Set[ right, x, c ] ];
+
+Equal[ Number{n1}, Number{n2} ] %{ $$ !$n1$->Equals (*$n2$) %} --> False[];
+
+Ln[Exp[{x}]] --> x;
+Exp[Ln[{x}]] --> x;
+
+
+//logische Gleichungen:
+And[ False[], {x} ] --> False[];
+And[ True[], {x} ] --> x;
+
+Or[ False[], {x} ] --> x;
+Or[ True[], {x} ] --> True[];
+
+//Set:
+Set[{x},{y},{z}] %{ $$ $x$->Equals (*$y$) %} --> z;
+Set[{x},{y},{z}] --> i:x { Set[i,y,z] };

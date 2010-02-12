@@ -118,6 +118,7 @@ void Parser::WriteFiles(const std::string &originalfilename, const std::string &
     header << "#include \"" << headername2 << "\"\n";
     
     stream << "#include \"" << headername << "\"\n";
+    stream << "#pragma GCC visibility push(hidden)\n";
     stream << begin_stream_source.str();
     header << begin_stream_header.str();
     stream << "#ifdef SHOW_DEBUG\n";
@@ -244,6 +245,7 @@ void Parser::WriteFiles(const std::string &originalfilename, const std::string &
       << "return new " << namespace_prefix << "CreateClass ();\n}\n";
       stream << "extern \"C\" CAS::AbstractSimplifyRuleCollection *" << plugin_name << "SimplifyClass ()\n{\n"
 	    << "   return new CAS::SimplifyRuleCollection< " << namespace_prefix << classname << " > ();\n}\n";
+      stream << "#pragma GCC visibility pop\n";
     }
 }
 

@@ -17,7 +17,7 @@
 @author Fabian Schmitthenner
 
 
-@mainpage 
+@mainpage
 
 @section sec1 Einleitung
 
@@ -61,7 +61,7 @@ soll das ganze Plugin-basiert sein. Die Regeln haben folgende Form:
 <pre>
 Start --> End
 </pre>
-  
+
 Einige Regeln sind im Verzeichnis Regeln gespeichert. Hier sind auch Beispiele gespeichert.
 
 
@@ -123,155 +123,160 @@ void test5 (CAS::TermCacheInit &cache);
 void test5 ();
 #endif
 
+
+
 int yyFlexLexer::yywrap ()
 {
-  return 1;
+    return 1;
 }
 
-namespace Global { int tabs = 0; };
+namespace Global {
+int tabs = 0;
+};
 
 CAS::AbstractCreateClass *OurTerms;
 
 int main (int argc, char **argv)
 {
-  //load library
-  dlerror();
-  void *handle = dlopen ("libmyrules.so", RTLD_LAZY);
-  if (handle == NULL)
-  {
-    std::cout << "could not load library: error: " << dlerror() << std::endl;
-    return 2;
-  }
-  void *createclass = dlsym (handle, "BasicStuffCreateClass");
-  void *simplifyrulecollection = dlsym (handle, "BasicStuffSimplifyClass");
-  
-  OurTerms = ((CAS::AbstractCreateClass * (*) ())createclass)();
-  CAS::AbstractSimplifyRuleCollection *rulecollection = ((CAS::AbstractSimplifyRuleCollection * (*) ())simplifyrulecollection)();
-   
-  std::cout << "Copyright (C) 2009 Fabian Schmitthenner" << std::endl;
-  std::cout << "License GPLv2+: GNU GPL version 2 or later <http://gnu.org/licenses/gpl.html>" << std::endl;
-  std::cout << "This is free software: you are free to change and redistribute it." << std::endl;
-  std::cout << "There is NO WARRANTY, to the extent permitted by law." << std::endl;
-  CAS::AbstractSimplifyRuleCollection &r = *rulecollection;
-#ifdef CACHE  
-  CAS::TermCacheInit r2 (&r);
-  CAS::Term::SetStandardRuleCollection(r2);
-#else
-  CAS::Term::SetStandardRuleCollection(r);
-#endif
-  if (argc == 1)
-    //test1();
-    test1();
-  else
+    //load library
+    dlerror();
+    void *handle = dlopen ("libmyrules.so", RTLD_LAZY);
+    if (handle == NULL)
+    {
+        std::cout << "could not load library: error: " << dlerror() << std::endl;
+        return 2;
+    }
+    void *createclass = dlsym (handle, "TypeStuffCreateClass");
+    void *simplifyrulecollection = dlsym (handle, "BasicStuffSimplifyClass");
+
+    OurTerms = ((CAS::AbstractCreateClass * (*) ())createclass)();
+    CAS::AbstractSimplifyRuleCollection *rulecollection = ((CAS::AbstractSimplifyRuleCollection * (*) ())simplifyrulecollection)();
+
+    std::cout << "Copyright (C) 2009 Fabian Schmitthenner" << std::endl;
+    std::cout << "License GPLv2+: GNU GPL version 2 or later <http://gnu.org/licenses/gpl.html>" << std::endl;
+    std::cout << "This is free software: you are free to change and redistribute it." << std::endl;
+    std::cout << "There is NO WARRANTY, to the extent permitted by law." << std::endl;
+    CAS::AbstractSimplifyRuleCollection &r = *rulecollection;
 #ifdef CACHE
-    test5(r2);
+    CAS::TermCacheInit r2 (&r);
+    CAS::Term::SetStandardRuleCollection(r2);
 #else
-    test5 ();
+    CAS::Term::SetStandardRuleCollection(r);
 #endif
-  delete OurTerms;
-  delete rulecollection;
-  dlclose(handle);
+    if (argc == 1)
+        //test1();
+        test1();
+    else
+#ifdef CACHE
+        test5(r2);
+#else
+        test5 ();
+#endif
+    delete OurTerms;
+    delete rulecollection;
+    dlclose(handle);
 }
 
 void Output (CAS::Term *t)
-{  
-  std::cout << "Term(Hash:" << t->GetHashCode() << "): " << *t << std::endl;
-  CAS::TermReference* temp = t->Simplify();
-  if (temp)
-  {
-    const CAS::Term *tt;
-    if (temp == CAS::Term::This())
-      tt = t;
-    else
+{
+    std::cout << "Term(Hash:" << t->GetHashCode() << "): " << *t << std::endl;
+    CAS::TermReference* temp = t->Simplify();
+    if (temp)
     {
-      tt = temp->get_const();
-      t = NULL;
+        const CAS::Term *tt;
+        if (temp == CAS::Term::This())
+            tt = t;
+        else
+        {
+            tt = temp->get_const();
+            t = NULL;
+        }
+        std::cout << "Vereinfacht: " << *tt << std::endl;
+        if (temp != CAS::Term::This ())
+            delete temp;
     }
-    std::cout << "Vereinfacht: " << *tt << std::endl;
-    if (temp != CAS::Term::This ())
-      delete temp;
-  }
-  delete t;
+    delete t;
 }
 
 void Output (CAS::TermReference *t)
 {
-  std::cout << "Term(Hash:" << t->GetHashCode() << "): " << *t << std::endl;
-  delete t;
+    std::cout << "Term(Hash:" << t->GetHashCode() << "): " << *t << std::endl;
+    delete t;
 }
 
 void OutputRule (CAS::TermReference *t, CAS::Rule *rule)
 {
-  std::cout << "Term: " << *t << std::endl;
-  std::vector< CAS::TermReference * > its;
-  CAS::SimplifyWithRule (t, rule, std::back_insert_iterator< std::vector <CAS::TermReference *> > (its));
-  std::cout << "Nach Regelanwendung: (" << its.size() << " Mal)"  << std::endl;
-  for (std::vector< CAS::TermReference* >::iterator it = its.begin(); it != its.end(); ++it)
-  {
-    std::cout << "->" << **it << std::endl;
-    delete *it;
-  }
-  delete t;
+    std::cout << "Term: " << *t << std::endl;
+    std::vector< CAS::TermReference * > its;
+    CAS::SimplifyWithRule (t, rule, std::back_insert_iterator< std::vector <CAS::TermReference *> > (its));
+    std::cout << "Nach Regelanwendung: (" << its.size() << " Mal)"  << std::endl;
+    for (std::vector< CAS::TermReference* >::iterator it = its.begin(); it != its.end(); ++it)
+    {
+        std::cout << "->" << **it << std::endl;
+        delete *it;
+    }
+    delete t;
 }
 
 CAS::TermReference *CreateLn (CAS::TermReference *t)
 {
-  return Create< CAS::BuildInFunction > (CAS::BuildInFunction::Ln, t);
+    return Create< CAS::BuildInFunction > (CAS::BuildInFunction::Ln, t);
 }
 
 CAS::TermReference *CreateExp (CAS::TermReference *t)
 {
-  return Create< CAS::BuildInFunction > (CAS::BuildInFunction::Exp, t);
+    return Create< CAS::BuildInFunction > (CAS::BuildInFunction::Exp, t);
 }
 
 
 void test1 ()
 {
-  TermReference *ref =  CreateExp (Create<CAS::Mul> (CreateLn (Create<CAS::Variable> (0)), Create<CAS::Variable> (2)));
-  std::cout << *ref << std::endl;
-  /*for (int i = 0; i < 10000000000; ++i)
-  {
-    
-  }*/
-  delete ref;
+    TermReference *ref =  CreateExp (Create<CAS::Mul> (CreateLn (Create<CAS::Variable> (0)), Create<CAS::Variable> (2)));
+    std::cout << *ref << std::endl;
+    /*for (int i = 0; i < 10000000000; ++i)
+    {
+
+    }*/
+    delete ref;
 }
 
 void test0()
 {
-  std::cout << "------ANFANG-----" << std::endl;
-  std::ifstream stream ("calc");
-  Parser parser (std::cout, &stream);
-  parser.setDebug(false);
-  for (int i = 0; i < 2; ++i)
-  {
-    parser.parse ();
-    std::cout << "\n--------------" << std::endl;
-  }
-  std::cout << "------ENDE-------" << std::endl;
+    std::cout << "------ANFANG-----" << std::endl;
+    std::ifstream stream ("calc");
+    Parser parser (std::cout, &stream);
+    parser.setDebug(false);
+    for (int i = 0; i < 2; ++i)
+    {
+        parser.parse ();
+        std::cout << "\n--------------" << std::endl;
+    }
+    std::cout << "------ENDE-------" << std::endl;
 };
 
 std::vector< const CAS::TermReference * > terms;
 
 CAS::TermReference *CreateOldTerm (const std::string &zahl)
 {
-  if (zahl == "-1")
-    return terms.back()->Clone ();
-  std::stringstream z (zahl);
-  unsigned int zz; z >> zz;
-  if (terms.size() > zz)
-  {
-    return terms[zz]->Clone();
-  }
-  else
-  {
-    throw new std::out_of_range ("index out of range");
-  }
+    if (zahl == "-1")
+        return terms.back()->Clone ();
+    std::stringstream z (zahl);
+    unsigned int zz;
+    z >> zz;
+    if (terms.size() > zz)
+    {
+        return terms[zz]->Clone();
+    }
+    else
+    {
+        throw new std::out_of_range ("index out of range");
+    }
 }
 
 void AddTerm (const CAS::TermReference *r)
 {
-  std::cout << "  %" << terms.size() << "%";
-  terms.push_back(r);
+    std::cout << "  %" << terms.size() << "%";
+    terms.push_back(r);
 }
 
 #ifdef CACHE
@@ -280,28 +285,28 @@ void test5 (CAS::TermCacheInit& cache)
 void test5 ()
 #endif
 {
-  Parser parser (std::cout);
-  parser.setDebug(false);
-  unsigned int index = 0;
-  while (true)
-  {
-    #ifdef CACHE
-    if (parser.parse() == 1)
+    Parser parser (std::cout);
+    parser.setDebug(false);
+    unsigned int index = 0;
+    while (true)
     {
-      cache.ClearCache();
-      std::cout << "cache cleared" << std::endl;
-      return;
+#ifdef CACHE
+        if (parser.parse() == 1)
+        {
+            cache.ClearCache();
+            std::cout << "cache cleared" << std::endl;
+            return;
+        }
+#else
+        if (parser.parse () == 1)
+        {
+            std::cout << "Fehler" << std::endl;
+            return;
+        }
+#endif
+        std::cout << std::endl <<  "-----------------" << std::endl;
+#ifdef CACHE
+        cache.GetInfo (std::cout);
+#endif
     }
-    #else
-    if (parser.parse () == 1)
-    {
-      std::cout << "Fehler" << std::endl;
-      return;
-    }
-    #endif
-    std::cout << std::endl <<  "-----------------" << std::endl;
-    #ifdef CACHE
-    cache.GetInfo (std::cout);    
-    #endif
-  }
 }

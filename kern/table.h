@@ -51,6 +51,6 @@ class Table : public CAS::Term
     static Term *CreateTerm (TermReference *term, TermReference *variable, TermReference *from, TermReference *to);
 };
 
-}
+};
 
 #endif // CAS_TABLE_H

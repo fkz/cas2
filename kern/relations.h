@@ -43,7 +43,7 @@ class Boolean: public CAS::Term
       static TermReference t (new Boolean (false));
       return t.Clone();
     }
-    bool GetBoolean ()
+    bool GetBoolean () const
     {
       return b;
     }

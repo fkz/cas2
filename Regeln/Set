@@ -1,0 +1,4 @@
+included;
+
+Set[{x},{y},{z}] %{ $$ $x$->Equals (*$y$) %} --> z;
+Set[{x},{y},{z}] --> i:x { Set[i,y,z] };

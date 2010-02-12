@@ -21,7 +21,7 @@
 #include "table.h"
 #include "termreference.h"
 #include "number.h"
-#include "Regeln/rules.out.cpp_classes.h"
+#include "Regeln/rules.out.cpp.h"
 
 using namespace CAS;
 
@@ -102,7 +102,7 @@ void Table::ToString(std::ostream& stream) const
   while (fromnum <= tonum)
   {
     TermReference *number = Create< Number > (fromnum);
-    TermReference *output = Create< MySimplifyRules::Set > (term->Clone(), variable->Clone(), number);
+    TermReference *output = Create< MyTypes::Set > (term->Clone(), variable->Clone(), number);
     stream << "| " << fromnum << " | " << *output << " |\n";
     delete output;
     ++fromnum;

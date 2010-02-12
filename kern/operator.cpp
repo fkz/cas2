@@ -451,70 +451,38 @@ Mul::Mul(TermReference** t, size_t anz)
 
 void Mul::push_back(TermReference* arg1)
 {
+  if (children.begin() != children.end() && (children.begin()->second.first->get_const()->Cast< Unknown >()))
   {
-    const Error *error;
-    if (children.begin() != children.end() && (error = children.begin()->second.first->get_const()->Cast<Error>()))
-    {
-      const Error *error2 = arg1->get_const()->Cast<const Error>();
-      if (!error2)
-      {
-	const Number* number = arg1->get_const()->Cast<const Number >();
-	if (number && number->GetNumber() == 0 && (error->GetArt () == Error::Infinity || error->GetArt() == Error::minusInfinity))
-	{
-	  delete arg1;
-	  delete children.begin()->second.first;
-	  children.clear();
-	  children.push_back(Create< Error > (Error::Unknown), 1);
-	  return;
-	}
-	delete arg1;
-	return;
-      }
-      if (error->GetArt () == Error::Unknown || error2->GetArt() == Error::Infinity)
-      {
-	delete arg1;
-	return;
-      }
-      if (error2->GetArt () == Error::Unknown)
-      {
-	delete children.begin()->second.first;
-	children.clear();
-	children.push_back(arg1, 1);
-	return;
-      }
-      TermReference *ref = Create< Error > (error->GetArt() == Error::Infinity ? Error::minusInfinity : Error::Infinity);
-      delete children.begin()->second.first;
-      delete arg1;
-      children.clear();
-      children.push_back(ref, 1);
-      return;
-    }
-    if (error = arg1->get_const()->Cast<const Error>())
-    {
-      if (children.begin() != children.end() && children.begin()->second.first->get_const()->Cast< const Number > () && children.begin()->second.first->get_const()->Cast< const Number > ()->GetNumber () == 0)
-      {
-	for (TermCollectionTemplate<NumberX>::const_iterator it = children.begin(); it != children.end(); ++it)
-	delete it->second.first;    
-	children.clear();
-	children.push_back(Create< Error > (Error::Unknown), 1);
-	return;
-      }
-      //FIXME: infinity * (-1) = -infinity; (-)infinity * 0 = unknown
-      for (TermCollectionTemplate<NumberX>::const_iterator it = children.begin(); it != children.end(); ++it)
-	delete it->second.first;    
-      children.clear();
-      children.push_back(arg1, 1);
-      return;
-    }
+    delete arg1;
+    return;
+  }
+  //Limit wird in Regeln verarbeitet
+  if (arg1->get_const()->Cast<const Unknown>())
+  {
+    for (TermCollectionTemplate<NumberX>::const_iterator it = children.begin(); it != children.end(); ++it)
+      delete it->second.first;    
+    children.clear();
+    children.push_back(Create< Unknown > (), 1);
+    return;
   }
   const Number *num = arg1->get_const()->Cast< const Number >();
   if (num && num->GetNumber() == 0)
   {
-    //children können nicht Error oder ähnlich sein, also ist das Ergebnis 0
+    bool unknown = false;
     for (TermCollectionTemplate<NumberX>::const_iterator it = children.begin(); it != children.end(); ++it)
-      delete it->second.first;    
+    {
+      if (it->second.first->get_const()->Cast< const Limit > ())
+	unknown = true;
+      delete it->second.first;
+    }
     children.clear();
-    children.push_back(arg1, 1);
+    if (!unknown)
+      children.push_back(arg1, 1);
+    else
+    {
+      delete arg1;
+      children.push_back(Create< Unknown > (), 1);
+    }
     return;
   }
   
@@ -731,13 +699,13 @@ TermReference* Mul::Simplify()
     }
     
   vect.clear();
-  Where< Error > (std::back_inserter (vect), &Operator::True);
+  Where< Unknown > (std::back_inserter (vect), &Operator::True);
   if (!vect.empty())
   {
     //TODO: I think, this should never be reached, because it's alredy checked out in the push_back-function, but I'm not sure
     assert (0);
     delete this;
-    //return Create<Error> ();
+    return Create<Unknown> ();
   }
   
   TermReference* result2 = coll->Simplify(this);

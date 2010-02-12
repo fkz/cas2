@@ -1,0 +1,4 @@
+included;
+
+Exp[ Ln[ {x} ] ] --> x;
+Ln[ Exp[ {x} ] ] --> Add[ x, Mul[ Number<"2">[], Pi[], Natural[] ] ];

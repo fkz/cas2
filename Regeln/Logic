@@ -1,0 +1,9 @@
+included;
+
+And[ False[], {x} ] --> False[];
+And[ True[], {x} ] --> x;
+
+Equal[ Number{n1}, Number{n2} ] %{ $$ !$n1$->Equals (*$n2$) %} --> False[];
+
+Or[ False[], {x} ] --> x;
+Or[ True[], {x} ] --> True[];

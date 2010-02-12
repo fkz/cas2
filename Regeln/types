@@ -1,0 +1,74 @@
+%{
+/*
+    <one line to give the program's name and a brief idea of what it does.>
+    Copyright (C) 2009  Fabian Schmitthenner
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+*/
+#include <termreference.h>
+#include <operator.h>
+#include <transform.h>
+#include <exp.h>
+#include <number.h>
+#include <hashes.h>
+#include <typeinfo>
+#include <iostream>
+#include <relations.h>
+#include <abstractcreateclass.h>
+#include <error.h>
+#include <Constants.h>
+#define SHOW_DEBUG
+%}
+
+NAMESPACE "MyTypes";
+CLASS "NonUsedClassName";
+PLUGIN_NAME "TypeStuff";
+
+TYPE ASSOC Add: "CAS::Add";
+TYPE ASSOC Mul: "CAS::Mul";
+TYPE Diff: "CAS::Derive";
+TYPE Variable: "CAS::Variable";
+TYPE Ln: "CAS::BuildInFunction", %{ $->GetFunctionEnum () == CAS::BuildInFunction::Ln %}, "CAS::BuildInFunction::Ln";
+TYPE Exp: "CAS::BuildInFunction", %{ $->GetFunctionEnum () == CAS::BuildInFunction::Exp %}, "CAS::BuildInFunction::Exp";
+TYPE Number: "CAS::Number";
+TYPE Number0: "CAS::Number", %{ $->GetNumber () == 0 %};
+TYPE Numberm1: "CAS::Number", %{ $->GetNumber () == -1 %};
+TYPE Number1: "CAS::Number", %{ $->GetNumber () == 1 %};
+TYPE new Set "Set" [3]: "CAS::Type::GetBuildInType (CAS::Type::Term)";
+TYPE new Constant "Constant" [1]: "CAS::Type::GetBuildInType (CAS::Type::Term)";
+TYPE new Expand "Expand" [1]: "CAS::Type::GetBuildInType (CAS::Type::Term)";
+TYPE new Fakultaet "Fakultaet" [1]: "CAS::Type::GetBuildInType (CAS::Type::Term)";
+TYPE new NoExpand "NoExpand" [1] : "CAS::Type::GetBuildInType (CAS::Type::Term)";
+TYPE ASSOC Equal: "CAS::Relations", %{ $->GetRelationType () == CAS::Relations::Equality %}, "CAS::Relations::Equality";
+TYPE new Solve "Solve" [2]: "CAS::Type::GetBuildInType (CAS::Type::Boolean)";
+TYPE new Lim "Lim" [3] : "CAS::Type::GetBuildInType (CAS::Type::Term)";
+TYPE Unknown: "CAS::Unknown";
+TYPE Any: "CAS::Term";
+TYPE new Sum "Sum" [4]: "CAS::Type::GetBuildInType (CAS::Type::Term)";
+TYPE False: "CAS::Boolean", %{ !$->GetBoolean () %}, "false";
+TYPE True: "CAS::Boolean", %{ $->GetBoolean () %}, "true";
+TYPE new Factor "Factor" [1]: "CAS::Type::GetBuildInType (CAS::Type::Term)";
+TYPE new Floor "Floor" [1]: "CAS::Type::GetBuildInType (CAS::Type::Term)";
+TYPE Limit: "CAS::Limit";
+
+TYPE new ASSOC Or "Or" [2]: "CAS::Type::GetBuildInType (CAS::Type::Term)";
+TYPE new ASSOC And "And" [2]: "CAS::Type::GetBuildInType (CAS::Type::Term)";
+
+TYPE Pi: "CAS::Pi";
+TYPE Natural: "CAS::Natural";
+
+//BUG: We have to add a simplification note to get it compiled
+Exp[Number0[]] --> Number<"1">[];
