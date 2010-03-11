@@ -1,24 +1,169 @@
 %{
-#include "types.out.cpp.h"
+/*
+    <one line to give the program's name and a brief idea of what it does.>
+    Copyright (C) 2009  Fabian Schmitthenner
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+*/
+//#define SHOW_DEBUG
 %}
 
 NAMESPACE "MySimplifyRules";
 CLASS "MyClass";
 PLUGIN_NAME "BasicStuff";
 
-//TODO: support relative paths
-include_types "/home/fabian/svn/trunk/c++/mathematics/cas2/Regeln/types";
-include_rules "/home/fabian/svn/trunk/c++/mathematics/cas2/Regeln/Exp";
-include_rules "/home/fabian/svn/trunk/c++/mathematics/cas2/Regeln/Set";
-include_rules "/home/fabian/svn/trunk/c++/mathematics/cas2/Regeln/Logic";
-include_rules "/home/fabian/svn/trunk/c++/mathematics/cas2/Regeln/Solve";
-include_rules "/home/fabian/svn/trunk/c++/mathematics/cas2/Regeln/Expand";
-include_rules "/home/fabian/svn/trunk/c++/mathematics/cas2/Regeln/Diff";
+include "/home/fabian/svn/trunk/c++/mathematics/cas2/Regeln/types";
+
+
+//Exponentialfunktionen:
+Exp[Number0[]] --> Number<"1">[];
+Ln[Exp[{x}]] --> x;
+Exp[Ln[{x}]] --> x;
+Ln[Number1[]] --> Number<"0">[];
+
+//Ableitungen
+Diff[{x},{y}] %{ $$ $x$->Equals (*$y$) %} --> Number<"1">[];
+Diff[Add[ ... {x} ],{y}] --> Add[ ... i:x { Diff[i,y] }];
+Diff[Number,{x}] --> Number<"0">[];
+//TODO: why does this not function?? 
+Diff[Mul[ ... {mul}], {x}] --> Add[ ... i:mul { Mul[ ... y:mul { %{ if (&$y$ != &$i$) %} = y %{ else %} = Diff[y,x]  } ] } ];
+Diff[Exp[{x}],{y}] --> Mul[Exp[x], Diff[x,y]];
+Diff[Ln[{x}],{y}] --> Mul[Exp[Mul[Ln[x], Number<"-1">[]]],Diff[x,y]];
+Diff[Variable{x},Variable{y}] --> Number<"0">[];
+
+//Setzen
+Set[{x},{y},{z}] %{ $$ $x$->Equals (*$y$) %} --> z;
+Set[{x},{y},{z}] --> i:x { Set[i,y,z] };
+
+//Ausklammern
+Expand[Mul[Add[ ... {add}] ... {mul}]] --> Add[ ... i:add { Expand[Mul[ i ... y:mul {y} ]] } ];
+Expand[Add[ ... {x}]] --> Add[ ... i:x { Expand[i] } ];
+Expand[Exp[Mul[Ln[Add[... {add}]], Number{num}]]]
+  --> Add[ ... i:add { Expand[Mul[ i, Exp[Mul[Ln[Add[ ... y:add {y}]], 
+  %{ $$ = CAS::Create<CAS::Number> ($num$->get_const()->Cast<const CAS::Number> ()->GetNumber () - 1); %}]]]]}]; 
+Expand[Mul[ ... {x} ]] --> NoExpand[ Mul[ ... i:x { Expand[i] } ] ];
+NoExpand[Mul[Add ... {mul}]{x}] --> Expand[x];
+NoExpand[{x}] --> x;
+
+Expand[{x}] --> i:x { Expand[i] };
+
+//NoExpand[Add{x}] --> x;
+//Expand[NoExpand[Mul[Add{x} ... {y}]{z}]] --> Expand[z];
+//Expand[NoExpand[{x}]] --> x;
+
+Fakultaet[Number{num}] -->
+%{
+  const mpz_class &n = $num$->get_const()->Cast<const CAS::Number> ()->GetNumber ();
+  mpz_class res = 1;
+  for (mpz_class i = 1; i <= n; ++i)
+    res *= i;  
+%} =Number<"res">[];
 
 %{
-#ifdef SHOW_DEBUG
-}; };
-namespace Global { int tabs; };
-namespace MySimplifyRules { namespace __private {
-#endif
+inline bool HasX (const CAS::AutoTermReference &term, const CAS::AutoTermReference &x)
+{
+  if (term->Equals (*x))
+     return true;
+  void *param = NULL;
+  while (true)
+  {
+    CAS::AutoTermReference ref = term->GetChildren (param);
+    if (!ref)
+      break;
+    if (HasX (ref, x))
+      return true;
+  }
+  return false;
+}
 %}
+
+//Solve equations
+Solve [Equal[{x},{y}],{z}] %{ $$ $x$->Equals (*$z$) && !HasX ($y$, $z$) || $y$->Equals (*$z$) && !HasX ($x$, $z$) %} --> Equal[x,y];
+Solve [{a},{b}] %{ $$ !HasX ($a$, $b$) %} --> a;
+
+//Solve [ Equal[ Exp[ {xterm} ], {noxterm} ], {x} ] %{ $$ HasX ($xterm$, $x$) && !HasX ($noxterm$, $x$) %}
+//--> Solve [ Equal [ xterm, Ln[ noxterm ] ], x];
+
+Solve[ (1) Equal[ Exp[ Any & %{ HasX ($$, $x$) %}{xterm}] , Any & %{ !HasX ($$, $x$) %}{noxterm}], {x} ] 
+--> Solve [ Equal [xterm, Ln[ noxterm ] ], x];
+
+Solve[ (1) Equal[ Add[ ... Any & %{ HasX ($$, $x$) %}{xterms}, {noxterms}], Any & %{ !HasX ($$, $x$) %}{eq2} ], {x} ]
+--> Solve [ Equal[ Add[ ... i:xterms { i } ], Add[ eq2, Mul[ Number<"-1">[], Add[ ... i:noxterms { i } ] ] ] ], x ];
+
+Solve[ (1) Equal[ Add[ ... Any & %{ HasX ($$, $x$) %}{xterms}, {noxterms}], Any & %{ HasX ($$, $x$) %}{eq2} ], {x} ]
+--> Solve [ Equal[ Add[ ... i:noxterms { i } ], Add[ eq2, Mul[ Number<"-1">[], Add[ ... i:xterms { i } ] ] ] ], x ];
+
+Equal[ Number{n1}, Number & %{ ! $$->Equals (*$n1$) %} {n2} ] --> False[];
+
+//Solve[ (1) Equal[ Add[ ... Any & %{ HasX ($$, $x$) %}{xterms}, {noxterms}]] {x}]
+//--> Solve[ Equal[ Add[ ... xterms], Add
+
+//Any[ ... {x} ] --> Add[ ... i:x {i}]
+
+
+
+Lim[Error,{x},{y}] --> Error[];
+
+//Lim[{term},{x},{wert}] --> %{ //HERE IS THIS RULE
+//%}
+//  =Set[ i:term { Lim[i,x,wert] }, x, wert]
+// == Error{abc} ++ "return NULL;";
+
+//Lim[Mul[Exp[Mul[Ln[{nenner}], Numberm1]] ... {zaehler}], {x}, {wert}] -->
+// %{ CAS::TermReference *zaehler; %} 
+//   "zaehler" = 
+//   Set[Mul[... i:zaehler {i}], x, wert]
+//   %{ CAS::TermReference *nenner; %} "nenner" = Set[nenner, x, wert]
+//   "zaehler" == Number0 -- "return NULL;"
+//   "nenner" == Number0 -- "return NULL;"
+//   = Lim[Mul[Exp[Mul[Ln[Diff[nenner,x]], Number<"-1">[]]], Diff[Mul[ ... i:zaehler {i}],x] ], x, wert];
+
+Lim[{x},{y},{z}] --> Error[];
+
+Sum[{term},{variable},{anfang},{ende}] %{ $$ $anfang$->Equals(*$ende$) %} --> Set[term, variable, anfang];
+Sum[Add[...{terms}],{variable},{anfang},{ende}] --> Add[...i:terms{Sum[i,variable,anfang,ende]}];
+Sum[{terms},{variable},{anfang},{ende}] %{ $$ !HasX ($terms$, $variable$) %} --> Mul[ terms, Add[ende, Mul[ anfang, Number<"-1">[]], Number<"1">[]]];
+
+Sum[{term},{variable},{anfang},{ende}] --> %{ %}
+   anfang == Number0 ++ "return NULL;"
+   = Add[ Mul[ Number<"-1">[], Sum[term, variable, Number<"0">[], Add[anfang, Number<"-1">[]]] ], Sum[ term, variable, Number<"0">[], ende] ];
+
+Sum[{x},{y},Number0,{ende}] %{ $$ $x$->Equals (*$y$) %} --> Mul[ ende, Add[ende, Number<"1">[] ], Number<"""1/2""">[] ];
+Sum[ (1) Exp[Mul[Ln[{z}],Any & %{ $$->Equals (*$i2$) %}{i}]], {i2}, Number0, {ende}] --> 
+  Mul[ 
+    Add[ Exp[ Mul[ Ln[z], Add[ende, Number<"1">[]]]], Number<"-1">[]],
+    Exp[ Mul[ Number<"-1">[], Ln[ Add[ z, Number<"-1">[]] ]]]
+  ]; 
+
+Sum[{term},{variable},Number{anfang},Number{ende}] --> 
+%{ %}
+  = Number<"0">[]
+%{
+  for (mpq_class it = $anfang$->get_const ()->Cast<const CAS::Number>()->GetNumber (); it <= $ende$->get_const()->Cast<const CAS::Number> ()->GetNumber (); ++it)
+  {
+%}
+  = Add["result", Set[term, variable, Number<"it">[]]]
+%{
+  }
+%};
+
+Floor[Number{x}] --> 
+ %{
+    mpq_class rat = $x$->get_const()->Cast<const CAS::Number> ()->GetNumber ();
+    mpz_class tr;
+    mpz_fdiv_q (tr.get_mpz_t(), rat.get_num().get_mpz_t(), rat.get_den ().get_mpz_t());
+ %}
+  = Number<"tr">[];
