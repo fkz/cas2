@@ -102,7 +102,7 @@ void Table::ToString(std::ostream& stream) const
   while (fromnum <= tonum)
   {
     TermReference *number = Create< Number > (fromnum);
-    TermReference *output = Create< MyTypes::Set > (term->Clone(), variable->Clone(), number);
+    TermReference *output = Create<  MySimplifyTypes::Set > (term->Clone(), variable->Clone(), number);
     stream << "| " << fromnum << " | " << *output << " |\n";
     delete output;
     ++fromnum;

@@ -136,6 +136,9 @@ void Parser::WriteFiles(const std::string &originalfilename, const std::string &
     header2 << begin_stream_header2.str() << "};\n";
     
     header << "#pragma once\n";
+    //TODO: define this in an include file
+    header << "#define EXPORT __attribute__ ((visibility (\"default\")))\n";
+    
     header << "#include \"" << headername2 << "\"\n";
     
     stream << "#include \"" << headername << "\"\n";
@@ -265,9 +268,9 @@ void Parser::WriteFiles(const std::string &originalfilename, const std::string &
     if (!plugin_name.empty ())
     {
       std::string namespace_prefix = _namespace.empty() ? "" : (_namespace + "::");
-      stream << "extern \"C\" CAS::AbstractCreateClass *" << plugin_name << "CreateClass ()\n{\n"
+      stream << "extern \"C\" EXPORT CAS::AbstractCreateClass *" << plugin_name << "CreateClass ()\n{\n"
       << "return new " << namespace_prefix << "CreateClass ();\n}\n";
-      stream << "extern \"C\" CAS::AbstractSimplifyRuleCollection *" << plugin_name << "SimplifyClass ()\n{\n"
+      stream << "extern \"C\" EXPORT CAS::AbstractSimplifyRuleCollection *" << plugin_name << "SimplifyClass ()\n{\n"
 	    << "   return new CAS::SimplifyRuleCollection< " << namespace_prefix << classname << " > ();\n}\n";
       stream << "#pragma GCC visibility pop\n";
     }
