@@ -254,17 +254,17 @@ void NormalExpressionLeft::ToString(std::ostream& out, const std::string& obj, b
       }
       else
       {
-	out << "bool nomatch = false;\nwhile (true)\n";
+	out << "bool nomatch" << index << " = false;\nwhile (true)\n";
 	out << "{\n";
 	out << "CAS::AutoTermReference loc" << index << " = my" << index << "->GetChildren(param" << index << ");\n";
 	out << "if (!loc" << index << ")\n   break;\n";
 	for (std::list< ExpressionListLeft* >::iterator it = children2->begin(); it != children2->end(); ++it)
 	{
 	  std::stringstream str; str << "loc" << index;
-	  (*it)->ToString (out, str.str(), vars, "{}", "continue;", varIndex);
+	  (*it)->ToString (out, str.str(), vars, "{}", "continue;", index);
 	}
-	out << "//When this state is reached, the rule does not match\nnomatch=true;break;\n";
-	out << "}\nif (nomatch) " << endStr << "\n";
+	out << "//When this state is reached, the rule does not match\nnomatch" << index << "=true;break;\n";
+	out << "}\nif (nomatch" << index << ") " << endStr << "\n";
       }
     }
   }

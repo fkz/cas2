@@ -99,6 +99,7 @@ void WriteHead (std::ostream &stream, const std::string &originalfile)
 void Parser::WriteIncludeFile(const std::string& headername2, std::ostream& stream)
 {
   stream << "//WARNING: this is an auto generated file\n";
+  stream << "included;\n";
   stream << "include_cpp \"" << headername2 << "\";\n";
   for (std::map< Identification, AbstractDefinition* >::const_iterator it = definitions.begin(); it != definitions.end(); ++it)
   {
@@ -272,7 +273,6 @@ void Parser::WriteFiles(const std::string &originalfilename, const std::string &
     }
 }
 
-<<<<<<< .mine
 void Parser::AddDefinitions(const std::string& filename)
 {
   std::ifstream foo ((filename + ".configure").c_str(), std::ifstream::in);
@@ -298,7 +298,6 @@ void Parser::AddDefinitions(const std::string& filename)
 }
 
 
-=======
 
 void Parser::IncludeTypes(const std::string& filename)
 {
@@ -320,7 +319,3 @@ void Parser::IncludeRules(const std::string& filename)
   
   rules.splice(rules.end(), include.rules);
 }
-
-
-
->>>>>>> .r394

@@ -26,7 +26,7 @@ term: term '^' term { $$ = CAS::TermReference::Create<CAS::BuildInFunction> (CAS
     | STR '[' equalTerm ',' addTerm ']' { $$ = OurTerms->Create (*$1, $3, $5); delete $1; if (!$$) throw PARSE_ABORT__; }
     | STR '[' equalTerm ',' addTerm ',' addTerm ']' { $$ = OurTerms->Create (*$1, $3, $5, $7); delete $1; if (!$$) throw PARSE_ABORT__; }
     | STR '[' equalTerm ',' addTerm ',' addTerm ',' addTerm ']' { $$ = OurTerms->Create (*$1, $3, $5, $7, $9); delete $1; if (!$$) throw PARSE_ABORT__; }
-    | TABLE '[' addTerm ',' addTerm ',' addTerm ',' addTerm ']' { $$ = CAS::Create< CAS::Table > ($3, $5, $7, $9); }
+//    | TABLE '[' addTerm ',' addTerm ',' addTerm ',' addTerm ']' { $$ = CAS::Create< CAS::Table > ($3, $5, $7, $9); }
 ;
 
 mulTerm: term { $$ = $1; }

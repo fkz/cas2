@@ -23,7 +23,7 @@
 
 #include "term.h"
 
-
+/*
 namespace CAS {
 
 class Table : public CAS::Term
@@ -52,5 +52,5 @@ class Table : public CAS::Term
 };
 
 };
-
+*/
 #endif // CAS_TABLE_H

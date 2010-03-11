@@ -116,7 +116,6 @@ class DefinitionList
       }
       return it->second;
     }
-<<<<<<< .mine
     
     std::map< Identification, AbstractDefinition * >::const_iterator begin () const
     {
@@ -128,10 +127,8 @@ class DefinitionList
       return introparts.end();
     }
     
-=======
     
     void AddDefinitionList(DefinitionList &dl);
->>>>>>> .r394
 };
 
 };

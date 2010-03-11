@@ -24,12 +24,7 @@
 }
 
 %debug
-
-<<<<<<< .mine
-%token TYPE ARROW QUESTIONARROW DOTS OR NOT NAMESPACE CLASS NEW ASSOC MINUS PLUS EQUAL PLUGIN_NAME INCLUDE INCLUDE_CPP
-=======
-%token TYPE ARROW QUESTIONARROW DOTS OR NOT NAMESPACE CLASS NEW ASSOC MINUS PLUS EQUAL PLUGIN_NAME INCLUDE_TYPES INCLUDE_RULES INCLUDED
->>>>>>> .r394
+%token TYPE ARROW QUESTIONARROW DOTS OR NOT NAMESPACE CLASS NEW ASSOC MINUS PLUS EQUAL PLUGIN_NAME INCLUDE_TYPES INCLUDE_RULES INCLUDED INCLUDE INCLUDE_CPP
 %token <identification> ID
 %token <STRING> STR CPP_CODE
 %token <NUMBER> NUM
@@ -82,16 +77,13 @@ introSection: TYPE ID ':' STR ';'	{ $$ = new RuleParser::IntroPart ($2, $4); }
 |	TYPE ID ':' STR ',' CPP_CODE ',' STR ';' { $$ = new RuleParser::IntroPart ($2, $4, $6, $8); }
 |	TYPE ASSOC ID ':' STR ',' CPP_CODE ',' STR ';' { $$ = new RuleParser::IntroPart ($3, $5, $7, $9, true); }
 |	TYPE ID ':' STR ',' STR ';'	{ $$ = new RuleParser::IntroPart ($2, $4, NULL, $6); }
-<<<<<<< .mine
-|	TYPE NEW ID STR '[' NUM ']' ':' STR ';' { std::string str = *$4; $$ = new RuleParser::IntroPart ($3, /*TODO: make namespace*/ $4); CreateClass (&str, $6, $9); }
+|	TYPE NEW ID STR '[' NUM ']' ':' STR ';' { std::string str = *$4; std::string namestr = _namespace + "::" + str; $$ = new RuleParser::IntroPart ($3, &namestr); CreateClass (&str, $6, $9); }
 |	INCLUDE STR ';'  { $$ = NULL; AddDefinitions (*$2); delete $2; }
 |	INCLUDE_CPP STR ';' { $$ = NULL; begin_stream_header << "#include \"" << *$2 << "\"\n"; delete $2; }
-=======
 |	TYPE NEW ID STR '[' NUM ']' ':' STR ';' { std::string str = _namespace + "::" + *$4;  $$ = new RuleParser::IntroPart ($3, &str); CreateClass ($4, $6, $9); delete $4; }
 |	TYPE NEW ASSOC ID STR '[' NUM ']' ':' STR ';' { std::string str = _namespace + "::" + *$5;  $$ = new RuleParser::IntroPart ($4, &str, new std::string ("true"), NULL, true); CreateClass ($5, $7, $10); delete $5; }
 |	INCLUDE_TYPES STR ';' { IncludeTypes (*$2); delete $2; $$ = NULL; }
 |	INCLUDE_RULES STR ';' { IncludeRules (*$2); delete $2; $$ = NULL; }
->>>>>>> .r394
 ;
 
 mainPart:		

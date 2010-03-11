@@ -30,7 +30,7 @@
 #include <abstractcreateclass.h>
 #include <error.h>
 #include <Constants.h>
-#define SHOW_DEBUG
+//#define SHOW_DEBUG
 %}
 
 NAMESPACE "MyTypes";
@@ -63,6 +63,7 @@ TYPE True: "CAS::Boolean", %{ $->GetBoolean () %}, "true";
 TYPE new Factor "Factor" [1]: "CAS::Type::GetBuildInType (CAS::Type::Term)";
 TYPE new Floor "Floor" [1]: "CAS::Type::GetBuildInType (CAS::Type::Term)";
 TYPE Limit: "CAS::Limit";
+TYPE Error: "CAS::Error";
 
 TYPE new ASSOC Or "Or" [2]: "CAS::Type::GetBuildInType (CAS::Type::Term)";
 TYPE new ASSOC And "And" [2]: "CAS::Type::GetBuildInType (CAS::Type::Term)";

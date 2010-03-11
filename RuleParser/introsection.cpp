@@ -28,13 +28,8 @@ std::vector< std::string> RuleParser::Identification::dict_other;
 
 void RuleParser::DefinitionList::AddDefinition(RuleParser::AbstractDefinition* def)
 {
-<<<<<<< .mine
   if (def == NULL) 
     return;
-=======
-  if (def == NULL)
-    return;
->>>>>>> .r394
   assert (def->parent == NULL);
   Identification id = def->GetID();
   std::map< Identification, AbstractDefinition* >::iterator it = introparts.find (id);

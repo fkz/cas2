@@ -115,7 +115,7 @@ Equal[ Number{n1}, Number & %{ ! $$->Equals (*$n1$) %} {n2} ] --> False[];
 
 
 
-Lim[Error,{x},{y}] --> Error[];
+//Lim[Error,{x},{y}] --> Error[];
 
 //Lim[{term},{x},{wert}] --> %{ //HERE IS THIS RULE
 //%}
@@ -131,7 +131,7 @@ Lim[Error,{x},{y}] --> Error[];
 //   "nenner" == Number0 -- "return NULL;"
 //   = Lim[Mul[Exp[Mul[Ln[Diff[nenner,x]], Number<"-1">[]]], Diff[Mul[ ... i:zaehler {i}],x] ], x, wert];
 
-Lim[{x},{y},{z}] --> Error[];
+//Lim[{x},{y},{z}] --> Error[];
 
 Sum[{term},{variable},{anfang},{ende}] %{ $$ $anfang$->Equals(*$ende$) %} --> Set[term, variable, anfang];
 Sum[Add[...{terms}],{variable},{anfang},{ende}] --> Add[...i:terms{Sum[i,variable,anfang,ende]}];
