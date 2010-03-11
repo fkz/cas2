@@ -96,6 +96,26 @@ void WriteHead (std::ostream &stream, const std::string &originalfile)
   stream << " **************************/\n";
 }
 
+void Parser::WriteIncludeFile(const std::string& headername2, std::ostream& stream)
+{
+  stream << "//WARNING: this is an auto generated file\n";
+  stream << "include_cpp \"" << headername2 << "\";\n";
+  for (std::map< Identification, AbstractDefinition* >::const_iterator it = definitions.begin(); it != definitions.end(); ++it)
+  {
+    const IntroPart *intro = dynamic_cast< const IntroPart * > (it->second);
+    if (intro)
+    {
+       //create a line like this: TYPE Ln: "CAS::BuildInFunction", %{ $->GetFunctionEnum () == CAS::BuildInFunction::Ln %}, "CAS::BuildInFunction::Ln";
+       stream << "TYPE " << it->first.GetString() << ": \"" << intro->GetCPPClassName() << "\", %{" << intro->_GetCondition() << "%}, \"" << intro->GetAdditionalParam() << "\";\n";
+    }
+    else
+    {
+      std::cerr << "Warning: " << it->first.GetString() << " Definition-Type is not supported" << std::endl;
+    }
+  }
+}
+
+
 void Parser::WriteFiles(const std::string &originalfilename, const std::string &headername, const std::string &headername2, std::ostream& cppfile, std::ostream& hfile, std::ostream& hfile2)
 {
   if (is_included)
@@ -188,7 +208,10 @@ void Parser::WriteFiles(const std::string &originalfilename, const std::string &
       std::multimap< std::string, std::string >::const_iterator myit2 = myit;
       while (myit != myrules.end() && myit2->first == myit->first) ++myit;
     }
-    stream << "else return NULL;\n}\n";
+    if (myrules.empty())
+      stream << "return NULL;\n}\n";
+    else
+      stream << "else return NULL;\n}\n";
     
     header << "}; // namespace __private \n";
     stream << "}; // namespace __private \n";
@@ -249,6 +272,33 @@ void Parser::WriteFiles(const std::string &originalfilename, const std::string &
     }
 }
 
+<<<<<<< .mine
+void Parser::AddDefinitions(const std::string& filename)
+{
+  std::ifstream foo ((filename + ".configure").c_str(), std::ifstream::in);
+  if (!foo.is_open())
+  {
+    std::cerr << "Warning: " << filename << " should be compiled before including" << std::endl;
+    foo.open (filename.c_str(), std::ifstream::in);
+    if (!foo.is_open())
+      throw ParseException (RuleParser::ParseException::SYNTAX, "file does not exist: " + filename);
+  }
+  Parser parser (&foo);
+  parser.setDebug(false);
+  if (parser.parse() == PARSE_ABORT__)
+  {
+    throw ParseException (RuleParser::ParseException::SYNTAX, "syntax error in included file: " + filename);
+  }
+  for (std::map< Identification, AbstractDefinition* >::const_iterator it = parser.definitions.begin(); it != parser.definitions.end(); ++it)
+  {
+    it->second->RemoveParent();;
+    definitions.AddDefinition(it->second);
+  }
+  begin_stream_header << parser.begin_stream_header.str();
+}
+
+
+=======
 
 void Parser::IncludeTypes(const std::string& filename)
 {
@@ -273,3 +323,4 @@ void Parser::IncludeRules(const std::string& filename)
 
 
 
+>>>>>>> .r394

@@ -45,7 +45,7 @@ class Identification
     {
       id = 0;
     }
-    std::string GetString ()
+    std::string GetString () const
     {
       return dict_other[id-1];
     }
@@ -66,8 +66,12 @@ class AbstractDefinition
   protected:
     AbstractDefinition (Identification id) : id (id), parent (NULL) { }
   public:
-    Identification GetID () { return id; }
+    Identification GetID () const { return id; }
     virtual ~AbstractDefinition()  { }
+    void RemoveParent()
+    {
+      parent = NULL;
+    }
     
     friend class DefinitionList;
 };
@@ -82,11 +86,15 @@ class IntroPart: public AbstractDefinition
     
   public:
     IntroPart (Identification id, std::string *classname, std::string *condition = new std::string ("true"), std::string *additionalParam = NULL, bool associative = false);
-    const Identification GetName();
-    const std::string &GetCPPClassName();
-    const std::string &GetAdditionalParam () { return additionalParam; }
-    void GetCondition (std::ostream &stream, const std::string &rep);
-    bool isAssociative()
+    const Identification GetName() const;
+    const std::string &GetCPPClassName() const;
+    const std::string &GetAdditionalParam () const { return additionalParam; }
+    void GetCondition (std::ostream &stream, const std::string &rep) const;
+    const std::string &_GetCondition () const
+    {
+      return condition;
+    }
+    bool isAssociative() const
     {
       return associative;
     }
@@ -108,8 +116,22 @@ class DefinitionList
       }
       return it->second;
     }
+<<<<<<< .mine
+    
+    std::map< Identification, AbstractDefinition * >::const_iterator begin () const
+    {
+      return introparts.begin();
+    }
+    
+    std::map< Identification, AbstractDefinition * >::const_iterator end () const
+    {
+      return introparts.end();
+    }
+    
+=======
     
     void AddDefinitionList(DefinitionList &dl);
+>>>>>>> .r394
 };
 
 };

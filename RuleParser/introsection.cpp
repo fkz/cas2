@@ -28,8 +28,13 @@ std::vector< std::string> RuleParser::Identification::dict_other;
 
 void RuleParser::DefinitionList::AddDefinition(RuleParser::AbstractDefinition* def)
 {
+<<<<<<< .mine
+  if (def == NULL) 
+    return;
+=======
   if (def == NULL)
     return;
+>>>>>>> .r394
   assert (def->parent == NULL);
   Identification id = def->GetID();
   std::map< Identification, AbstractDefinition* >::iterator it = introparts.find (id);
@@ -49,18 +54,18 @@ RuleParser::IntroPart::IntroPart(RuleParser::Identification id, std::string* cla
   delete condition;
 }
 
-const std::string& RuleParser::IntroPart::GetCPPClassName()
+const std::string& RuleParser::IntroPart::GetCPPClassName() const
 {
   return classname;
 }
 
-const RuleParser::Identification RuleParser::IntroPart::GetName()
+const RuleParser::Identification RuleParser::IntroPart::GetName() const
 {
   return GetID();
 }
 
 
-void RuleParser::IntroPart::GetCondition(std::ostream& stream, const std::string& rep)
+void RuleParser::IntroPart::GetCondition(std::ostream& stream, const std::string& rep) const
 {
   size_t index_before = 0;
   for (size_t index = condition.find ("$", index_before);index != std::string::npos;index = condition.find ("$", index_before))
