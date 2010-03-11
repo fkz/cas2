@@ -157,7 +157,8 @@ int main(int argc, char **argv) {
     }
     
     parser.WriteFiles(output->second, ExtractFileName(headername), ExtractFileName(headername2), stream, header, header2);
-       
+    std::ofstream config ((it->second + ".configure").c_str(), std::ofstream::out);
+    parser.WriteIncludeFile(headername2, config);
     
     header2.close();
     header.close();

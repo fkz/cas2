@@ -30,6 +30,14 @@ class Parser: public ParserBase
       
       MyLexer lexer;
       
+      void AddDefinitions (const std::string &filename);
+      
+      
+      std::string NamespacePrefix () const
+      {
+	return _namespace.empty() ? "" : (_namespace + "::");
+      }
+      
   public:
       void CreateClass (std::string *classname, int paramcount, std::string *type);
 	    
@@ -52,6 +60,7 @@ class Parser: public ParserBase
         int parse();
 	/// Semantic parsing and output
 	/// this function should be called after parse()
+	void WriteIncludeFile (const std::string &headername2, std::ostream &stream);
 	void WriteFiles (const std::string& originalfilename, const std::string& headername, const std::string& headername2, std::ostream& cppfile, std::ostream& hfile, std::ostream& hfile2);
 
     private:
