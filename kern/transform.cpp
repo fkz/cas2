@@ -63,9 +63,9 @@ Transform::Transform(TermReference* c)
 
 }
 
-Term* Derive::Clone() const
+Term* Derive::clone() const
 {
-  return new Derive (child->Clone(), variable->Clone());
+  return new Derive (child->clone(), variable->clone());
 }
 
 Derive* Derive::CreateTerm(TermReference* child, TermReference* variable)
@@ -141,7 +141,7 @@ TermReference* Derive::simplify()
     TermReference *ref;
     while (ref = adds->GetChildren(param))
     {
-      childs.push_back(TermReference::Create< Derive > (ref->Clone(), variable->Clone()));
+      childs.push_back(TermReference::Create< Derive > (ref->clone(), variable->Clone()));
     }
     
     TermReference **refs = new TermReference * [childs.size()];
@@ -170,11 +170,11 @@ TermReference* Derive::simplify()
       {
 	if (y == i)
 	{
-	  refs[y] = Create<Derive> (childs[y]->Clone(), variable->Clone());
+	  refs[y] = Create<Derive> (childs[y]->clone(), variable->Clone());
 	}
 	else
 	{
-	  refs[y] = childs[y]->Clone();
+	  refs[y] = childs[y]->clone();
 	}
       }
       adds[i] = new TermReference (mul->CreateTerm(refs));
@@ -194,13 +194,13 @@ TermReference* Derive::simplify()
     assert (f->GetChildren(p) == NULL);
     if (f->GetFunctionEnum() == BuildInFunction::Exp)
     {
-      TermReference *result = Create<Mul> (child->Clone(), Create<Derive> (c->Clone(), variable->Clone()));
+      TermReference *result = Create<Mul> (child->clone(), Create<Derive> (c->clone(), variable->clone()));
       delete this;
       return result;
     }
     else if (f->GetFunctionEnum() == BuildInFunction::Ln)
     {
-      TermReference *result = Create<Mul> (Create<BuildInFunction> (BuildInFunction::Exp, Create<Mul> (Create<Number> (-1), Create<BuildInFunction> (BuildInFunction::Ln, c->Clone()))), Create<Derive> (c->Clone(), variable->Clone()));
+      TermReference *result = Create<Mul> (Create<BuildInFunction> (BuildInFunction::Exp, Create<Mul> (Create<Number> (-1), Create<BuildInFunction> (BuildInFunction::Ln, c->clone()))), Create<Derive> (c->Clone(), variable->Clone()));
       delete this;
       return result;
     }

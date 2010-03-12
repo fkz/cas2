@@ -31,10 +31,10 @@ void RuleParser::Parser::CreateClass(std::string* classname, int paramcount, std
     outh << ", param" << i << "(p" << i << ")";
   outh << "\n{\n\n}\n";
   outh << "public:\n";
-  outh << "virtual Term* Clone() const\n";
-  outh << "{\n   return new " << *classname << "(param0->Clone()";
+  outh << "virtual Term* clone() const\n";
+  outh << "{\n   return new " << *classname << "(param0->clone()";
   for (int i = 1; i < paramcount; ++i)
-    outh << ",param" << i << "->Clone()";
+    outh << ",param" << i << "->clone()";
   outh << ");\n}";
   outh << "virtual Term* CreateTerm(CAS::TermReference** children) const\n";
   outh << "{\nreturn new " << *classname << "(children[0]";

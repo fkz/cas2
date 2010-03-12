@@ -259,13 +259,13 @@ std::vector< const CAS::TermReference * > terms;
 CAS::TermReference *CreateOldTerm (const std::string &zahl)
 {
     if (zahl == "-1")
-        return terms.back()->Clone ();
+        return terms.back()->clone ();
     std::stringstream z (zahl);
     unsigned int zz;
     z >> zz;
     if (terms.size() > zz)
     {
-        return terms[zz]->Clone();
+        return terms[zz]->clone();
     }
     else
     {

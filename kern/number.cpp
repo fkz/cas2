@@ -33,7 +33,7 @@ TermReference *Number::simplify()
   return NULL;
 }
 
-CAS::Number* CAS::Number::Clone() const
+CAS::Number* CAS::Number::clone() const
 {
   return new Number (zahl);
 }
@@ -83,7 +83,7 @@ TermReference* Number::GetChildrenVar(void*& param) const
 }
 
 
-Term* Variable::Clone() const
+Term* Variable::clone() const
 {
   return new Variable (id);
 }

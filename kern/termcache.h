@@ -56,7 +56,7 @@ class TermCacheInit: public AbstractSimplifyRuleCollection
       //TODO:WORKAROUND
       AbstractSimplifyRuleCollection &standard = Term::GetStandardRuleCollection ();
       Term::SetStandardRuleCollection(NoSimplificationRules::GetInstance());
-      TermReference *ref = new TermReference (t->Clone ());
+      TermReference *ref = new TermReference (t->clone ());
       std::multimap< Hash, std::pair< TermReference*, TermReference * > >::iterator it = collection.find(ref);
       if (it != collection.end())
       {
@@ -66,7 +66,7 @@ class TermCacheInit: public AbstractSimplifyRuleCollection
 	  it->second.second = (TermReference *)3;
 	  TermReference* result = coll->simplify(t);
 	  if (result)
-	    it->second.second = result->Clone();
+	    it->second.second = result->clone();
 	  else
 	    it->second.second = (TermReference *)2;
 	  delete ref;
@@ -84,10 +84,10 @@ class TermCacheInit: public AbstractSimplifyRuleCollection
 	    return NULL;
 	  //std::cout << "Cache: " << *ref << " --> " << *it->second.second << std::endl; 
 	  delete t;
-	  return it->second.second->Clone ();
+	  return it->second.second->clone ();
 	}
       }
-      TermReference *key = ref->Clone();
+      TermReference *key = ref->clone();
       collection.push_back(key, NULL);
       Term::SetStandardRuleCollection(standard);
       ref->SetRuleCollection(temp);

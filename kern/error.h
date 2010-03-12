@@ -14,7 +14,7 @@ class Unknown: public Term
       return new Unknown ();
     }
     
-    virtual Term* Clone() const
+    virtual Term* clone() const
     {
       return new Unknown ();
     }
@@ -59,7 +59,7 @@ class Limit: public Term
     {
       return new Limit (argument);
     }
-    virtual Term* Clone() const;
+    virtual Term* clone() const;
     virtual Term* CreateTerm(TermReference** children) const;
     virtual bool Equals(const CAS::Term& t) const;
     virtual TermReference* GetChildrenVar(void*& param) const;

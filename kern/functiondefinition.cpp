@@ -45,7 +45,7 @@ CAS::Type* FunctionDefinition::GetType() const
   return Type::GetBuildInType(Type::FunctionDefinition);
 }
 
-CAS::Term* FunctionDefinition::Clone() const
+CAS::Term* FunctionDefinition::clone() const
 {
   return new FunctionDefinition (term, variable);
 }
@@ -90,7 +90,7 @@ BuildInFunctionDefinition::BuildInFunctionDefinition(CAS::BuildInFunction::Funct
 
 }
 
-Term* BuildInFunctionDefinition::Clone() const
+Term* BuildInFunctionDefinition::clone() const
 {
   return new BuildInFunctionDefinition (func);
 }
@@ -136,9 +136,9 @@ CAS::Term* CAS::BuildInFunctionDefinition::Transform(TransformType t) const
     switch (func)
     {
       case BuildInFunction::Ln:
-	return GetStandardFunction (BuildInFunction::Exp)->Clone();
+	return GetStandardFunction (BuildInFunction::Exp)->clone();
       case BuildInFunction::Exp:
-	return GetStandardFunction (BuildInFunction::Ln)->Clone();
+	return GetStandardFunction (BuildInFunction::Ln)->clone();
       default:
 	assert (0);
     }

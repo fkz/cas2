@@ -26,7 +26,7 @@ using namespace CAS;
 
 
 
-Term* Boolean::Clone() const
+Term* Boolean::clone() const
 {
   return new Boolean (b);
 }
@@ -124,9 +124,9 @@ CAS::Type* Relations::GetType() const
   return Type::GetBuildInType(Type::Boolean);
 }
 
-CAS::Term* Relations::Clone() const
+CAS::Term* Relations::clone() const
 {
-  return new Relations (type, left->Clone(), right->Clone());
+  return new Relations (type, left->clone(), right->clone());
 }
 
 CAS::TermReference* Relations::simplify()

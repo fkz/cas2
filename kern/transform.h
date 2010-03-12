@@ -47,7 +47,7 @@ class Derive: public Transform
     Derive (TermReference *child, TermReference *variable);
   public:
     static Derive *CreateTerm (TermReference *child, TermReference *variable);
-    virtual Term* Clone() const;
+    virtual Term* clone() const;
     virtual Term* CreateTerm(TermReference** children) const;
     virtual TermReference* GetChildrenVar(void*& param) const;
     virtual Hash GetHashCode() const;

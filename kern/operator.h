@@ -85,7 +85,7 @@ class Operator : public CAS::Term
 	{
 	  //TODO:BUG: für multiplikation muss es statt xx * yy heißen: xx ^ yy (!!)
 	  // kritischer Fehler!!
-	  push_back (std::make_pair(it2->second.first->Clone(), it2->second.second * it->second));
+	  push_back (std::make_pair(it2->second.first->clone(), it2->second.second * it->second));
 	}
 	delete it->first;
       }
@@ -118,7 +118,7 @@ class Add: public Operator
     virtual void push_back(std::pair< TermReference*, NumberX > arg1);
     virtual TermReference* GetElement(std::multimap< CAS::Hash, std::pair< CAS::TermReference*, CAS::Operator::NumberX > >::const_iterator arg1) const;
   public:
-    virtual Term* Clone() const;
+    virtual Term* clone() const;
     virtual Hash GetHashCode() const;
     virtual void ToString(std::ostream& stream) const;
     virtual TermReference *simplify();
@@ -143,7 +143,7 @@ class Mul: public Operator
       return it->second.second >= 0;
     }
   public:
-    virtual Term* Clone() const;
+    virtual Term* clone() const;
     virtual Hash GetHashCode() const;
     virtual bool Equals(const CAS::Term& t) const;
     virtual void ToString(std::ostream& stream) const;

@@ -62,7 +62,7 @@ TermReference *FunctionCall::simplify()
     Term* t1_ = t1->Transform(Transforms::UmkehrFunktion);
     if (t1_->Equals(*t2))
     {
-      result = f->parameter->Clone();
+      result = f->parameter->clone();
       delete f;
     }
     delete t1_;
@@ -142,9 +142,9 @@ void BuildInFunction::ToString(std::ostream& stream) const
 
 
 
-Term* NormalFunctionCall::Clone() const
+Term* NormalFunctionCall::clone() const
 {
-  return new NormalFunctionCall (parameter->Clone(), /*soll es wirklich geklont werden ?*/(FunctionDefinition *)definition->Clone());
+  return new NormalFunctionCall (parameter->clone(), /*soll es wirklich geklont werden ?*/(FunctionDefinition *)definition->clone());
 }
 
 bool NormalFunctionCall::Equals(const CAS::Term& t) const
@@ -197,9 +197,9 @@ BuildInFunction::BuildInFunction(BuildInFunction::Function f, TermReference* t)
 
 }
 
-Term* BuildInFunction::Clone() const
+Term* BuildInFunction::clone() const
 {
-  return new BuildInFunction (func, parameter->Clone());
+  return new BuildInFunction (func, parameter->clone());
 }
 
 BuildInFunction* BuildInFunction::CreateTerm(BuildInFunction::Function f, TermReference* t)

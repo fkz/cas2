@@ -11,7 +11,7 @@ class Pi: public Term
     {
       return new Pi ();
     }
-    virtual Term* Clone() const
+    virtual Term* clone() const
     {
       return new Pi ();
     }
@@ -56,7 +56,7 @@ class UniqueTypes: public Term
   public:    
     virtual Term* CreateTerm(TermReference** children) const
     {
-      return Clone ();
+      return clone ();
     }
     virtual bool Equals(const CAS::Term& t) const
     {
@@ -97,7 +97,7 @@ class Natural: public UniqueTypes
     {
       return new Natural ();
     }
-    virtual Term* Clone() const
+    virtual Term* clone() const
     {
       return new Natural (id);
     }

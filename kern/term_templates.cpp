@@ -113,7 +113,7 @@ namespace CAS
 		iterators[index] = data[index].begin();
 	      }
 	      for (int i = 0; i < paramcount; ++i)
-		dataArray[i] = (*iterators[i])->Clone();
+		dataArray[i] = (*iterators[i])->clone();
 	      Term *tTerm = all_it->second.first->CreateTerm (dataArray);
 	      if (!objects_all.push_back (tTerm))
 		/*delete tTerm*/;

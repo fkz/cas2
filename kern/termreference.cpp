@@ -71,7 +71,7 @@ CAS::Term* CAS::TermReference::get_unconst()
   if (term->references > 1)
   {
     --term->references;
-    term = term->Clone();
+    term = term->clone();
     assert (term->references == 1);
   }
   return term;

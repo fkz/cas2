@@ -37,7 +37,7 @@ Term::Term(AbstractSimplifyRuleCollection& c)
 }
 
 
-Term* SimpleTerm::Clone() const
+Term* SimpleTerm::clone() const
 {
   return new SimpleTerm (*coll);
 }
@@ -80,7 +80,7 @@ Term* Term::Transform(TransformType t) const
   if (t == Transforms::Simplify)
   {
     assert(0);
-    Term *result = Clone();
+    Term *result = clone();
     TermReference *ret = result->simplify();
     if (ret)
       return ret->get_unconst();
@@ -97,7 +97,7 @@ TermReference* Term::GetChildren(void*& param) const
   if (!result)
     return NULL;
   else
-    return result->Clone();
+    return result->clone();
 }
 
 bool Term::IsCacheable() const

@@ -39,7 +39,7 @@ class Table : public CAS::Term
 	static TableType *Instance ();
     };
     
-    virtual Term* Clone() const;
+    virtual Term* clone() const;
     virtual Term* CreateTerm(TermReference** children) const;
     virtual bool Equals(const CAS::Term& t) const;
     virtual TermReference* GetChildrenVar(void*& param) const;

@@ -60,7 +60,7 @@ class Term
 	  t = temp;
     */
     virtual TermReference *simplify () = 0;
-    virtual Term *Clone () const = 0;
+    virtual Term *clone () const = 0;
     virtual Type *GetType () const = 0;
     virtual bool Equals (const Term &t) const = 0;
     virtual void ToString (std::ostream &stream) const = 0;
@@ -129,7 +129,7 @@ class SimpleTerm: public Term
 {
   public:
     SimpleTerm(AbstractSimplifyRuleCollection& c = *standardCollection) : Term (c) { }
-    virtual Term* Clone() const;
+    virtual Term* clone() const;
     virtual bool Equals(const CAS::Term& t) const;
     virtual Hash GetHashCode() const;
     virtual Type* GetType() const;
@@ -156,7 +156,7 @@ class SimpleUniqueTerm: public Term
       static ID id = 0;
       return new SimpleUniqueTerm (id);
     }
-    virtual Term* Clone() const
+    virtual Term* clone() const
     {
       return new SimpleUniqueTerm (id);
     }

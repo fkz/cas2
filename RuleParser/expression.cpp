@@ -140,7 +140,7 @@ void IdentificationExpressionRight::ToStringRight(std::ostream& out, const std::
     //TODO: report problem
     throw;
   }
-  out << obj << " = " << it->second << "->Clone();\n";
+  out << obj << " = " << it->second << "->clone();\n";
 }
 
 void NormalExpressionLeft::ToStringDeclared(std::ostream& s, std::map< Identification, std::string >& vars, int& index)
@@ -450,7 +450,7 @@ void NormalExpressionRight::ToStringRight(std::ostream& out, const std::string& 
     }
     else
     {
-      out << obj << " = " << vars[id] << "->Clone();\n";
+      out << obj << " = " << vars[id] << "->clone();\n";
     }*/
   }
 }

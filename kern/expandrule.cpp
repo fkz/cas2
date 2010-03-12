@@ -54,11 +54,11 @@ CAS::TermReference* ExpandRule::UseRule(const CAS::TermReference *p) const
 	  {
 	    if (mulIndex != index)
 	    {
-	      mulTermsArray[mulIndex] = terms[mulIndex]->Clone();
+	      mulTermsArray[mulIndex] = terms[mulIndex]->clone();
 	    }
 	    else
 	    {
-	      mulTermsArray[mulIndex] = addTerms[addIndex]->Clone();
+	      mulTermsArray[mulIndex] = addTerms[addIndex]->clone();
 	    }
 	  }
 	  addTermsArray[addIndex] = new TermReference (mul->CreateTerm(mulTermsArray));
@@ -102,13 +102,13 @@ CAS::TermReference* ExpandRule::UseRule(const CAS::TermReference *p) const
 	      assert (zahl > 0);
 	      
 	      TermReference *expTerm = TermReference::Create< BuildInFunction > (BuildInFunction::Exp,
-		TermReference::Create< Mul > (other->Clone(), TermReference::Create< Number > (zahl - 1)));
+		TermReference::Create< Mul > (other->clone(), TermReference::Create< Number > (zahl - 1)));
 	      std::vector< TermReference * > mulTerms;
 	      p = NULL;
 	      TermReference *a;
 	      while (a = add->GetChildren(p))
 	      {
-		mulTerms.push_back(TermReference::Create< Mul > (a->Clone(), expTerm->Clone()));
+		mulTerms.push_back(TermReference::Create< Mul > (a->clone(), expTerm->clone()));
 	      }
 	      delete expTerm;
 	      TermReference **array = new TermReference * [ mulTerms.size() ];

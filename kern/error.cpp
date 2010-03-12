@@ -7,7 +7,7 @@ void CAS::Unknown::ToString(std::ostream& stream) const
   stream << "Unknown";
 }
 
-CAS::Term* CAS::Limit::Clone() const
+CAS::Term* CAS::Limit::clone() const
 {
   return new Limit (argument);
 }

@@ -32,7 +32,7 @@ CAS::TermReference* CAS::Table::simplify()
   return NULL;
 }
 
-CAS::Term* CAS::Table::Clone() const
+CAS::Term* CAS::Table::clone() const
 {
   return new Table (*this);
 }
@@ -102,7 +102,7 @@ void Table::ToString(std::ostream& stream) const
   while (fromnum <= tonum)
   {
     TermReference *number = Create< Number > (fromnum);
-    TermReference *output = Create<  MySimplifyTypes::Set > (term->Clone(), variable->Clone(), number);
+    TermReference *output = Create<  MySimplifyTypes::Set > (term->clone(), variable->clone(), number);
     stream << "| " << fromnum << " | " << *output << " |\n";
     delete output;
     ++fromnum;

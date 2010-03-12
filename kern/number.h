@@ -35,7 +35,7 @@ class Number : public CAS::Term
   public:
     virtual CAS::Type* GetType() const;
     virtual TermReference *simplify();
-    virtual Number *Clone() const;
+    virtual Number *clone() const;
     virtual bool Equals(const CAS::Term& t) const;
     virtual void ToString(std::ostream& stream) const;
     virtual Hash GetHashCode() const;
@@ -57,7 +57,7 @@ class Variable: public CAS::Term
     int id;
     Variable (int id) : id (id) { }
   public:
-    virtual Term* Clone() const;
+    virtual Term* clone() const;
     virtual bool Equals(const CAS::Term& t) const;
     virtual Hash GetHashCode() const;
     virtual Type* GetType() const;

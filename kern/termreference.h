@@ -88,7 +88,7 @@ class TermReference
     /**
     * gibt einen Term als nicht konstant zurück. Nach der Veränderung dieses Terms sollte immer finnish_get_unconst aufgerufen werden,
     * um TermReference zu veranlassen, seine Informationen über den Term (wie z. B. seinen Hash-Code) zu erneuern. Falls es mehrere Referenzen
-    * auf Term gab, wird hiermit zunächst ein eigenständiger Term (über CAS::Term::Clone) erzeugt.
+    * auf Term gab, wird hiermit zunächst ein eigenständiger Term (über CAS::Term::clone) erzeugt.
     */
     Term *get_unconst ();
     bool finnish_get_unconst (bool do_simplify = true)
@@ -102,7 +102,7 @@ class TermReference
 	return false;
       }
     }
-    TermReference *Clone () const
+    TermReference *clone () const
     {
       return new TermReference (*this);
     }
@@ -194,13 +194,13 @@ class AutoTermReference
     : ref (t) { }
     
     AutoTermReference (const AutoTermReference &t)
-    : ref (t->Clone ()) { }
+    : ref (t->clone ()) { }
     
     AutoTermReference &operator = (const AutoTermReference &t)
     {
       if (ref != NULL)
 	delete ref;
-      ref = t->Clone();
+      ref = t->clone();
       return *this;
     }
     

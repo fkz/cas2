@@ -36,18 +36,18 @@ class Boolean: public CAS::Term
     static TermReference *True()
     {
       static TermReference t(new Boolean (true));
-      return t.Clone();
+      return t.clone();
     }
     static TermReference *False()
     {
       static TermReference t (new Boolean (false));
-      return t.Clone();
+      return t.clone();
     }
     bool GetBoolean () const
     {
       return b;
     }
-    virtual Term* Clone() const;
+    virtual Term* clone() const;
     virtual Term *CreateTerm(TermReference** children) const;
     virtual bool Equals(const CAS::Term& t) const;
     virtual TermReference* GetChildrenVar(void*& param) const;
@@ -80,7 +80,7 @@ class Relations : public CAS::Term
     virtual void ToString(std::ostream& stream) const;
     virtual bool Equals(const CAS::Term& t) const;
     virtual CAS::Type* GetType() const;
-    virtual CAS::Term* Clone() const;
+    virtual CAS::Term* clone() const;
     virtual CAS::TermReference* simplify();
     static Relations *CreateTerm (RelationType type, TermReference *left, TermReference *right)
     {

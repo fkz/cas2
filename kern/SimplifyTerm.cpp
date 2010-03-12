@@ -39,7 +39,7 @@ void CAS::SimplifyWithRule(CAS::TermReference* ref, CAS::RuleCollection* rule, s
       iterators[index] = childrenSimplifications[index].begin();
     }
     for (size_t i = 0; i < paramcount; ++i)
-      dataArray[i] = (*iterators[i])->Clone();
+      dataArray[i] = (*iterators[i])->clone();
     TermReference *tTerm = new TermReference (ref->get_const()->CreateTerm (dataArray));
     if (!coll.push_back (tTerm, 0))
       delete tTerm;
@@ -53,7 +53,7 @@ void CAS::SimplifyWithRule(CAS::TermReference* ref, CAS::RuleCollection* rule, s
   }
   else
   {
-    TermReference *tTerm = ref->Clone();
+    TermReference *tTerm = ref->clone();
     if (!coll.push_back (tTerm, 0))
       delete tTerm;
   }

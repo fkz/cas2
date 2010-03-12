@@ -88,7 +88,7 @@ Operator::Operator(const CAS::TermCollectionTemplate< Operator::NumberX >& c)
 {
   for (TermCollectionTemplate<NumberX>::const_iterator it = c.begin(); it != c.end(); ++it)
   {
-    children.insert (std::make_pair(it->first, std::make_pair (it->second.first->Clone(), it->second.second)));
+    children.insert (std::make_pair(it->first, std::make_pair (it->second.first->clone(), it->second.second)));
   }
 }
 
@@ -226,11 +226,11 @@ TermReference* Add::GetElement(std::multimap< Hash, std::pair< TermReference*, O
 {
   if (arg1->second.second == 1)
   {
-    return arg1->second.first->Clone();
+    return arg1->second.first->clone();
   }
   else
   {
-    return Create<Mul> (Create<Number> (arg1->second.second), arg1->second.first->Clone ());
+    return Create<Mul> (Create<Number> (arg1->second.second), arg1->second.first->clone ());
   }
 }
 
@@ -248,7 +248,7 @@ bool Mul::Equals(const CAS::Term& t) const
 
 
 
-Term* Add::Clone() const
+Term* Add::clone() const
 {
   return new Add (*this);  
 }
@@ -416,7 +416,7 @@ void Add::push_back(std::pair< TermReference*, Operator::NumberX > arg1)
 }
 
 
-Term* Mul::Clone() const
+Term* Mul::clone() const
 {
   return new Mul (*this);
 }
@@ -424,9 +424,9 @@ Term* Mul::Clone() const
 TermReference* Mul::GetElement(std::multimap< Hash, std::pair< TermReference*, Operator::NumberX > >::const_iterator arg1) const
 {
   if (arg1->second.second == 1)
-    return arg1->second.first->Clone();
+    return arg1->second.first->clone();
   //Speicherleck!!
-  return Create<BuildInFunction> (BuildInFunction::Exp, Create<Mul> (Create<BuildInFunction> (BuildInFunction::Ln, arg1->second.first->Clone()), Create<Number> (arg1->second.second)));
+  return Create<BuildInFunction> (BuildInFunction::Exp, Create<Mul> (Create<BuildInFunction> (BuildInFunction::Ln, arg1->second.first->clone()), Create<Number> (arg1->second.second)));
 }
 
 
