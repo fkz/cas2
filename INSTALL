@@ -27,4 +27,4 @@ optional prequesites for an integration in KRunner:
   KDE 4 see http://kde.org
 
 the project should be platform independent, but is only tested on linux, yet
-it does not uses any Qt stuff.
+it does only uses standard c++ and gmp (without KRunner plugin of course)
