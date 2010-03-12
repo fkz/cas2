@@ -3,7 +3,7 @@ PROJECT(cas2_kern)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Parser ${CMAKE_BINARY_DIR} ${CMAKE_BINARY_DIR}/Parser ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR})
 add_definitions(-fexceptions)
 # WARNING: temporarily removed table.cpp from this list
-add_library(cas2 SHARED simplifyrulecollection.cpp  transform.cpp subrule.cpp SimplifyTerm.cpp termcache.cpp termreference.cpp expandrule.cpp relations.cpp rule.cpp functionchange.cpp functiondefinition.cpp exp.cpp operator.cpp hash.cpp number.cpp type.cpp term.cpp unique.cpp  abstractcreateclass.cpp error.cpp Constants.cpp)
+add_library(cas2 SHARED simplifyrulecollection.cpp  transform.cpp subrule.cpp SimplifyTerm.cpp termcache.cpp termreference.cpp expandrule.cpp relations.cpp rule.cpp functionchange.cpp functiondefinition.cpp exp.cpp operator.cpp hash.cpp number.cpp type.cpp term.cpp unique.cpp  abstractcreateclass.cpp error.cpp Constants.cpp createclasscollection.cpp)
 target_link_libraries(cas2 ${GMP_LIBRARY} libgmpxx.so)
 
 

@@ -100,6 +100,7 @@ void Parser::WriteIncludeFile(const std::string& headername2, std::ostream& stre
 {
   stream << "//WARNING: this is an auto generated file\n";
   stream << "included;\n";
+  stream << "PLUGIN_NAME \"" << plugin_name << "\";\n";
   stream << "include_cpp \"" << headername2 << "\";\n";
   for (std::map< Identification, AbstractDefinition* >::const_iterator it = definitions.begin(); it != definitions.end(); ++it)
   {
@@ -132,7 +133,7 @@ void Parser::WriteFiles(const std::string &originalfilename, const std::string &
     WriteHead(stream, originalfilename);
     WriteHead(header, originalfilename);
     WriteHead(header2, originalfilename);
-    header2 << "#include \"kern/termreference.h\"\nnamespace " << _namespace << "{\n";
+    header2 << "#include \"kern/termreference.h\"\n#include \"kern/createclasscollection.h\"\nnamespace " << _namespace << "{\n";
     header2 << begin_stream_header2.str() << "};\n";
     
     header << "#pragma once\n";
@@ -268,10 +269,27 @@ void Parser::WriteFiles(const std::string &originalfilename, const std::string &
     if (!plugin_name.empty ())
     {
       std::string namespace_prefix = _namespace.empty() ? "" : (_namespace + "::");
-      stream << "extern \"C\" EXPORT CAS::AbstractCreateClass *" << plugin_name << "CreateClass ()\n{\n"
-      << "return new " << namespace_prefix << "CreateClass ();\n}\n";
+      for (std::vector< std::string >::iterator it = createclass.begin(); it != createclass.end(); ++it)
+      {
+	stream << "extern \"C\" CAS::AbstractCreateClass *" << *it << "();\n";
+      }
+      
+      stream << "extern \"C\" EXPORT CAS::AbstractCreateClass *" << plugin_name << "CreateClass ()\n{\n";
+      if (createclass.empty())
+	stream << "   return new " << namespace_prefix << "CreateClass ();\n";
+      else
+      {
+	stream << "CAS::CreateClassCollection *result = new CAS::CreateClassCollection ();\n";
+	stream << "result->pushClass (new " << namespace_prefix << "CreateClass ());\n";
+	for (std::vector< std::string >::iterator it = createclass.begin(); it != createclass.end(); ++it)
+	{
+	  stream << "result->pushClass (" << *it << " ());\n";
+	}
+	stream << "return result;\n";
+      }
+      stream << "}\n\n";
       stream << "extern \"C\" EXPORT CAS::AbstractSimplifyRuleCollection *" << plugin_name << "SimplifyClass ()\n{\n"
-	    << "   return new CAS::SimplifyRuleCollection< " << namespace_prefix << classname << " > ();\n}\n";
+      << "   return new CAS::SimplifyRuleCollection< " << namespace_prefix << classname << " > ();\n}\n";
       stream << "#pragma GCC visibility pop\n";
     }
 }
@@ -295,11 +313,16 @@ void Parser::IncludeTypes(const std::string& filename)
   }
   begin_stream_header << parser.begin_stream_header.str();
   definitions.AddDefinitionList (parser.definitions);
+  createclass.push_back ( parser.plugin_name + "CreateClass" );
 }
 
 void Parser::IncludeRules(const std::string& filename)
 {
   std::ifstream input (filename.c_str());
+  if (!input.is_open())
+  {
+    throw ParseException (RuleParser::ParseException::SYNTAX, "file does not exist: " + filename);
+  }
   Parser include (&input, &definitions);
   if (include.parse () == PARSE_ABORT__)
     throw;

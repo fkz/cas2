@@ -146,7 +146,7 @@ int main (int argc, char **argv)
         std::cout << "could not load library: error: " << dlerror() << std::endl;
         return 2;
     }
-    void *createclass = dlsym (handle, "TypeStuffCreateClass");
+    void *createclass = dlsym (handle, "BasicStuffCreateClass");
     void *simplifyrulecollection = dlsym (handle, "BasicStuffSimplifyClass");
 
     OurTerms = ((CAS::AbstractCreateClass * (*) ())createclass)();

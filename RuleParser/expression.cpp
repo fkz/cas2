@@ -22,7 +22,6 @@
 #include <map>
 #include <cassert>
 #include <sstream>
-#include "Parser.h"
 
 using namespace RuleParser;
 

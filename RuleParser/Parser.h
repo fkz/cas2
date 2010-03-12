@@ -79,6 +79,7 @@ class Parser: public ParserBase
         void nextToken();
 	
 	bool is_included;
+    std::vector< std::string > createclass;
 	void IncludeTypes (const std::string &filename);
 	void IncludeRules (const std::string &filename);
 	

@@ -51,6 +51,7 @@ CLASS { return ParserBase::CLASS; }
 include_cpp { return ParserBase::INCLUDE_CPP; }
 "include_types" { return Parser::INCLUDE_TYPES; }
 "include_rules" { return Parser::INCLUDE_RULES; }
+include { return Parser::INCLUDE; }
 included { return Parser::INCLUDED; }
 {whitespace} { /* do nothing */ }
 \n { ++lines; }

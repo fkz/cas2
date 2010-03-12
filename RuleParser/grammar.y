@@ -24,7 +24,7 @@
 }
 
 %debug
-%token TYPE ARROW QUESTIONARROW DOTS OR NOT NAMESPACE CLASS NEW ASSOC MINUS PLUS EQUAL PLUGIN_NAME INCLUDE_TYPES INCLUDE_RULES INCLUDED INCLUDE_CPP
+%token TYPE ARROW QUESTIONARROW DOTS OR NOT NAMESPACE CLASS NEW ASSOC MINUS PLUS EQUAL PLUGIN_NAME INCLUDE_TYPES INCLUDE_RULES INCLUDED INCLUDE_CPP INCLUDE
 %token <identification> ID
 %token <STRING> STR CPP_CODE
 %token <NUMBER> NUM
@@ -57,7 +57,7 @@ prolog:	other_prolog
 |	CPP_CODE other_prolog	{ begin_stream_header << (*$1); delete $1; }
 ;
 
-other_prolog: 	INCLUDED ';' { is_included = true; }
+other_prolog: 	INCLUDED ';' plugin_prolog { is_included = true; }
 |	CLASS STR ';' plugin_prolog	{ classname = *$2; delete $2; _namespace = ""; }
 |	NAMESPACE STR ';' CLASS STR ';' plugin_prolog { classname = *$5; _namespace = *$2; delete $2; delete $5; }
 ;
@@ -83,6 +83,7 @@ introSection: TYPE ID ':' STR ';'	{ $$ = new RuleParser::IntroPart ($2, $4); }
 |	TYPE NEW ASSOC ID STR '[' NUM ']' ':' STR ';' { std::string str = _namespace + "::" + *$5;  $$ = new RuleParser::IntroPart ($4, &str, new std::string ("true"), NULL, true); CreateClass ($5, $7, $10); delete $5; }
 |	INCLUDE_TYPES STR ';' { IncludeTypes (*$2); delete $2; $$ = NULL; }
 |	INCLUDE_RULES STR ';' { IncludeRules (*$2); delete $2; $$ = NULL; }
+|	INCLUDE STR ';' { IncludeTypes (*$2); IncludeRules (*$2); delete $2; $$ = NULL; }
 ;
 
 mainPart:		

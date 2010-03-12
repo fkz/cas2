@@ -29,24 +29,11 @@ include_types "/home/fabian/svn/trunk/c++/mathematics/cas2/Regeln/types";
 
 
 //Exponentialfunktionen:
-Exp[Number0[]] --> Number<"1">[];
-Ln[Exp[{x}]] --> x;
-Exp[Ln[{x}]] --> x;
-Ln[Number1[]] --> Number<"0">[];
-
-//Ableitungen
-Diff[{x},{y}] %{ $$ $x$->Equals (*$y$) %} --> Number<"1">[];
-Diff[Add[ ... {x} ],{y}] --> Add[ ... i:x { Diff[i,y] }];
-Diff[Number,{x}] --> Number<"0">[];
-//TODO: why does this not function?? 
-Diff[Mul[ ... {mul}], {x}] --> Add[ ... i:mul { Mul[ ... y:mul { %{ if (&$y$ != &$i$) %} = y %{ else %} = Diff[y,x]  } ] } ];
-Diff[Exp[{x}],{y}] --> Mul[Exp[x], Diff[x,y]];
-Diff[Ln[{x}],{y}] --> Mul[Exp[Mul[Ln[x], Number<"-1">[]]],Diff[x,y]];
-Diff[Variable{x},Variable{y}] --> Number<"0">[];
-
-//Setzen
-Set[{x},{y},{z}] %{ $$ $x$->Equals (*$y$) %} --> z;
-Set[{x},{y},{z}] --> i:x { Set[i,y,z] };
+include_rules "/home/fabian/svn/trunk/c++/mathematics/cas2/Regeln/functions";
+include_rules "/home/fabian/svn/trunk/c++/mathematics/cas2/Regeln/Exp";
+include_rules "/home/fabian/svn/trunk/c++/mathematics/cas2/Regeln/Diff";
+include_rules "/home/fabian/svn/trunk/c++/mathematics/cas2/Regeln/Set";
+include_rules "/home/fabian/svn/trunk/c++/mathematics/cas2/Regeln/Expand";
 
 //Ausklammern
 Expand[Mul[Add[ ... {add}] ... {mul}]] --> Add[ ... i:add { Expand[Mul[ i ... y:mul {y} ]] } ];
@@ -71,24 +58,6 @@ Fakultaet[Number{num}] -->
   for (mpz_class i = 1; i <= n; ++i)
     res *= i;  
 %} =Number<"res">[];
-
-%{
-inline bool HasX (const CAS::AutoTermReference &term, const CAS::AutoTermReference &x)
-{
-  if (term->Equals (*x))
-     return true;
-  void *param = NULL;
-  while (true)
-  {
-    CAS::AutoTermReference ref = term->GetChildren (param);
-    if (!ref)
-      break;
-    if (HasX (ref, x))
-      return true;
-  }
-  return false;
-}
-%}
 
 //Solve equations
 Solve [Equal[{x},{y}],{z}] %{ $$ $x$->Equals (*$z$) && !HasX ($y$, $z$) || $y$->Equals (*$z$) && !HasX ($x$, $z$) %} --> Equal[x,y];

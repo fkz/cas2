@@ -1,0 +1,20 @@
+included;
+
+%{
+inline bool HasX (const CAS::AutoTermReference &term, const CAS::AutoTermReference &x)
+{
+  if (term->Equals (*x))
+     return true;
+  void *param = NULL;
+  while (true)
+  {
+    CAS::AutoTermReference ref = term->GetChildren (param);
+    if (!ref)
+      break;
+    if (HasX (ref, x))
+      return true;
+  }
+  return false;
+}
+
+%}

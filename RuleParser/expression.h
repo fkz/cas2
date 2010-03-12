@@ -48,8 +48,6 @@ namespace GlobalGrammarOutput
 
 namespace RuleParser {
 
-class Parser;
-  
 class ExpressionType
 {
   private:

@@ -2,3 +2,7 @@ included;
 
 Exp[ Ln[ {x} ] ] --> x;
 Ln[ Exp[ {x} ] ] --> Add[ x, Mul[ Number<"2">[], Pi[], Natural[] ] ];
+Exp[Number0[]] --> Number<"1">[];
+Ln[Exp[{x}]] --> x;
+Exp[Ln[{x}]] --> x;
+Ln[Number1[]] --> Number<"0">[];
