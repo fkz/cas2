@@ -24,13 +24,13 @@
 }
 
 %debug
-%token TYPE ARROW QUESTIONARROW DOTS OR NOT NAMESPACE CLASS NEW ASSOC MINUS PLUS EQUAL PLUGIN_NAME INCLUDE_TYPES INCLUDE_RULES INCLUDED INCLUDE INCLUDE_CPP
+%token TYPE ARROW QUESTIONARROW DOTS OR NOT NAMESPACE CLASS NEW ASSOC MINUS PLUS EQUAL PLUGIN_NAME INCLUDE_TYPES INCLUDE_RULES INCLUDED INCLUDE_CPP
 %token <identification> ID
 %token <STRING> STR CPP_CODE
 %token <NUMBER> NUM
 
 %type <Rule> rule
-%type <expressionLeft> leftside
+%type <expressionLeft> leftside leftside_without_operator leftside_operator
 %type <expressionRight> rightside outerrightside
 %type <expressiontype> operationtype operationtype_nonempty
 %type <paramsLeft> paramlist 
@@ -78,7 +78,6 @@ introSection: TYPE ID ':' STR ';'	{ $$ = new RuleParser::IntroPart ($2, $4); }
 |	TYPE ASSOC ID ':' STR ',' CPP_CODE ',' STR ';' { $$ = new RuleParser::IntroPart ($3, $5, $7, $9, true); }
 |	TYPE ID ':' STR ',' STR ';'	{ $$ = new RuleParser::IntroPart ($2, $4, NULL, $6); }
 |	TYPE NEW ID STR '[' NUM ']' ':' STR ';' { std::string str = *$4; std::string namestr = _namespace + "::" + str; $$ = new RuleParser::IntroPart ($3, &namestr); CreateClass (&str, $6, $9); }
-|	INCLUDE STR ';'  { $$ = NULL; AddDefinitions (*$2); delete $2; }
 |	INCLUDE_CPP STR ';' { $$ = NULL; begin_stream_header << "#include \"" << *$2 << "\"\n"; delete $2; }
 |	TYPE NEW ID STR '[' NUM ']' ':' STR ';' { std::string str = _namespace + "::" + *$4;  $$ = new RuleParser::IntroPart ($3, &str); CreateClass ($4, $6, $9); delete $4; }
 |	TYPE NEW ASSOC ID STR '[' NUM ']' ':' STR ';' { std::string str = _namespace + "::" + *$5;  $$ = new RuleParser::IntroPart ($4, &str, new std::string ("true"), NULL, true); CreateClass ($5, $7, $10); delete $5; }
@@ -98,9 +97,17 @@ eventuelcpp_code:  { $$ = NULL; }
 |	CPP_CODE { $$ = $1; }
 ;
 
-leftside: operationtype_nonempty paramlist name { $$ = new RuleParser::NormalExpressionLeft ($1, $2->first, $2->second, $3, 0); delete $2; }
+leftside: leftside_without_operator { $$ = $1; }
+|	  leftside_operator { $$ = $1; }
+;
+
+leftside_without_operator: operationtype_nonempty paramlist name { $$ = new RuleParser::NormalExpressionLeft ($1, $2->first, $2->second, $3, 0); delete $2; }
 |	name_nonempty { $$ = new RuleParser::IdentificationExpressionLeft ($1); }
 |	'(' NUM ')' operationtype paramlist name { $$ = new RuleParser::NormalExpressionLeft ($4, $5->first, $5->second, $6, $2); delete $5; }
+;
+
+leftside_operator: leftside_without_operator '*' leftside_without_operator { $$ = new RuleParser::NormalExpressionLeft (&definitions, RuleParser::NormalExpressionLeft::Mul, $1, $3); }
+|		   leftside_without_operator '+' leftside_without_operator { $$ = new RuleParser::NormalExpressionLeft (&definitions, RuleParser::NormalExpressionLeft::Add, $1, $3); }
 ;
 
 paramlist: { $$ = new std::pair< std::list<RuleParser::AbstractExpressionLeft *> *, std::list<RuleParser::ExpressionListLeft *> *> (NULL, NULL); }

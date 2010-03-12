@@ -46,9 +46,10 @@ namespace GlobalGrammarOutput
 };
 */
 
-
 namespace RuleParser {
 
+class Parser;
+  
 class ExpressionType
 {
   private:
@@ -169,7 +170,15 @@ class NormalExpressionLeft: public AbstractExpressionLeft
     Identification id;
     int verarbeitungsId;
   public:
+    enum BuildInExpressionTypes
+    {
+      Mul,
+      Add,
+      Negate
+    };
+    
     NormalExpressionLeft (ExpressionType *type, std::list< AbstractExpressionLeft * > *children1, std::list< ExpressionListLeft * > *children2, Identification id, int nr);
+    NormalExpressionLeft (RuleParser::DefinitionList* definitions, RuleParser::NormalExpressionLeft::BuildInExpressionTypes buildInType, RuleParser::AbstractExpressionLeft* child1, RuleParser::AbstractExpressionLeft* evChild2 = 0);
     
     virtual void ToString(std::ostream& s, const std::string& obj, bool isReference, std::map< Identification, std::string >& vars, int& varIndex, std::string endStr) const;
     virtual void ToStringDeclared(std::ostream& s, std::map< Identification, std::string >& vars, int& index);

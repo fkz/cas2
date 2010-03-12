@@ -16,6 +16,7 @@ SET_SOURCE_FILES_PROPERTIES(${CMAKE_CURRENT_SOURCE_DIR}/types.configure PROPERTI
 
 
 #ADD_CUSTOM_TARGET(myrules DEPENDS rules.out.cpp)
+add_definitions(-fvisibility=hidden)
 ADD_LIBRARY(myrules MODULE types.out.cpp rules.out.cpp)
 TARGET_LINK_LIBRARIES(myrules cas2)
 

@@ -22,6 +22,7 @@
 #include <map>
 #include <cassert>
 #include <sstream>
+#include "Parser.h"
 
 using namespace RuleParser;
 
@@ -106,8 +107,30 @@ IntroPart* NormalRule::ToString(std::ostream& out, std::string name) const
 NormalExpressionLeft::NormalExpressionLeft(ExpressionType* type, std::list< AbstractExpressionLeft* >* children1, std::list< ExpressionListLeft* >* children2, Identification id, int nr)
 : type (type), children(children1), children2(children2),id(id),verarbeitungsId(nr)
 {
-
+  
 }
+
+NormalExpressionLeft::NormalExpressionLeft(DefinitionList *definitions, NormalExpressionLeft::BuildInExpressionTypes buildInType, AbstractExpressionLeft* child1, AbstractExpressionLeft* evChild2)
+: verarbeitungsId(0), children2(0)
+{
+  //TODO: enable build-in-expressions in a more natural way
+  switch (buildInType)
+  {
+    case Add:
+      type = new ExpressionType (definitions, Identification::GetIdentification("Add", 3));
+      break;
+    case Mul:
+      type = new ExpressionType (definitions, Identification::GetIdentification("Mul", 3));
+      break;
+  }
+  
+  children = new std::list< AbstractExpressionLeft * > ();
+  children->push_back(child1);
+  if (evChild2)
+    children->push_back(evChild2);
+  id.SetNone();
+}
+
 
 
 void IdentificationExpressionRight::ToStringRight(std::ostream& out, const std::string& obj, std::map< Identification, std::string >& vars, int& varIndex) const

@@ -276,7 +276,8 @@ void Parser::WriteFiles(const std::string &originalfilename, const std::string &
     }
 }
 
-void Parser::AddDefinitions(const std::string& filename)
+
+void Parser::IncludeTypes(const std::string& filename)
 {
   std::ifstream foo ((filename + ".configure").c_str(), std::ifstream::in);
   if (!foo.is_open())
@@ -292,25 +293,8 @@ void Parser::AddDefinitions(const std::string& filename)
   {
     throw ParseException (RuleParser::ParseException::SYNTAX, "syntax error in included file: " + filename);
   }
-  for (std::map< Identification, AbstractDefinition* >::const_iterator it = parser.definitions.begin(); it != parser.definitions.end(); ++it)
-  {
-    it->second->RemoveParent();;
-    definitions.AddDefinition(it->second);
-  }
   begin_stream_header << parser.begin_stream_header.str();
-}
-
-
-
-void Parser::IncludeTypes(const std::string& filename)
-{
-  std::ifstream input (filename.c_str());
-  Parser include (&input);
-  if (include.parse() == PARSE_ABORT__)
-  {
-    throw;
-  }
-  definitions.AddDefinitionList (include.definitions);
+  definitions.AddDefinitionList (parser.definitions);
 }
 
 void Parser::IncludeRules(const std::string& filename)

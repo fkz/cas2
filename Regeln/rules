@@ -25,7 +25,7 @@ NAMESPACE "MySimplifyRules";
 CLASS "MyClass";
 PLUGIN_NAME "BasicStuff";
 
-include "/home/fabian/svn/trunk/c++/mathematics/cas2/Regeln/types";
+include_types "/home/fabian/svn/trunk/c++/mathematics/cas2/Regeln/types";
 
 
 //Exponentialfunktionen:

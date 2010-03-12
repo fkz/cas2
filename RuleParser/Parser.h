@@ -30,7 +30,6 @@ class Parser: public ParserBase
       
       MyLexer lexer;
       
-      void AddDefinitions (const std::string &filename);
       
       
       std::string NamespacePrefix () const
@@ -82,6 +81,7 @@ class Parser: public ParserBase
 	bool is_included;
 	void IncludeTypes (const std::string &filename);
 	void IncludeRules (const std::string &filename);
+	
 };
 
 inline void Parser::error(char const *msg)
