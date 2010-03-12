@@ -61,8 +61,8 @@ void RuleParser::Parser::CreateClass(std::string* classname, int paramcount, std
   outh << ";\n}\n";
   outh << "virtual CAS::Type* GetType() const\n";
   outh << "{\n   return " << *type << ";\n}\n";
-  outh << "virtual CAS::TermReference* Simplify()\n";
-  outh << "{\n   return coll->Simplify (this);\n}\n";
+  outh << "virtual CAS::TermReference* simplify()\n";
+  outh << "{\n   return coll->simplify (this);\n}\n";
   outh << "virtual void ToString(std::ostream& stream) const\n{\n";
   outh << " stream << \"" << *classname << "[\" << *param0";
   for (int i = 1; i < paramcount; ++i)
@@ -172,7 +172,7 @@ void Parser::WriteFiles(const std::string &originalfilename, const std::string &
       }
     }
     header << "   template<class T>\n";
-    header << "   CAS::TermReference *Simplify (const T *param)\n";
+    header << "   CAS::TermReference *simplify (const T *param)\n";
     header << "   {\n";
     header << "      return NULL;\n";
     header << "   }\n";
@@ -183,9 +183,9 @@ void Parser::WriteFiles(const std::string &originalfilename, const std::string &
       while (endit != myrules.end() && startit->first == endit->first)
 	++endit;
       header << "   template<>\n";
-      header << "   CAS::TermReference *Simplify (const " << startit->first << " *param);\n";
+      header << "   CAS::TermReference *simplify (const " << startit->first << " *param);\n";
       stream << "   template<>\n";
-      stream << "   CAS::TermReference *Simplify (const " << startit->first << " *param)\n";
+      stream << "   CAS::TermReference *simplify (const " << startit->first << " *param)\n";
       stream << "   {\n";
       stream << "      CAS::TermReference *result;\n";
       for (; startit != endit; ++startit)
@@ -198,9 +198,9 @@ void Parser::WriteFiles(const std::string &originalfilename, const std::string &
     }
     
     header << "template<>\n";
-    header << "CAS::TermReference *Simplify (const CAS::Term *param);\n";
+    header << "CAS::TermReference *simplify (const CAS::Term *param);\n";
     stream << "template<>\n";
-    stream << "CAS::TermReference *Simplify (const CAS::Term *param)\n";
+    stream << "CAS::TermReference *simplify (const CAS::Term *param)\n";
     stream << "{\nconst std::type_info &info = typeid (*param);\n";
     bool firsttime = true;
     for (std::multimap< std::string, std::string >::const_iterator myit = myrules.begin(); myit != myrules.end();)
@@ -209,7 +209,7 @@ void Parser::WriteFiles(const std::string &originalfilename, const std::string &
 	stream << "else ";
       else
 	firsttime = false;
-      stream << "if (info == typeid(" << myit->first << ")) return Simplify<" << myit->first << "> ((" << myit->first << " *)param);\n";
+      stream << "if (info == typeid(" << myit->first << ")) return simplify<" << myit->first << "> ((" << myit->first << " *)param);\n";
       std::multimap< std::string, std::string >::const_iterator myit2 = myit;
       while (myit != myrules.end() && myit2->first == myit->first) ++myit;
     }
@@ -224,9 +224,9 @@ void Parser::WriteFiles(const std::string &originalfilename, const std::string &
     header << "{\n";
     header << "public:\n";
     header << "template<class T>\n";
-    header << "static CAS::TermReference *Simplify (const T *t)\n";
+    header << "static CAS::TermReference *simplify (const T *t)\n";
     header << "{\n";
-    header << "   return __private::Simplify (t);\n";
+    header << "   return __private::simplify (t);\n";
     header << "}\n";
     header << "}; //class " << classname << "\n";
     header << "class CreateClass:public CAS::AbstractCreateClass\n{\npublic:";

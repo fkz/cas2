@@ -59,7 +59,7 @@ Type* Boolean::GetType() const
   return Type::GetBuildInType(Type::Boolean);
 }
 
-TermReference* Boolean::Simplify()
+TermReference* Boolean::simplify()
 {
   return NULL;
 }
@@ -129,7 +129,7 @@ CAS::Term* Relations::Clone() const
   return new Relations (type, left->Clone(), right->Clone());
 }
 
-CAS::TermReference* Relations::Simplify()
+CAS::TermReference* Relations::simplify()
 {
   if (left->Equals(*right))
   {
@@ -148,6 +148,6 @@ CAS::TermReference* Relations::Simplify()
     delete this;
     return result;
   }
-  return coll->Simplify(this);
+  return coll->simplify(this);
 }
 

@@ -57,7 +57,7 @@ Type* SimpleTerm::GetType() const
   return Type::GetBuildInType(Type::Term);
 }
 
-TermReference* SimpleTerm::Simplify()
+TermReference* SimpleTerm::simplify()
 {
   return NULL;
 }
@@ -81,7 +81,7 @@ Term* Term::Transform(TransformType t) const
   {
     assert(0);
     Term *result = Clone();
-    TermReference *ret = result->Simplify();
+    TermReference *ret = result->simplify();
     if (ret)
       return ret->get_unconst();
     else

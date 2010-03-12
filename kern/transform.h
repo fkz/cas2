@@ -35,7 +35,7 @@ class Transform : public CAS::Term
   public:
     virtual bool Equals(const CAS::Term& t) const;
     virtual CAS::Type* GetType() const;
-    virtual CAS::TermReference* Simplify();
+    virtual CAS::TermReference* simplify();
     virtual ~Transform();
     virtual TermReference* GetChildrenVar(void*& param) const = 0;
 };
@@ -52,7 +52,7 @@ class Derive: public Transform
     virtual TermReference* GetChildrenVar(void*& param) const;
     virtual Hash GetHashCode() const;
     virtual void ToString(std::ostream& stream) const;
-    virtual TermReference* Simplify();
+    virtual TermReference* simplify();
 };
 
 }

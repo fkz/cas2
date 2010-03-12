@@ -55,11 +55,11 @@ class Term
       Vereinfacht den Term. Falls keine Vereinfachung stattgefunden hat, gibt NULL (0) zurück, sonst
       das vereinfachte Objekt. Falls result != NULL && result != this ist this danach undefiniert!!!
       Sicherer Code sollte also in etwa schreiben:
-	Term *temp = t->Simplify ();
+	Term *temp = t->simplify ();
 	if (temp)
 	  t = temp;
     */
-    virtual TermReference *Simplify () = 0;
+    virtual TermReference *simplify () = 0;
     virtual Term *Clone () const = 0;
     virtual Type *GetType () const = 0;
     virtual bool Equals (const Term &t) const = 0;
@@ -133,7 +133,7 @@ class SimpleTerm: public Term
     virtual bool Equals(const CAS::Term& t) const;
     virtual Hash GetHashCode() const;
     virtual Type* GetType() const;
-    virtual TermReference* Simplify();
+    virtual TermReference* simplify();
     virtual void ToString(std::ostream& stream) const;
     virtual Term* CreateTerm(TermReference** children) const;
     virtual TermReference* GetChildrenVar(void*& param) const;
@@ -181,7 +181,7 @@ class SimpleUniqueTerm: public Term
     {
       return Type::GetBuildInType(Type::Term);
     }
-    virtual TermReference* Simplify()
+    virtual TermReference* simplify()
     {
       return NULL;
     }

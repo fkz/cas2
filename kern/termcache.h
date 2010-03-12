@@ -49,7 +49,7 @@ class TermCacheInit: public AbstractSimplifyRuleCollection
       //return coll->Simplify(t);
       if (!t->IsCacheable ())
       {
-	return coll->Simplify(t);
+	return coll->simplify(t);
       }
       AbstractSimplifyRuleCollection &temp = t->GetRuleCollection();
       t->SetRuleCollection(NoSimplificationRules::GetInstance());
@@ -64,7 +64,7 @@ class TermCacheInit: public AbstractSimplifyRuleCollection
 	if (it->second.second == NULL)
 	{
 	  it->second.second = (TermReference *)3;
-	  TermReference* result = coll->Simplify(t);
+	  TermReference* result = coll->simplify(t);
 	  if (result)
 	    it->second.second = result->Clone();
 	  else
@@ -109,55 +109,55 @@ class TermCacheInit: public AbstractSimplifyRuleCollection
       collection.clear();
     }
     
-    virtual TermReference* Simplify(Term* t)
+    virtual TermReference* simplify(Term* t)
     {
       return DoSimplify (t);
     }
-    virtual TermReference* Simplify(Add* t)
+    virtual TermReference* simplify(Add* t)
     {
       return DoSimplify (t);
     }
-    virtual TermReference* Simplify(Mul* t)
+    virtual TermReference* simplify(Mul* t)
     {
       return DoSimplify (t);
     }
-    virtual TermReference* Simplify(BuildInFunction* t)
+    virtual TermReference* simplify(BuildInFunction* t)
     {
       return DoSimplify (t);
     }
-    virtual TermReference* Simplify(Derive* t)
+    virtual TermReference* simplify(Derive* t)
     {
       return DoSimplify (t);
     }
-    virtual TermReference* Simplify(FunctionChange* t)
+    virtual TermReference* simplify(FunctionChange* t)
     {
       return DoSimplify (t);
     }
-    virtual TermReference* Simplify(Number* t)
+    virtual TermReference* simplify(Number* t)
     {
       return DoSimplify (t);
     }
-    virtual TermReference* Simplify(Variable* t)
+    virtual TermReference* simplify(Variable* t)
     {
       return DoSimplify (t);
     }
-    virtual TermReference* Simplify(SimpleTerm* t)
+    virtual TermReference* simplify(SimpleTerm* t)
     {
       return DoSimplify (t);
     }
-    virtual TermReference* Simplify(SimpleUniqueTerm* t)
+    virtual TermReference* simplify(SimpleUniqueTerm* t)
     {
       return DoSimplify (t);
     }
-    virtual TermReference* Simplify(FunctionDefinition* t)
+    virtual TermReference* simplify(FunctionDefinition* t)
     {
       return DoSimplify (t);
     }
-    virtual TermReference* Simplify(FunctionCall* t)
+    virtual TermReference* simplify(FunctionCall* t)
     {
       return DoSimplify (t);
     }
-    virtual TermReference* Simplify(Relations* t)
+    virtual TermReference* simplify(Relations* t)
     {
       return DoSimplify (t);
     }

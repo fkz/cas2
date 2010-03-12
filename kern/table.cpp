@@ -27,7 +27,7 @@ using namespace CAS;
 
 //TODO: implement all these functions
 
-CAS::TermReference* CAS::Table::Simplify()
+CAS::TermReference* CAS::Table::simplify()
 {
   return NULL;
 }

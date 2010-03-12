@@ -43,19 +43,19 @@ class TermReference;
 class AbstractSimplifyRuleCollection
 {
   public:
-    virtual TermReference *Simplify (Term *t) = 0;
-    virtual TermReference *Simplify (Add *t) = 0;
-    virtual TermReference *Simplify (Mul *t) = 0;
-    virtual TermReference *Simplify (BuildInFunction *t) = 0;
-    virtual TermReference *Simplify (Derive *t) = 0;
-    virtual TermReference *Simplify (FunctionChange *t) = 0;
-    virtual TermReference *Simplify (Number *t) = 0;
-    virtual TermReference *Simplify (Variable *t) = 0;
-    virtual TermReference *Simplify (SimpleTerm *t) = 0;
-    virtual TermReference *Simplify (SimpleUniqueTerm *t) = 0;
-    virtual TermReference *Simplify (FunctionDefinition *t) = 0;
-    virtual TermReference *Simplify (FunctionCall *t) = 0;
-    virtual TermReference *Simplify (Relations *t) = 0;
+    virtual TermReference *simplify (Term *t) = 0;
+    virtual TermReference *simplify (Add *t) = 0;
+    virtual TermReference *simplify (Mul *t) = 0;
+    virtual TermReference *simplify (BuildInFunction *t) = 0;
+    virtual TermReference *simplify (Derive *t) = 0;
+    virtual TermReference *simplify (FunctionChange *t) = 0;
+    virtual TermReference *simplify (Number *t) = 0;
+    virtual TermReference *simplify (Variable *t) = 0;
+    virtual TermReference *simplify (SimpleTerm *t) = 0;
+    virtual TermReference *simplify (SimpleUniqueTerm *t) = 0;
+    virtual TermReference *simplify (FunctionDefinition *t) = 0;
+    virtual TermReference *simplify (FunctionCall *t) = 0;
+    virtual TermReference *simplify (Relations *t) = 0;
     virtual ~AbstractSimplifyRuleCollection();
 };
 
@@ -63,57 +63,57 @@ template<class T>
 class SimplifyRuleCollection: public AbstractSimplifyRuleCollection
 {
   public:
-    virtual TermReference* Simplify(Add* t)
+    virtual TermReference* simplify(Add* t)
     {
-      return T::Simplify (t);
+      return T::simplify (t);
     }
-    virtual TermReference* Simplify(Mul* t)
+    virtual TermReference* simplify(Mul* t)
     {
-      return T::Simplify (t);
+      return T::simplify (t);
     }
-    virtual TermReference* Simplify(BuildInFunction* t)
+    virtual TermReference* simplify(BuildInFunction* t)
     {
-      return T::Simplify (t);
+      return T::simplify (t);
     }
-    virtual TermReference* Simplify(Derive* t)
+    virtual TermReference* simplify(Derive* t)
     {
-      return T::Simplify (t);
+      return T::simplify (t);
     }
-    virtual TermReference* Simplify(FunctionChange* t)
+    virtual TermReference* simplify(FunctionChange* t)
     {
-      return T::Simplify (t);
+      return T::simplify (t);
     }
-    virtual TermReference* Simplify(Number* t)
+    virtual TermReference* simplify(Number* t)
     {
-      return T::Simplify (t);
+      return T::simplify (t);
     }
-    virtual TermReference* Simplify(Variable* t)
+    virtual TermReference* simplify(Variable* t)
     {
-      return T::Simplify (t);
+      return T::simplify (t);
     }
-    virtual TermReference* Simplify(SimpleTerm* t)
+    virtual TermReference* simplify(SimpleTerm* t)
     {
-      return T::Simplify (t);
+      return T::simplify (t);
     }
-    virtual TermReference* Simplify(SimpleUniqueTerm* t)
+    virtual TermReference* simplify(SimpleUniqueTerm* t)
     {
-      return T::Simplify (t);
+      return T::simplify (t);
     }
-    virtual TermReference* Simplify(FunctionDefinition* t)
+    virtual TermReference* simplify(FunctionDefinition* t)
     {
-      return T::Simplify (t);
+      return T::simplify (t);
     }
-    virtual TermReference* Simplify(FunctionCall* t)
+    virtual TermReference* simplify(FunctionCall* t)
     {
-      return T::Simplify (t);
+      return T::simplify (t);
     }
-    virtual TermReference* Simplify(Relations* t)
+    virtual TermReference* simplify(Relations* t)
     {
-      return T::Simplify (t);
+      return T::simplify (t);
     }
-    virtual TermReference* Simplify(Term* t)
+    virtual TermReference* simplify(Term* t)
     {
-      return T::Simplify (t);
+      return T::simplify (t);
     }
 };
 
@@ -121,7 +121,7 @@ class NoSimplificationRules
 {
   public:
   template<class T>
-  static TermReference *Simplify (T *t)
+  static TermReference *simplify (T *t)
   {
     return NULL;
   }
@@ -137,15 +137,15 @@ template<class T1, class T2 = NoSimplificationRules, class T3 = NoSimplification
 class SimplificationRuleList
 {
   template<class T>
-  static TermReference *Simplify (T *t)
+  static TermReference *simplify (T *t)
   {
-    TermReference *result = T1::Simplify (t);
+    TermReference *result = T1::simplify (t);
     if (!result)
-      result = T2::Simplify (t);
+      result = T2::simplify (t);
     if (!result)
-      result = T3::Simplify (t);
+      result = T3::simplify (t);
     if (!result)
-      result = T4::Simplify (t);
+      result = T4::simplify (t);
     return result;
   }
 };

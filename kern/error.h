@@ -38,7 +38,7 @@ class Unknown: public Term
     {
       return Type::GetBuildInType(Type::Term);
     }
-    virtual TermReference* Simplify()
+    virtual TermReference* simplify()
     {
       return NULL;
     }
@@ -65,7 +65,7 @@ class Limit: public Term
     virtual TermReference* GetChildrenVar(void*& param) const;
     virtual Hash GetHashCode() const;
     virtual Type* GetType() const;
-    virtual TermReference* Simplify();
+    virtual TermReference* simplify();
     virtual void ToString(std::ostream& stream) const;
     virtual bool IsCacheable() const
     {

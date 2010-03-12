@@ -36,10 +36,10 @@ class TermReference
     Term *term;
     Hash hash;
     TermReference (const TermReference &);
-    bool Simplify ()
+    bool simplify ()
     {
       assert (term->references == 1);
-      TermReference *re = term->Simplify();
+      TermReference *re = term->simplify();
       if (!re)
       {
 	hash = term->GetHashCode();
@@ -91,11 +91,11 @@ class TermReference
     * auf Term gab, wird hiermit zunächst ein eigenständiger Term (über CAS::Term::Clone) erzeugt.
     */
     Term *get_unconst ();
-    bool finnish_get_unconst (bool simplify = true)
+    bool finnish_get_unconst (bool do_simplify = true)
     {
       assert (term->references == 1);
-      if (simplify)
-	return Simplify();
+      if (do_simplify)
+	return simplify();
       else
       {
 	hash = term->GetHashCode();

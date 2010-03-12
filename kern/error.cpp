@@ -43,9 +43,9 @@ CAS::Type* CAS::Limit::GetType() const
   return Type::GetBuildInType(Type::Term);
 }
 
-CAS::TermReference* CAS::Limit::Simplify()
+CAS::TermReference* CAS::Limit::simplify()
 {
-  return coll->Simplify(this);
+  return coll->simplify(this);
 }
 
 void CAS::Limit::ToString(std::ostream& stream) const

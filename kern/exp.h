@@ -42,7 +42,7 @@ class FunctionCall: public Term
   public:
     virtual bool Equals(const CAS::Term& t) const;
     virtual Type *GetType() const;
-    virtual TermReference *Simplify();
+    virtual TermReference *simplify();
     virtual void ToString(std::ostream& stream) const;
     virtual TermReference* GetChildrenVar(void*& param) const;
     ~FunctionCall ();
@@ -70,7 +70,7 @@ class BuildInFunction: public FunctionCall
     virtual Term* Clone() const;
     virtual Hash GetHashCode() const;
     virtual Term* CreateTerm(TermReference** children) const;
-    virtual TermReference* Simplify();
+    virtual TermReference* simplify();
     virtual void ToString(std::ostream& stream) const;
     static void GetFunctionNameEx(std::ostream&, CAS::BuildInFunction::Function);
 };

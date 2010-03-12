@@ -99,7 +99,7 @@ class Operator : public CAS::Term
     virtual void push_back(std::pair< TermReference*, NumberX > arg1) = 0;
   public:
     virtual CAS::Type* GetType() const;
-    virtual TermReference *Simplify();
+    virtual TermReference *simplify();
     virtual ~Operator();
     virtual bool Equals(const CAS::Term& t) const;
     virtual TermReference* GetChildren(void*& param) const;
@@ -121,7 +121,7 @@ class Add: public Operator
     virtual Term* Clone() const;
     virtual Hash GetHashCode() const;
     virtual void ToString(std::ostream& stream) const;
-    virtual TermReference *Simplify();
+    virtual TermReference *simplify();
     virtual bool Equals(const CAS::Term& t) const;
     virtual Term* CreateTerm(TermReference** children) const;
     static Add *CreateTerm (CAS::TermReference* t1, CAS::TermReference* t2);
@@ -151,7 +151,7 @@ class Mul: public Operator
     static Mul *CreateTerm (CAS::TermReference* t1, CAS::TermReference* t2, CAS::TermReference *t3);
     static Mul *CreateTerm (CAS::TermReference **children, size_t anzahl);
     virtual Term* CreateTerm(CAS::TermReference** children) const;
-    virtual TermReference* Simplify();
+    virtual TermReference* simplify();
 };
 
 }

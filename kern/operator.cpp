@@ -35,7 +35,7 @@ CAS::Type* Operator::GetType() const
   return Type::GetBuildInType(Type::Term);
 }
 
-TermReference *Operator::Simplify()
+TermReference *Operator::simplify()
 {
   //es gibt nichts zu tun: Die Kinder sind bereits alle vereinfacht
   return NULL;
@@ -281,7 +281,7 @@ Mul* Mul::CreateTerm(TermReference** children, size_t anzahl)
 
 
 
-TermReference *Add::Simplify()
+TermReference *Add::simplify()
 {
   //Assoziativgestz anwenden (Build-In)
   bool b1 = SimplifyEx<Add>();
@@ -338,7 +338,7 @@ TermReference *Add::Simplify()
   }
   
   assert (!result || result == This ());
-  TermReference* result2 = coll->Simplify(this);
+  TermReference* result2 = coll->simplify(this);
   if (result2)
     return result2;
   else
@@ -595,7 +595,7 @@ CAS::Mul::Mul()
 
 }
 
-TermReference* Mul::Simplify()
+TermReference* Mul::simplify()
 {  
   TermReference *result = SimplifyEx<Mul> () ? This() : NULL;
   
@@ -708,7 +708,7 @@ TermReference* Mul::Simplify()
     return Create<Unknown> ();
   }
   
-  TermReference* result2 = coll->Simplify(this);
+  TermReference* result2 = coll->simplify(this);
   if (result2)
     return result2;
   else

@@ -47,7 +47,7 @@ CAS::Type* Transform::GetType() const
   return Type::GetBuildInType(Type::Term);
 }
 
-CAS::TermReference* Transform::Simplify()
+CAS::TermReference* Transform::simplify()
 {
   return NULL;
 }
@@ -109,7 +109,7 @@ void Derive::ToString(std::ostream& stream) const
   stream << "d/d" << *variable << " " << *child;
 }
 
-TermReference* Derive::Simplify()
+TermReference* Derive::simplify()
 {
   
   /*
@@ -208,5 +208,5 @@ TermReference* Derive::Simplify()
   
   return NULL;
   */
-  return coll->Simplify(this);   
+  return coll->simplify(this);   
 }

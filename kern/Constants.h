@@ -35,7 +35,7 @@ class Pi: public Term
     {
       return Type::GetBuildInType(Type::Term);
     }
-    virtual TermReference* Simplify()
+    virtual TermReference* simplify()
     {
       return NULL;
     }
@@ -77,7 +77,7 @@ class UniqueTypes: public Term
     {
       return Type::GetBuildInType(Type::Term);
     }
-    virtual TermReference* Simplify()
+    virtual TermReference* simplify()
     {
       return NULL;
     }

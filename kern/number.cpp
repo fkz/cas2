@@ -27,7 +27,7 @@ CAS::Type* Number::GetType() const
   return Type::GetBuildInType(Type::Term);
 }
 
-TermReference *Number::Simplify()
+TermReference *Number::simplify()
 {
   //Zahlen können definitionsgemäß nicht vereinfacht werden; auch nicht durch externe Regeln
   return NULL;
@@ -105,7 +105,7 @@ Type* Variable::GetType() const
   return Type::GetBuildInType(Type::Term);
 }
 
-TermReference *Variable::Simplify()
+TermReference *Variable::simplify()
 {
   return NULL;
 }

@@ -31,14 +31,14 @@ TermReference::TermReference(Term *t, CreationFlags flag)
   {
     case New:
       assert (t->references == 1);
-      Simplify();
+      simplify();
       break;
     case NotNew:
       ++t->references;
       break;
     case NotNewSimplify:
       ++t->references;
-      Simplify ();
+      simplify ();
       break;
   }
   

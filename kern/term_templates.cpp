@@ -4,11 +4,11 @@
 namespace CAS
 {
     template<class _It, class _outIt>
-    bool Term::SimplifyWithRules (_It rule_begin, _It rule_end, _outIt output)
+    bool Term::simplifyWithRules (_It rule_begin, _It rule_end, _outIt output)
     {
       bool result = false;
       TermCollection data;
-      assert (Simplify() == NULL);
+      assert (simplify() == NULL);
       data.push_back(this);
       
       bool finnish = false;
@@ -63,7 +63,7 @@ namespace CAS
   
     //Vereinfache den Term und alle seine Kinder
     template<class _It, class _outIt>    
-    bool Term::SimplifyChildsWithRules (_It rule_begin, _It rule_end, _outIt output)
+    bool Term::simplifyChildsWithRules (_It rule_begin, _It rule_end, _outIt output)
     {
       bool result = false;
       TermCollection objects_all;
@@ -92,7 +92,7 @@ namespace CAS
 	  std::vector< Term* > *datait = data;
 	  for (std::vector< Term* >::const_iterator it = children.begin(); it != children.end(); ++it,++datait)
 	  {
-	    if ((*it)->SimplifyChildsWithRules(rule_begin, rule_end, std::back_insert_iterator< std::vector< Term * > > (*datait)))
+	    if ((*it)->simplifyChildsWithRules(rule_begin, rule_end, std::back_insert_iterator< std::vector< Term * > > (*datait)))
 	    {
 	      all_it->second.second = TermCollection::Flag_Simplified;
 	      result = true;
@@ -135,7 +135,7 @@ namespace CAS
 	  for (TermCollection::iterator it = terme.begin(); it != terme.end(); ++it)
 	  {
 	    size_t size = terme.size();
-	    if (it->second.first->SimplifyWithRules(rule_begin, rule_end, insert_iterator))
+	    if (it->second.first->simplifyWithRules(rule_begin, rule_end, insert_iterator))
 	    {
 	      it->second.second = TermCollection::Flag_Simplified;
 	      result = true;
@@ -143,7 +143,7 @@ namespace CAS
 	    else
 	      it->second.second = TermCollection::Flag_Processed;
 	  }
-	  if (all_it->second.first->SimplifyWithRules(rule_begin, rule_end, insert_iterator))
+	  if (all_it->second.first->simplifyWithRules(rule_begin, rule_end, insert_iterator))
 	    all_it->second.second = TermCollection::Flag_Simplified;
 	  terme.EndIteration();
 	}

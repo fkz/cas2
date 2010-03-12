@@ -48,9 +48,9 @@ Type* FunctionCall::GetType() const
   return Type::GetBuildInType(Type::Term);
 }
 
-TermReference *FunctionCall::Simplify()
+TermReference *FunctionCall::simplify()
 {
-  return coll->Simplify(this);
+  return coll->simplify(this);
   /*
   TermReference *result = NULL;
   
@@ -248,7 +248,7 @@ Term* NormalFunctionCall::CreateTerm(TermReference** children) const
   return new NormalFunctionCall (children[0], definition);
 }
 
-TermReference* BuildInFunction::Simplify()
+TermReference* BuildInFunction::simplify()
 {
   if (parameter->get_const()->Cast<const Unknown>())
   {
@@ -386,9 +386,9 @@ TermReference* BuildInFunction::Simplify()
       return Create< Limit > (Create< Pi > ());
     }
   }*/
-  TermReference *result = coll->Simplify(this);
+  TermReference *result = coll->simplify(this);
   if (!result)
-    return CAS::FunctionCall::Simplify();
+    return CAS::FunctionCall::simplify();
   else
     return result;
 }

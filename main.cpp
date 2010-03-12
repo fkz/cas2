@@ -180,7 +180,7 @@ int main (int argc, char **argv)
 void Output (CAS::Term *t)
 {
     std::cout << "Term(Hash:" << t->GetHashCode() << "): " << *t << std::endl;
-    CAS::TermReference* temp = t->Simplify();
+    CAS::TermReference* temp = t->simplify();
     if (temp)
     {
         const CAS::Term *tt;
