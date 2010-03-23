@@ -268,13 +268,13 @@ class ExpressionCPPCode: public AbstractExpressionRight
       }
       
       MyNode (AbstractExpressionLeft *exp, std::string *var, std::string *yes, std::string *no = NULL)
-      : str (*var), exp (exp),strYes (yes ? *yes : ";"), strNo (no ? *no : ";")
+      : str (*var), exp (exp),strYes (yes ? *yes : ";"), strNo (no ? *no : ";"), type (LEFT)
       {
 	
       }
       
       MyNode (AbstractExpressionLeft *exp, Identification var, std::string *yes, std::string *no = NULL)
-      : str (""), id (var), exp (exp),strYes (yes ? *yes : ";"), strNo (no ? *no : ";")
+      : str (""), id (var), exp (exp),strYes (yes ? *yes : ";"), strNo (no ? *no : ";"), type (LEFT)
       {
 	
       }      

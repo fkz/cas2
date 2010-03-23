@@ -58,6 +58,7 @@ class Term
 	Term *temp = t->simplify ();
 	if (temp)
 	  t = temp;
+      Normalerweise sollte dies automatisch von TermReference durchgeführt werden.
     */
     virtual TermReference *simplify () = 0;
     virtual Term *clone () const = 0;
