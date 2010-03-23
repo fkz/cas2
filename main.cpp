@@ -114,6 +114,7 @@ And of cause, you can hack the source code.
 */
 
 //#define CACHE
+#include <createclasscollection.h>
 
 void test0 ();
 void test1 ();
@@ -122,7 +123,6 @@ void test5 (CAS::TermCacheInit &cache);
 #else
 void test5 ();
 #endif
-
 
 
 int yyFlexLexer::yywrap ()
@@ -139,7 +139,7 @@ CAS::AbstractCreateClass *OurTerms;
 int main (int argc, char **argv)
 {
     //load library
-    dlerror();
+    /*dlerror();
     void *handle = dlopen ("libmyrules.so", RTLD_LAZY);
     if (handle == NULL)
     {
@@ -148,10 +148,10 @@ int main (int argc, char **argv)
     }
     void *createclass = dlsym (handle, "BasicStuffCreateClass");
     void *simplifyrulecollection = dlsym (handle, "BasicStuffSimplifyClass");
-
-    OurTerms = ((CAS::AbstractCreateClass * (*) ())createclass)();
-    CAS::AbstractSimplifyRuleCollection *rulecollection = ((CAS::AbstractSimplifyRuleCollection * (*) ())simplifyrulecollection)();
-
+*/
+    OurTerms = new CAS::CreateClassCollection ();// ((CAS::AbstractCreateClass * (*) ())createclass)();
+    CAS::AbstractSimplifyRuleCollection *rulecollection = //((CAS::AbstractSimplifyRuleCollection * (*) ())simplifyrulecollection)();
+      new CAS::SimplifyRuleCollectionList ();
     std::cout << "Copyright (C) 2009 Fabian Schmitthenner" << std::endl;
     std::cout << "License GPLv2+: GNU GPL version 2 or later <http://gnu.org/licenses/gpl.html>" << std::endl;
     std::cout << "This is free software: you are free to change and redistribute it." << std::endl;
@@ -174,7 +174,7 @@ int main (int argc, char **argv)
 #endif
     delete OurTerms;
     delete rulecollection;
-    dlclose(handle);
+    //dlclose(handle);
 }
 
 void Output (CAS::Term *t)

@@ -21,6 +21,7 @@
 #ifndef CAS_SIMPLIFYRULECOLLECTION_H
 #define CAS_SIMPLIFYRULECOLLECTION_H
 #include <cstring>
+#include <vector>
 
 namespace CAS {
 class Relations;
@@ -148,6 +149,41 @@ class SimplificationRuleList
       result = T4::simplify (t);
     return result;
   }
+};
+
+class SimplifyRuleCollectionList: public AbstractSimplifyRuleCollection
+{
+  private:
+    std::vector< AbstractSimplifyRuleCollection * > list;
+    
+    template< class T >
+    TermReference *_simplify (T *t)
+    {
+      for (std::vector< AbstractSimplifyRuleCollection* >::iterator it = list.begin(); it != list.end(); ++it)
+      {
+	TermReference *result = (*it)->simplify(t);
+	if (result)
+	  return result;
+      }
+      return NULL;
+    }
+  
+  public:
+    void pushList (AbstractSimplifyRuleCollection *list);
+    
+    virtual TermReference* simplify(Term* t);
+    virtual TermReference* simplify(Add* t);
+    virtual TermReference* simplify(Mul* t);
+    virtual TermReference* simplify(BuildInFunction* t);
+    virtual TermReference* simplify(Derive* t);
+    virtual TermReference* simplify(FunctionChange* t);
+    virtual TermReference* simplify(Number* t);
+    virtual TermReference* simplify(Variable* t);
+    virtual TermReference* simplify(SimpleTerm* t);
+    virtual TermReference* simplify(SimpleUniqueTerm* t);
+    virtual TermReference* simplify(FunctionDefinition* t);
+    virtual TermReference* simplify(FunctionCall* t);
+    virtual TermReference* simplify(Relations* t);
 };
 
 };

@@ -5,8 +5,8 @@
   std::string *STRING;
 }
 
-%token          LN EXP E DIFF TABLE
-%token <STRING>    STR
+%token          LN EXP E DIFF TABLE INCLUDE METHOD
+%token <STRING>    STR STR2
 %token <Number> VARIABLE
 %token <Number2> DIGIT 
 %type  <Term> term literal addTerm mulTerm equalTerm
@@ -17,6 +17,7 @@
 %%
 
 finallyTerm: equalTerm { output << *$1; AddTerm ($1); }
+|	INCLUDE STR2 METHOD STR2 { addLibrary ($2, $4); }
 ;
 
 term: term '^' term { $$ = CAS::TermReference::Create<CAS::BuildInFunction> (CAS::BuildInFunction::Exp, CAS::TermReference::Create<CAS::Mul> ($3, CAS::TermReference::Create<CAS::BuildInFunction> (CAS::BuildInFunction::Ln, $1))); }

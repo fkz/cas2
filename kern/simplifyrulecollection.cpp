@@ -27,3 +27,78 @@ CAS::AbstractSimplifyRuleCollection::~AbstractSimplifyRuleCollection()
 {
 
 }
+
+void CAS::SimplifyRuleCollectionList::pushList(AbstractSimplifyRuleCollection* rules)
+{
+  list.push_back(rules);
+}
+
+TermReference* SimplifyRuleCollectionList::simplify(Term* t)
+{
+  return _simplify (t);
+}
+
+TermReference* SimplifyRuleCollectionList::simplify(Add* t)
+{
+  return _simplify (t);
+}
+
+TermReference* SimplifyRuleCollectionList::simplify(Mul* t)
+{
+  return _simplify (t);
+}
+
+TermReference* SimplifyRuleCollectionList::simplify(BuildInFunction* t)
+{
+  return _simplify (t);
+}
+
+TermReference* SimplifyRuleCollectionList::simplify(Derive* t)
+{
+  return _simplify (t);
+}
+
+TermReference* SimplifyRuleCollectionList::simplify(FunctionChange* t)
+{
+  return _simplify (t);
+}
+
+TermReference* SimplifyRuleCollectionList::simplify(Number* t)
+{
+  return _simplify (t);
+}
+
+TermReference* SimplifyRuleCollectionList::simplify(Variable* t)
+{
+  return _simplify (t);
+}
+
+TermReference* SimplifyRuleCollectionList::simplify(SimpleTerm* t)
+{
+  return _simplify (t);
+}
+
+TermReference* SimplifyRuleCollectionList::simplify(SimpleUniqueTerm* t)
+{
+  return _simplify (t);
+}
+
+TermReference* SimplifyRuleCollectionList::simplify(FunctionDefinition* t)
+{
+  return _simplify (t);
+}
+
+TermReference* SimplifyRuleCollectionList::simplify(FunctionCall* t)
+{
+  return _simplify (t);
+}
+
+TermReference* SimplifyRuleCollectionList::simplify(Relations* t)
+{
+  return _simplify (t);
+}
+
+
+
+
+

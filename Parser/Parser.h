@@ -45,6 +45,7 @@ class Parser: public ParserBase
         void errorRecovery();
         int lookup(bool recovery);
         void nextToken();
+	void addLibrary (std::string *filename, std::string *name);
 };
 
 inline void Parser::error(char const *msg)
