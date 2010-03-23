@@ -51,13 +51,16 @@ Expand[{x}] --> i:x { Expand[i] };
 //Expand[NoExpand[Mul[Add{x} ... {y}]{z}]] --> Expand[z];
 //Expand[NoExpand[{x}]] --> x;
 
-Fakultaet[Number{num}] -->
-%{
-  const mpz_class &n = $num$->get_const()->Cast<const CAS::Number> ()->GetNumber ();
-  mpz_class res = 1;
-  for (mpz_class i = 1; i <= n; ++i)
-    res *= i;  
-%} =Number<"res">[];
+//Fakultaet[Number{num}] -->
+//%{
+//  const mpz_class &n = $num$->get_const()->Cast<const CAS::Number> ()->GetNumber ();
+//  mpz_class res = 1;
+//  for (mpz_class i = 1; i <= n; ++i)
+//    res *= i;  
+//%} =Number<"res">[];
+
+Fakultaet[Number{num}] --> %{  %} num == Number0 -- "return NULL;" = Number<"1">[];
+Fakultaet[Number{num}] --> Mul[ num, Fakultaet[ Add[ num, Number<"-1">[] ] ] ];
 
 //Solve equations
 Solve [Equal[{x},{y}],{z}] %{ $$ $x$->Equals (*$z$) && !HasX ($y$, $z$) || $y$->Equals (*$z$) && !HasX ($x$, $z$) %} --> Equal[x,y];
