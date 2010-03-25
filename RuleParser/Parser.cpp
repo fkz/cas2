@@ -1,12 +1,27 @@
 #include "Parser.h"
 #include "errors.h"
 #include <fstream>
+#include <stdint.h>
 
 using namespace RuleParser;
 
 int yyFlexLexer::yywrap ()
 {
   return 1;
+}
+
+uint32_t getRandomNumber ()
+{
+  //TODO: don't reopen this file every class, but open it only once, because this is much quicker
+  std::fstream rand ("/dev/random");
+  if (!rand)
+  {
+    // we're not on an unix like system
+    return 7861;
+  }
+  uint32_t result;
+  rand.read ((char*)&result, sizeof (result));
+  return result;
 }
 
 
@@ -55,7 +70,7 @@ void RuleParser::Parser::CreateClass(std::string* classname, int paramcount, std
   outh << "      default: return NULL;\n";
   outh << "    }\n}";
   outh << "virtual CAS::Hash getHashCode() const\n";
-  outh << "{\n   return CAS::Hash (CAS::hashes::Extended, 7268)";
+  outh << "{\n   return CAS::Hash (CAS::hashes::Extended, " << getRandomNumber () << ")";
   for (int i = 0; i < paramcount; ++i)
     outh << " ^ param" << i << "->getHashCode ()";
   outh << ";\n}\n";
