@@ -95,17 +95,7 @@ class Term
     {
       return dynamic_cast < const T * > (this);
     }
-    
-    ///berechne alle möglichen Terme, die nicht weiter "vereinfacht" werden können (durch Regeln)
-    ///setzt voraus, dass vorher Simplify aufgerufen wurde!
-    ///TODO: momentan nicht funktionsfähig, da durch andere Methoden ersetzt; wird evtl. einfach gelöscht werden
-    template<class _It, class _outIt>
-    bool SimplifyWithRules (_It rule_begin, _It rule_end, _outIt output);
-    
-    ///Vereinfache den Term und alle seine Kinder
-    template<class _It, class _outIt>    
-    bool SimplifyChildsWithRules (_It rule_begin, _It rule_end, _outIt output);
-    
+     
     void SetRuleCollection (AbstractSimplifyRuleCollection &coll);
     AbstractSimplifyRuleCollection &GetRuleCollection () const
     {
@@ -194,5 +184,4 @@ class SimpleUniqueTerm: public Term
 
 }
 
-//#include "term_templates.cpp"
 #endif // CAS_TERM_H
