@@ -22,12 +22,12 @@
 
 using namespace CAS;
 
-bool FunctionChange::Equals(const CAS::Term& t) const
+bool FunctionChange::equals(const CAS::Term& t) const
 {
   const CAS::FunctionChange* tt = dynamic_cast<const FunctionChange * > (&t);
   if (!tt)
     return false;
-  return definition->Equals(*tt->definition);
+  return definition->equals(*tt->definition);
 }
 
 CAS::Type* FunctionChange::GetType() const

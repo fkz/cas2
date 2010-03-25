@@ -44,12 +44,12 @@ Term* Table::CreateTerm(TermReference** children) const
 }
 
 
-bool Table::Equals(const CAS::Term& t) const
+bool Table::equals(const CAS::Term& t) const
 {
   const Table *tt = t.Cast< const Table >();
   if (!tt)
     return false;
-  return term->Equals (tt->term) && variable->Equals(tt->variable) && from->Equals(tt->from) && to->Equals(tt->to);
+  return term->equals (tt->term) && variable->Equals(tt->variable) && from->Equals(tt->from) && to->Equals(tt->to);
 }
 
 TermReference* Table::GetChildrenVar(void*& param) const
@@ -115,7 +115,7 @@ CAS::Term* CAS::Table::CreateTerm(TermReference* term, TermReference* variable, 
   return new Table (term, variable, from, to);
 }
 
-bool CAS::Table::TableType::Equals(const CAS::Type& t) const
+bool CAS::Table::TableType::equals(const CAS::Type& t) const
 {
   return dynamic_cast< const CAS::Table::TableType * > (&t);
 }

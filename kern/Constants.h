@@ -19,7 +19,7 @@ class Pi: public Term
     {
       return new Pi ();
     }
-    virtual bool Equals(const CAS::Term& t) const
+    virtual bool equals(const CAS::Term& t) const
     {
       return dynamic_cast < const Pi * > (&t);
     }
@@ -58,7 +58,7 @@ class UniqueTypes: public Term
     {
       return clone ();
     }
-    virtual bool Equals(const CAS::Term& t) const
+    virtual bool equals(const CAS::Term& t) const
     {
       const UniqueTypes *tt = dynamic_cast< const UniqueTypes * > (&t);
       if (!tt)

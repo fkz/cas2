@@ -40,7 +40,7 @@ class FunctionCall: public Term
     ///nicht vom Aufrufer zerstört werden sollte
     virtual const Term *GetFunction () const = 0;
   public:
-    virtual bool Equals(const CAS::Term& t) const;
+    virtual bool equals(const CAS::Term& t) const;
     virtual Type *GetType() const;
     virtual TermReference *simplify();
     virtual void ToString(std::ostream& stream) const;
@@ -87,7 +87,7 @@ class NormalFunctionCall: public FunctionCall
     virtual std::string GetFunctionName() const;
     virtual Hash GetHashCode() const;
     virtual FunctionCall* GetUmkehrFunktion() const;
-    virtual bool Equals(const CAS::Term& t) const;
+    virtual bool equals(const CAS::Term& t) const;
     virtual Term* CreateTerm(TermReference** children) const;
     virtual ~NormalFunctionCall();
 };

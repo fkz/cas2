@@ -35,13 +35,13 @@ class Table : public CAS::Term
     class TableType : public CAS::Type
     {
       public:
-	virtual bool Equals(const CAS::Type& t) const;
+	virtual bool equals(const CAS::Type& t) const;
 	static TableType *Instance ();
     };
     
     virtual Term* clone() const;
     virtual Term* CreateTerm(TermReference** children) const;
-    virtual bool Equals(const CAS::Term& t) const;
+    virtual bool equals(const CAS::Term& t) const;
     virtual TermReference* GetChildrenVar(void*& param) const;
     virtual Hash GetHashCode() const;
     virtual Type* GetType() const;

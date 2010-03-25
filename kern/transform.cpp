@@ -36,10 +36,10 @@ CAS::TermReference* Transform::GetChildrenVar(void*& param) const
 }
 
 
-bool Transform::Equals(const CAS::Term& t) const
+bool Transform::equals(const CAS::Term& t) const
 {
   const CAS::Transform* tt = t.Cast<const Transform>();
-  return tt && child->Equals(tt->child);
+  return tt && child->equals(tt->child);
 }
 
 CAS::Type* Transform::GetType() const
@@ -114,7 +114,7 @@ TermReference* Derive::simplify()
   
   /*
   TODO: An neue GetChildren anpassen oder einfach Kommentar löschen
-  if (child->Equals(variable))
+  if (child->equals(variable))
   {
     delete this;
     return TermReference::Create<Number>(1);
@@ -123,7 +123,7 @@ TermReference* Derive::simplify()
   if (bf)
   {
     /*Term *func = bf->GetFunction ();
-    assert (func->GetType()->Equals(Type::GetBuildInType(Type::FunctionDefinition)));
+    assert (func->GetType()->equals(Type::GetBuildInType(Type::FunctionDefinition)));
     Term *ableitung = func->Transform(Transforms::Ableitung);
     //...* /
   }

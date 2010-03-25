@@ -17,7 +17,7 @@ CAS::Term* CAS::Limit::CreateTerm(CAS::TermReference** children) const
   return new Limit (*children);
 }
 
-bool CAS::Limit::Equals(const CAS::Term& t) const
+bool CAS::Limit::equals(const CAS::Term& t) const
 {
   return false;
 }

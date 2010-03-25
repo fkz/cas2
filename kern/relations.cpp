@@ -36,7 +36,7 @@ Term *Boolean::CreateTerm(TermReference** children) const
   return new Boolean (b);
 }
 
-bool Boolean::Equals(const CAS::Term& t) const
+bool Boolean::equals(const CAS::Term& t) const
 {
   const CAS::Boolean* tt = dynamic_cast< const Boolean * > (&t);
   if (!tt)
@@ -108,15 +108,15 @@ void Relations::ToString(std::ostream& stream) const
   stream << *left << (type == Equality ? "==" : ">") << *right;
 }
 
-bool Relations::Equals(const CAS::Term& t) const
+bool Relations::equals(const CAS::Term& t) const
 {
   const CAS::Relations* tt = dynamic_cast<const Relations *> (&t);
   if (!tt)
     return false;
   if (tt->type == Greater)
-    return type == tt->type && left->Equals(*tt->left) && right->Equals(*tt->right);
-  else //if (tt == Equals)
-    return type == tt->type && ((left->Equals(*tt->left) && right->Equals(*tt->right)) || (left->Equals(*tt->right) && right->Equals(*tt->left)));
+    return type == tt->type && left->equals(*tt->left) && right->equals(*tt->right);
+  else //if (tt == equals)
+    return type == tt->type && ((left->equals(*tt->left) && right->equals(*tt->right)) || (left->equals(*tt->right) && right->equals(*tt->left)));
 }
 
 CAS::Type* Relations::GetType() const
@@ -131,7 +131,7 @@ CAS::Term* Relations::clone() const
 
 CAS::TermReference* Relations::simplify()
 {
-  if (left->Equals(*right))
+  if (left->equals(*right))
   {
     TermReference *result = NULL;
     switch (type)

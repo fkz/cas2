@@ -64,7 +64,7 @@ void CAS::SimplifyWithRule(CAS::TermReference* ref, CAS::RuleCollection* rule, s
   TermCollection newly_addings;
   std::vector< TermReference * > vector;
   TermCollection *tt;
-  if (ref->get_const()->GetType()->Equals(*rule->GetCorrespondingType()))
+  if (ref->get_const()->GetType()->equals(*rule->GetCorrespondingType()))
   {
     for (TermCollection::iterator it = coll.begin(); it != coll.end(); ++it)
     {

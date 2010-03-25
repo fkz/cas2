@@ -63,7 +63,7 @@ Fakultaet[Number{num}] --> %{  %} num == Number0 -- "return NULL;" = Number<"1">
 Fakultaet[Number{num}] --> Mul[ num, Fakultaet[ Add[ num, Number<"-1">[] ] ] ];
 
 //Solve equations
-Solve [Equal[{x},{y}],{z}] %{ $$ $x$->Equals (*$z$) && !HasX ($y$, $z$) || $y$->Equals (*$z$) && !HasX ($x$, $z$) %} --> Equal[x,y];
+Solve [Equal[{x},{y}],{z}] %{ $$ $x$->equals (*$z$) && !HasX ($y$, $z$) || $y$->equals (*$z$) && !HasX ($x$, $z$) %} --> Equal[x,y];
 Solve [{a},{b}] %{ $$ !HasX ($a$, $b$) %} --> a;
 
 //Solve [ Equal[ Exp[ {xterm} ], {noxterm} ], {x} ] %{ $$ HasX ($xterm$, $x$) && !HasX ($noxterm$, $x$) %}
@@ -78,7 +78,7 @@ Solve[ (1) Equal[ Add[ ... Any & %{ HasX ($$, $x$) %}{xterms}, {noxterms}], Any 
 Solve[ (1) Equal[ Add[ ... Any & %{ HasX ($$, $x$) %}{xterms}, {noxterms}], Any & %{ HasX ($$, $x$) %}{eq2} ], {x} ]
 --> Solve [ Equal[ Add[ ... i:noxterms { i } ], Add[ eq2, Mul[ Number<"-1">[], Add[ ... i:xterms { i } ] ] ] ], x ];
 
-Equal[ Number{n1}, Number & %{ ! $$->Equals (*$n1$) %} {n2} ] --> False[];
+Equal[ Number{n1}, Number & %{ ! $$->equals (*$n1$) %} {n2} ] --> False[];
 
 //Solve[ (1) Equal[ Add[ ... Any & %{ HasX ($$, $x$) %}{xterms}, {noxterms}]] {x}]
 //--> Solve[ Equal[ Add[ ... xterms], Add
@@ -105,7 +105,7 @@ Equal[ Number{n1}, Number & %{ ! $$->Equals (*$n1$) %} {n2} ] --> False[];
 
 //Lim[{x},{y},{z}] --> Error[];
 
-Sum[{term},{variable},{anfang},{ende}] %{ $$ $anfang$->Equals(*$ende$) %} --> Set[term, variable, anfang];
+Sum[{term},{variable},{anfang},{ende}] %{ $$ $anfang$->equals(*$ende$) %} --> Set[term, variable, anfang];
 Sum[Add[...{terms}],{variable},{anfang},{ende}] --> Add[...i:terms{Sum[i,variable,anfang,ende]}];
 Sum[{terms},{variable},{anfang},{ende}] %{ $$ !HasX ($terms$, $variable$) %} --> Mul[ terms, Add[ende, Mul[ anfang, Number<"-1">[]], Number<"1">[]]];
 
@@ -113,8 +113,8 @@ Sum[{term},{variable},{anfang},{ende}] --> %{ %}
    anfang == Number0 ++ "return NULL;"
    = Add[ Mul[ Number<"-1">[], Sum[term, variable, Number<"0">[], Add[anfang, Number<"-1">[]]] ], Sum[ term, variable, Number<"0">[], ende] ];
 
-Sum[{x},{y},Number0,{ende}] %{ $$ $x$->Equals (*$y$) %} --> Mul[ ende, Add[ende, Number<"1">[] ], Number<"""1/2""">[] ];
-Sum[ (1) Exp[Mul[Ln[{z}],Any & %{ $$->Equals (*$i2$) %}{i}]], {i2}, Number0, {ende}] --> 
+Sum[{x},{y},Number0,{ende}] %{ $$ $x$->equals (*$y$) %} --> Mul[ ende, Add[ende, Number<"1">[] ], Number<"""1/2""">[] ];
+Sum[ (1) Exp[Mul[Ln[{z}],Any & %{ $$->equals (*$i2$) %}{i}]], {i2}, Number0, {ende}] --> 
   Mul[ 
     Add[ Exp[ Mul[ Ln[z], Add[ende, Number<"1">[]]]], Number<"-1">[]],
     Exp[ Mul[ Number<"-1">[], Ln[ Add[ z, Number<"-1">[]] ]]]

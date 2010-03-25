@@ -70,13 +70,13 @@ class TermReference
     {
       return hash;
     }
-    bool Equals (const TermReference *r2) const
+    bool equals (const TermReference *r2) const
     {
-      return r2->term == term || (hash == r2->hash && term->Equals (*r2->term));
+      return r2->term == term || (hash == r2->hash && term->equals (*r2->term));
     }
-    bool Equals (const TermReference &r2) const
+    bool equals (const TermReference &r2) const
     {
-      return Equals (&r2);
+      return equals (&r2);
     }
     /**
      gibt den konstanten zugrunde liegende Term zurück. Durch die Unveränderlichkeit müssen keine anderen Terme gesperrt werden.

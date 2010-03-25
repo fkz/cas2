@@ -3,7 +3,7 @@ included;
 %{
 inline bool HasX (const CAS::AutoTermReference &term, const CAS::AutoTermReference &x)
 {
-  if (term->Equals (*x))
+  if (term->equals (*x))
      return true;
   void *param = NULL;
   while (true)

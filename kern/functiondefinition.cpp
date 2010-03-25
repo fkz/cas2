@@ -33,11 +33,11 @@ void FunctionDefinition::ToString(std::ostream& stream) const
   stream << *variable << "->" << *term->get_const();
 }
 
-bool FunctionDefinition::Equals(const CAS::Term& t) const
+bool FunctionDefinition::equals(const CAS::Term& t) const
 {
   const CAS::FunctionDefinition* tt = dynamic_cast< const FunctionDefinition * > (&t);
   //TODO: Gebe auch wahr zurück, wenn es verschiedene Variablen, aber eigentlich die gleiche Funktion ist
-  return tt->term->Equals(*term) && tt->variable->Equals(*variable);
+  return tt->term->equals(*term) && tt->variable->equals(*variable);
 }
 
 CAS::Type* FunctionDefinition::GetType() const
@@ -95,7 +95,7 @@ Term* BuildInFunctionDefinition::clone() const
   return new BuildInFunctionDefinition (func);
 }
 
-bool BuildInFunctionDefinition::Equals(const CAS::Term& t) const
+bool BuildInFunctionDefinition::equals(const CAS::Term& t) const
 {
   const BuildInFunctionDefinition *tt = dynamic_cast< const BuildInFunctionDefinition * > (&t);
   if (!tt)

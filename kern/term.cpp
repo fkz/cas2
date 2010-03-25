@@ -42,7 +42,7 @@ Term* SimpleTerm::clone() const
   return new SimpleTerm (*coll);
 }
 
-bool SimpleTerm::Equals(const CAS::Term& t) const
+bool SimpleTerm::equals(const CAS::Term& t) const
 {
   return dynamic_cast< const SimpleTerm * > (&t);
 }

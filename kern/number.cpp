@@ -38,7 +38,7 @@ CAS::Number* CAS::Number::clone() const
   return new Number (zahl);
 }
 
-bool Number::Equals(const CAS::Term& t) const
+bool Number::equals(const CAS::Term& t) const
 {
   const CAS::Number *ct = dynamic_cast<const Number *> (&t);
   if (!ct)
@@ -88,7 +88,7 @@ Term* Variable::clone() const
   return new Variable (id);
 }
 
-bool Variable::Equals(const CAS::Term& t) const
+bool Variable::equals(const CAS::Term& t) const
 {
   const CAS::Variable* ct = dynamic_cast<const Variable *> (&t);
   if (!ct) return false;

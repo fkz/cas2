@@ -29,12 +29,12 @@
 using namespace CAS;
 
 
-bool FunctionCall::Equals(const CAS::Term& t) const
+bool FunctionCall::equals(const CAS::Term& t) const
 {
   const FunctionCall *func = dynamic_cast< const FunctionCall * > (&t);
   if (!func)
     return false;
-  return parameter->Equals(*func->parameter);
+  return parameter->equals(*func->parameter);
 }
 
 FunctionCall::FunctionCall(TermReference* t)
@@ -60,7 +60,7 @@ TermReference *FunctionCall::simplify()
     const Term *t1 = f->GetFunction();
     const Term *t2 = GetFunction();
     Term* t1_ = t1->Transform(Transforms::UmkehrFunktion);
-    if (t1_->Equals(*t2))
+    if (t1_->equals(*t2))
     {
       result = f->parameter->clone();
       delete f;
@@ -79,7 +79,7 @@ FunctionCall::~FunctionCall()
 
 bool FunctionCall::IsSameFunction(const CAS::FunctionCall& cf) const
 {
-  return GetFunction()->Equals(*cf.GetFunction());
+  return GetFunction()->equals(*cf.GetFunction());
 }
 
 
@@ -147,14 +147,14 @@ Term* NormalFunctionCall::clone() const
   return new NormalFunctionCall (parameter->clone(), /*soll es wirklich geklont werden ?*/(FunctionDefinition *)definition->clone());
 }
 
-bool NormalFunctionCall::Equals(const CAS::Term& t) const
+bool NormalFunctionCall::equals(const CAS::Term& t) const
 {
-  if (!CAS::FunctionCall::Equals(t))
+  if (!CAS::FunctionCall::equals(t))
     return false;
   const CAS::NormalFunctionCall* tt = dynamic_cast< const NormalFunctionCall * > (&t);
   if (!tt)
     return false;
-  return definition->Equals(*tt->definition);
+  return definition->equals(*tt->definition);
 }
 
 std::string NormalFunctionCall::GetFunctionName() const

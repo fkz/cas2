@@ -33,7 +33,7 @@ class Transform : public CAS::Term
     TermReference *child;
     Transform (TermReference *c);
   public:
-    virtual bool Equals(const CAS::Term& t) const;
+    virtual bool equals(const CAS::Term& t) const;
     virtual CAS::Type* GetType() const;
     virtual CAS::TermReference* simplify();
     virtual ~Transform();

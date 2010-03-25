@@ -101,7 +101,7 @@ class Operator : public CAS::Term
     virtual CAS::Type* GetType() const;
     virtual TermReference *simplify();
     virtual ~Operator();
-    virtual bool Equals(const CAS::Term& t) const;
+    virtual bool equals(const CAS::Term& t) const;
     virtual TermReference* GetChildren(void*& param) const;
     virtual TermReference* GetChildrenVar(void*& param) const;
     
@@ -122,7 +122,7 @@ class Add: public Operator
     virtual Hash GetHashCode() const;
     virtual void ToString(std::ostream& stream) const;
     virtual TermReference *simplify();
-    virtual bool Equals(const CAS::Term& t) const;
+    virtual bool equals(const CAS::Term& t) const;
     virtual Term* CreateTerm(TermReference** children) const;
     static Add *CreateTerm (CAS::TermReference* t1, CAS::TermReference* t2);
     static Add *CreateTerm (CAS::TermReference* t1, CAS::TermReference* t2, CAS::TermReference *t3);
@@ -145,7 +145,7 @@ class Mul: public Operator
   public:
     virtual Term* clone() const;
     virtual Hash GetHashCode() const;
-    virtual bool Equals(const CAS::Term& t) const;
+    virtual bool equals(const CAS::Term& t) const;
     virtual void ToString(std::ostream& stream) const;
     static Mul *CreateTerm (CAS::TermReference* t1, CAS::TermReference* t2);
     static Mul *CreateTerm (CAS::TermReference* t1, CAS::TermReference* t2, CAS::TermReference *t3);

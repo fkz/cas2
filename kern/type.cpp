@@ -36,7 +36,7 @@ CAS::Type::Type(Type::BuildInTypes t)
 {
 }
 
-bool Type::Equals(const CAS::Type& t) const
+bool Type::equals(const CAS::Type& t) const
 {
   if (typeid(t) != typeid(Type))
     return false;

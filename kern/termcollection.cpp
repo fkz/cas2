@@ -32,7 +32,7 @@ typename TermCollectionTemplate<Type>::parent::const_iterator TermCollectionTemp
   std::pair< typename parent::const_iterator, typename parent::const_iterator > range = this->equal_range(hash);
   for (; range.first != range.second; ++range.first)
   {
-    if (range.first->second.first->Equals(*t))
+    if (range.first->second.first->equals(*t))
       return range.first;
   }
   return this->end();
@@ -46,7 +46,7 @@ typename TermCollectionTemplate<Type>::parent::iterator TermCollectionTemplate<T
   std::pair< typename parent::iterator, typename parent::iterator > range = this->equal_range(hash);
   for (; range.first != range.second; ++range.first)
   {
-    if (range.first->second.first->Equals(*t))
+    if (range.first->second.first->equals(*t))
       return range.first;
   }
   return this->end();
@@ -60,7 +60,7 @@ typename TermCollectionTemplate<Type>::parent::const_iterator TermCollectionTemp
   std::pair< typename parent::const_iterator, typename parent::const_iterator > range = this->equal_range(hash);
   for (; range.first != range.second; ++range.first)
   {
-    if (range.first->second.first->Equals(*t))
+    if (range.first->second.first->equals(*t))
       return range.first;
   }
   return this->end();
@@ -74,7 +74,7 @@ typename TermCollectionTemplate<Type>::parent::iterator TermCollectionTemplate<T
   std::pair< typename parent::iterator, typename parent::iterator > range = this->equal_range(hash);
   for (; range.first != range.second; ++range.first)
   {
-    if (range.first->second.first->get_const()->Equals(*t))
+    if (range.first->second.first->get_const()->equals(*t))
       return range.first;
   }
   return this->end();
@@ -88,7 +88,7 @@ bool CAS::TermCollectionTemplate<Type>::push_back(CAS::TermReference* const & t,
   std::pair< typename parent::iterator, typename parent::iterator > range = this->equal_range(hash);
   for (; range.first != range.second; ++range.first)
   {
-    if (range.first->second.first->Equals(*t))
+    if (range.first->second.first->equals(*t))
       return false;
   }
   if (!iterating)

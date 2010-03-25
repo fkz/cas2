@@ -55,7 +55,7 @@ class RuleCollectionBase: public RuleCollection
     : rules (begin, end), type (begin->GetCorrespondingType ())
     {
       for (; begin != end; ++begin)
-	if (!begin->GetCorrespondingType()->Equals (*type))
+	if (!begin->GetCorrespondingType()->equals (*type))
 	  throw new std::runtime_error ("Rules all have to be the same type");
     }
     virtual Type* GetCorrespondingType() const;

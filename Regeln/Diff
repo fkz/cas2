@@ -1,6 +1,6 @@
 included;
 
-Diff[{x},{y}] %{ $$ $x$->Equals (*$y$) %} --> Number<"1">[];
+Diff[{x},{y}] %{ $$ $x$->equals (*$y$) %} --> Number<"1">[];
 Diff[Add[ ... {x} ],{y}] --> Add[ ... i:x { Diff[i,y] }];
 Diff[Number,{x}] --> Number<"0">[];
 Diff[Mul[ ... {mul}], {x}] --> Add[ ... i:mul { Mul[ ... y:mul { %{ if (&$y$ != &$i$) %} = y %{ else %} = Diff[y,x]  } ] } ];

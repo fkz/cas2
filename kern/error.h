@@ -22,7 +22,7 @@ class Unknown: public Term
     {
       return new Unknown ();
     }
-    virtual bool Equals(const CAS::Term& t) const
+    virtual bool equals(const CAS::Term& t) const
     {
       return false;
     }
@@ -61,7 +61,7 @@ class Limit: public Term
     }
     virtual Term* clone() const;
     virtual Term* CreateTerm(TermReference** children) const;
-    virtual bool Equals(const CAS::Term& t) const;
+    virtual bool equals(const CAS::Term& t) const;
     virtual TermReference* GetChildrenVar(void*& param) const;
     virtual Hash GetHashCode() const;
     virtual Type* GetType() const;

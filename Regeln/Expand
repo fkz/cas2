@@ -14,4 +14,4 @@ Expand[{x}] --> i:x { Expand[i] };
 
 And[ Equal[ {x}, {c} ], Any & %{ HasX ($$, $x$) %} { right } ] --> And[ Equal[ x, c], Set[ right, x, c ] ];
 
-Equal[ Number{n1}, Number{n2} ] %{ $$ !$n1$->Equals (*$n2$) %} --> False[];
+Equal[ Number{n1}, Number{n2} ] %{ $$ !$n1$->equals (*$n2$) %} --> False[];

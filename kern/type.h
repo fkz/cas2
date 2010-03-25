@@ -42,7 +42,7 @@ class Type
     }
     
     static Type *GetBuildInType (BuildInTypes type);
-    virtual bool Equals (const Type &t) const;
+    virtual bool equals (const Type &t) const;
     
   private:
     Type (BuildInTypes t);

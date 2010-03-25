@@ -41,12 +41,12 @@ void RuleParser::Parser::CreateClass(std::string* classname, int paramcount, std
   for (int i = 1; i < paramcount; ++i)
     outh << ",children[" << i << "]";
   outh << ");\n}\n";
-  outh << "virtual bool Equals(const CAS::Term& t) const\n";
+  outh << "virtual bool equals(const CAS::Term& t) const\n";
   outh << "{\n   const " << *classname << " *tt = t.Cast<const " << *classname << "> ();\n";
   outh << "   if (!tt) return false;\n";
-  outh << "   return param0->Equals (*tt->param0)";
+  outh << "   return param0->equals (*tt->param0)";
   for (int i = 1; i < paramcount; ++i)
-    outh << "&& param" << i << "->Equals (*tt->param" << i << ")";
+    outh << "&& param" << i << "->equals (*tt->param" << i << ")";
   outh << ";\n}\n";
   outh << "virtual CAS::TermReference* GetChildrenVar(void*& param) const\n";
   outh << "{\n   param = (void *)(((int)param)+1);\n   switch ((int)param)\n   {\n";

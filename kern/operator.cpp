@@ -59,7 +59,7 @@ void Operator::FindEquals (void (Operator::*FindEqual) (CAS::TermReference *t1, 
       ++it2;
       for (; it2 != it;)
       {
-	if (start->second.first->Equals (*it2->second.first))
+	if (start->second.first->equals (*it2->second.first))
 	{
 	  delete it2->second.first;
 	  children.erase (it2++);
@@ -100,7 +100,7 @@ Operator::Operator()
 }
 
 
-bool Operator::Equals(const CAS::Term& t) const
+bool Operator::equals(const CAS::Term& t) const
 {
   const CAS::Operator* ct = dynamic_cast<const Operator *> (&t);
   if (!ct)
@@ -124,7 +124,7 @@ bool Operator::Equals(const CAS::Term& t) const
       bool found = false;
       for (std::list< std::pair< Hash, std::pair< TermReference*, NumberX > > >::iterator itbeetween = tempList.begin(); itbeetween != tempList.end(); )
       {
-	if (thisit->second.second == itbeetween->second.second && thisit->second.first->Equals (*itbeetween->second.first))
+	if (thisit->second.second == itbeetween->second.second && thisit->second.first->equals (*itbeetween->second.first))
 	{
 	  tempList.erase (itbeetween);
 	  found = true;
@@ -235,14 +235,14 @@ TermReference* Add::GetElement(std::multimap< Hash, std::pair< TermReference*, O
 }
 
 
-bool Add::Equals(const CAS::Term& t) const
+bool Add::equals(const CAS::Term& t) const
 {
-  return t.Cast<const Add >() && CAS::Operator::Equals(t);
+  return t.Cast<const Add >() && CAS::Operator::equals(t);
 }
 
-bool Mul::Equals(const CAS::Term& t) const
+bool Mul::equals(const CAS::Term& t) const
 {
-  return t.Cast<const Mul > () && CAS::Operator::Equals(t);
+  return t.Cast<const Mul > () && CAS::Operator::equals(t);
 }
 
 
