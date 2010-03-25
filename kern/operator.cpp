@@ -253,7 +253,7 @@ Term* Add::clone() const
   return new Add (*this);  
 }
 
-Hash Add::GetHashCode() const
+Hash Add::getHashCode() const
 {
   return GetPseudoHashCode (hashes::Add, 0);
 }
@@ -304,7 +304,7 @@ TermReference *Add::simplify()
     if (res != 0)
     {
       TermReference *number = TermReference::Create<Number> (res);
-      children.insert(std::make_pair(number->GetHashCode(), std::make_pair (number, 1)));
+      children.insert(std::make_pair(number->getHashCode(), std::make_pair (number, 1)));
     }
     assert (result == This() || ! result );
     result = This();
@@ -313,7 +313,7 @@ TermReference *Add::simplify()
     if (!vect.empty())
     {
       if (vect.front().first->get_const()->Cast< Number > ()->GetNumber() != 0)
-	children.insert(std::make_pair (vect.front().first->GetHashCode(), vect.front()));
+	children.insert(std::make_pair (vect.front().first->getHashCode(), vect.front()));
       else
       {
 	delete vect.front().first;
@@ -430,7 +430,7 @@ TermReference* Mul::GetElement(std::multimap< Hash, std::pair< TermReference*, O
 }
 
 
-Hash Mul::GetHashCode() const
+Hash Mul::getHashCode() const
 {
   return GetPseudoHashCode(hashes::Mul, 0);
 }

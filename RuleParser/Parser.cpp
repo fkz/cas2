@@ -54,10 +54,10 @@ void RuleParser::Parser::CreateClass(std::string* classname, int paramcount, std
     outh << "      case " << i+1 << ": return param" << i << ";\n";
   outh << "      default: return NULL;\n";
   outh << "    }\n}";
-  outh << "virtual CAS::Hash GetHashCode() const\n";
+  outh << "virtual CAS::Hash getHashCode() const\n";
   outh << "{\n   return CAS::Hash (CAS::hashes::Extended, 7268)";
   for (int i = 0; i < paramcount; ++i)
-    outh << " ^ param" << i << "->GetHashCode ()";
+    outh << " ^ param" << i << "->getHashCode ()";
   outh << ";\n}\n";
   outh << "virtual CAS::Type* GetType() const\n";
   outh << "{\n   return " << *type << ";\n}\n";

@@ -28,7 +28,7 @@ template<class Type>
 typename TermCollectionTemplate<Type>::parent::const_iterator TermCollectionTemplate<Type>::find(const TermReference * t) const
 {
   assert (!iterating);
-  Hash hash = t->GetHashCode();
+  Hash hash = t->getHashCode();
   std::pair< typename parent::const_iterator, typename parent::const_iterator > range = this->equal_range(hash);
   for (; range.first != range.second; ++range.first)
   {
@@ -42,7 +42,7 @@ template<class Type>
 typename TermCollectionTemplate<Type>::parent::iterator TermCollectionTemplate<Type>::find(const CAS::TermReference* t)
 {
   assert (!iterating);
-  Hash hash = t->GetHashCode();
+  Hash hash = t->getHashCode();
   std::pair< typename parent::iterator, typename parent::iterator > range = this->equal_range(hash);
   for (; range.first != range.second; ++range.first)
   {
@@ -56,7 +56,7 @@ template<class Type>
 typename TermCollectionTemplate<Type>::parent::const_iterator TermCollectionTemplate<Type>::find(const Term * t) const
 {
   assert (!iterating);
-  Hash hash = t->GetHashCode();
+  Hash hash = t->getHashCode();
   std::pair< typename parent::const_iterator, typename parent::const_iterator > range = this->equal_range(hash);
   for (; range.first != range.second; ++range.first)
   {
@@ -70,7 +70,7 @@ template<class Type>
 typename TermCollectionTemplate<Type>::parent::iterator TermCollectionTemplate<Type>::find(const CAS::Term* t)
 {
   assert (!iterating);
-  Hash hash = t->GetHashCode();
+  Hash hash = t->getHashCode();
   std::pair< typename parent::iterator, typename parent::iterator > range = this->equal_range(hash);
   for (; range.first != range.second; ++range.first)
   {
@@ -84,7 +84,7 @@ template<class Type>
 bool CAS::TermCollectionTemplate<Type>::push_back(CAS::TermReference* const & t, const Type &flag)
 {
   push_back_called = true;
-  Hash hash = t->GetHashCode();
+  Hash hash = t->getHashCode();
   std::pair< typename parent::iterator, typename parent::iterator > range = this->equal_range(hash);
   for (; range.first != range.second; ++range.first)
   {

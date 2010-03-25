@@ -23,9 +23,9 @@
 
 using namespace CAS;
 
-CAS::Hash FunctionDefinition::GetHashCode() const
+CAS::Hash FunctionDefinition::getHashCode() const
 {
-  return Hash (hashes::FunctionDefinition) ^ variable->GetHashCode() ^ term->GetHashCode();
+  return Hash (hashes::FunctionDefinition) ^ variable->getHashCode() ^ term->getHashCode();
 }
 
 void FunctionDefinition::ToString(std::ostream& stream) const
@@ -103,7 +103,7 @@ bool BuildInFunctionDefinition::equals(const CAS::Term& t) const
   return func == tt->func;
 }
 
-Hash BuildInFunctionDefinition::GetHashCode() const
+Hash BuildInFunctionDefinition::getHashCode() const
 {
   return Hash (hashes::BuildInFunctionDefinition, func);
 }

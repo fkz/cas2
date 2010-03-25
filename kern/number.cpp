@@ -66,7 +66,7 @@ Number* Number::CreateTerm(const std::string& number, bool shouldCanonicalize)
 
 
 
-Hash Number::GetHashCode() const
+Hash Number::getHashCode() const
 {
   return Hash (hashes::Number, zahl.get_den ().get_si() ^ zahl.get_num ().get_si());
 }
@@ -95,7 +95,7 @@ bool Variable::equals(const CAS::Term& t) const
   return ct->id == id;
 }
 
-Hash Variable::GetHashCode() const
+Hash Variable::getHashCode() const
 {
   return Hash (hashes::Variable, id);
 }

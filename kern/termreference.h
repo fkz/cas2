@@ -42,12 +42,12 @@ class TermReference
       TermReference *re = term->simplify();
       if (!re)
       {
-	hash = term->GetHashCode();
+	hash = term->getHashCode();
 	return false;
       }
       if (re == Term::This())
       {
-	hash = term->GetHashCode();
+	hash = term->getHashCode();
 	return true;
       }
       term = re->term;
@@ -66,7 +66,7 @@ class TermReference
     };
     TermReference (Term *, CreationFlags flag = New);
     ~TermReference();
-    Hash GetHashCode () const
+    Hash getHashCode () const
     {
       return hash;
     }
@@ -98,7 +98,7 @@ class TermReference
 	return simplify();
       else
       {
-	hash = term->GetHashCode();
+	hash = term->getHashCode();
 	return false;
       }
     }

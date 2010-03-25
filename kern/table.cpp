@@ -70,9 +70,9 @@ TermReference* Table::GetChildrenVar(void*& param) const
   }
 }
 
-Hash Table::GetHashCode() const
+Hash Table::getHashCode() const
 {
-  return Hash (hashes::Table, 0) ^ term->GetHashCode() ^ variable->GetHashCode() ^ from->GetHashCode() ^ to->GetHashCode();
+  return Hash (hashes::Table, 0) ^ term->getHashCode() ^ variable->getHashCode() ^ from->getHashCode() ^ to->getHashCode();
 }
 
 Type* Table::GetType() const

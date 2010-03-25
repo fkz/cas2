@@ -49,7 +49,7 @@ TermReference* Boolean::GetChildrenVar(void*& param) const
   return NULL;
 }
 
-Hash Boolean::GetHashCode() const
+Hash Boolean::getHashCode() const
 {
   return Hash (hashes::Boolean, b);
 }
@@ -98,9 +98,9 @@ CAS::TermReference* Relations::GetChildrenVar(void*& param) const
       return NULL;
 }
 
-CAS::Hash Relations::GetHashCode() const
+CAS::Hash Relations::getHashCode() const
 {
-  return Hash (hashes::Relation, type) ^ left->GetHashCode () ^ (type == Equality ? right->GetHashCode() : ~right->GetHashCode());
+  return Hash (hashes::Relation, type) ^ left->getHashCode () ^ (type == Equality ? right->getHashCode() : ~right->getHashCode());
 }
 
 void Relations::ToString(std::ostream& stream) const

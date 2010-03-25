@@ -65,7 +65,7 @@ class Term
     virtual Type *GetType () const = 0;
     virtual bool equals (const Term &t) const = 0;
     virtual void ToString (std::ostream &stream) const = 0;
-    virtual Hash GetHashCode () const = 0;
+    virtual Hash getHashCode () const = 0;
     virtual TermReference *GetChildren (void *&param) const;
     virtual TermReference *GetChildrenVar (void *&param) const = 0;
     virtual bool IsCacheable () const;
@@ -132,7 +132,7 @@ class SimpleTerm: public Term
     SimpleTerm(AbstractSimplifyRuleCollection& c = *standardCollection) : Term (c) { }
     virtual Term* clone() const;
     virtual bool equals(const CAS::Term& t) const;
-    virtual Hash GetHashCode() const;
+    virtual Hash getHashCode() const;
     virtual Type* GetType() const;
     virtual TermReference* simplify();
     virtual void ToString(std::ostream& stream) const;
@@ -174,7 +174,7 @@ class SimpleUniqueTerm: public Term
     {
       return NULL;
     }
-    virtual Hash GetHashCode() const
+    virtual Hash getHashCode() const
     {
       return Hash (hashes::SimpleUniqueTerm, id);
     }

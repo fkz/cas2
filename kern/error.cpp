@@ -33,9 +33,9 @@ CAS::TermReference* CAS::Limit::GetChildrenVar(void*& param) const
     return NULL;
 }
 
-CAS::Hash CAS::Limit::GetHashCode() const
+CAS::Hash CAS::Limit::getHashCode() const
 {
-  return Hash (hashes::Limit, 0) ^ argument->GetHashCode();
+  return Hash (hashes::Limit, 0) ^ argument->getHashCode();
 }
 
 CAS::Type* CAS::Limit::GetType() const

@@ -99,9 +99,9 @@ TermReference* Derive::GetChildrenVar(void*& param) const
   }
 }
 
-Hash Derive::GetHashCode() const
+Hash Derive::getHashCode() const
 {
-  return Hash (hashes::Derive, 0) ^ child->GetHashCode() ^ variable->GetHashCode();
+  return Hash (hashes::Derive, 0) ^ child->getHashCode() ^ variable->getHashCode();
 }
 
 void Derive::ToString(std::ostream& stream) const

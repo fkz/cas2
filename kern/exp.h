@@ -68,7 +68,7 @@ class BuildInFunction: public FunctionCall
     }
     static BuildInFunction *CreateTerm (CAS::BuildInFunction::Function f, CAS::TermReference* t);
     virtual Term* clone() const;
-    virtual Hash GetHashCode() const;
+    virtual Hash getHashCode() const;
     virtual Term* CreateTerm(TermReference** children) const;
     virtual TermReference* simplify();
     virtual void ToString(std::ostream& stream) const;
@@ -85,7 +85,7 @@ class NormalFunctionCall: public FunctionCall
   public:
     virtual Term* clone() const;
     virtual std::string GetFunctionName() const;
-    virtual Hash GetHashCode() const;
+    virtual Hash getHashCode() const;
     virtual FunctionCall* GetUmkehrFunktion() const;
     virtual bool equals(const CAS::Term& t) const;
     virtual Term* CreateTerm(TermReference** children) const;

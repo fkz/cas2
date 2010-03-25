@@ -27,7 +27,7 @@ class Pi: public Term
     {
       return NULL;
     }
-    virtual Hash GetHashCode() const
+    virtual Hash getHashCode() const
     {
       return Hash (hashes::Pi, 0);
     }
@@ -69,7 +69,7 @@ class UniqueTypes: public Term
     {
       return NULL;
     }
-    virtual Hash GetHashCode() const
+    virtual Hash getHashCode() const
     {
       return Hash (hashes::unique, id);
     }

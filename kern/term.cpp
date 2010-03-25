@@ -47,7 +47,7 @@ bool SimpleTerm::equals(const CAS::Term& t) const
   return dynamic_cast< const SimpleTerm * > (&t);
 }
 
-Hash SimpleTerm::GetHashCode() const
+Hash SimpleTerm::getHashCode() const
 {
   return Hash (hashes::SimpleTerm, 0);
 }

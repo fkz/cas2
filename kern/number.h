@@ -38,7 +38,7 @@ class Number : public CAS::Term
     virtual Number *clone() const;
     virtual bool equals(const CAS::Term& t) const;
     virtual void ToString(std::ostream& stream) const;
-    virtual Hash GetHashCode() const;
+    virtual Hash getHashCode() const;
     static Number *CreateTerm (const mpq_class &number);
     static Number *CreateTerm (const std::string &number, bool shouldCanonicalize = true);
     virtual Term* CreateTerm(TermReference** children) const;
@@ -59,7 +59,7 @@ class Variable: public CAS::Term
   public:
     virtual Term* clone() const;
     virtual bool equals(const CAS::Term& t) const;
-    virtual Hash GetHashCode() const;
+    virtual Hash getHashCode() const;
     virtual Type* GetType() const;
     virtual TermReference *simplify();
     virtual void ToString(std::ostream& stream) const;

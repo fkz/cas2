@@ -119,7 +119,7 @@ class Add: public Operator
     virtual TermReference* GetElement(std::multimap< CAS::Hash, std::pair< CAS::TermReference*, CAS::Operator::NumberX > >::const_iterator arg1) const;
   public:
     virtual Term* clone() const;
-    virtual Hash GetHashCode() const;
+    virtual Hash getHashCode() const;
     virtual void ToString(std::ostream& stream) const;
     virtual TermReference *simplify();
     virtual bool equals(const CAS::Term& t) const;
@@ -144,7 +144,7 @@ class Mul: public Operator
     }
   public:
     virtual Term* clone() const;
-    virtual Hash GetHashCode() const;
+    virtual Hash getHashCode() const;
     virtual bool equals(const CAS::Term& t) const;
     virtual void ToString(std::ostream& stream) const;
     static Mul *CreateTerm (CAS::TermReference* t1, CAS::TermReference* t2);

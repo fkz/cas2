@@ -164,9 +164,9 @@ std::string NormalFunctionCall::GetFunctionName() const
   return stream.str();
 }
 
-Hash NormalFunctionCall::GetHashCode() const
+Hash NormalFunctionCall::getHashCode() const
 {
-  return Hash (hashes::NormalFunctionCall) ^ parameter->GetHashCode() ^ definition->GetHashCode();
+  return Hash (hashes::NormalFunctionCall) ^ parameter->getHashCode() ^ definition->getHashCode();
 }
 
 FunctionCall* NormalFunctionCall::GetUmkehrFunktion() const
@@ -219,9 +219,9 @@ std::string BuildInFunction::GetFunctionName() const
   return s.str();
 }
 
-Hash BuildInFunction::GetHashCode() const
+Hash BuildInFunction::getHashCode() const
 {
-  return Hash (hashes::Exp, func) ^ parameter->GetHashCode();
+  return Hash (hashes::Exp, func) ^ parameter->getHashCode();
 }
 
 void BuildInFunction::GetFunctionNameEx(std::ostream &stream, BuildInFunction::Function arg1)
