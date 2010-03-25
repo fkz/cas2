@@ -58,7 +58,6 @@ class BuildInFunctionDefinition: public Term
     virtual Type* GetType() const;
     virtual TermReference* simplify();
     virtual void toString(std::ostream& stream) const;
-    virtual Term* Transform(TransformType t) const;
     virtual Term* CreateTerm(TermReference** children) const;
     virtual TermReference* getChildrenVar(void*& param) const;
     static BuildInFunctionDefinition *GetStandardFunction (BuildInFunction::Function f);

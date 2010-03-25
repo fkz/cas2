@@ -129,23 +129,6 @@ void BuildInFunctionDefinition::toString(std::ostream& stream) const
   return BuildInFunction::GetFunctionNameEx(stream, func);
 }
 
-CAS::Term* CAS::BuildInFunctionDefinition::Transform(TransformType t) const
-{
-  if (t == Transforms::UmkehrFunktion)
-  {
-    switch (func)
-    {
-      case BuildInFunction::Ln:
-	return GetStandardFunction (BuildInFunction::Exp)->clone();
-      case BuildInFunction::Exp:
-	return GetStandardFunction (BuildInFunction::Ln)->clone();
-      default:
-	assert (0);
-    }
-  }
-  return CAS::Term::Transform(t);
-}
-
 Term* BuildInFunctionDefinition::CreateTerm(TermReference** children) const
 {
   return new BuildInFunctionDefinition (func);

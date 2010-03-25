@@ -4,7 +4,6 @@
 #include "exp.h"
 #include "expandrule.h"
 #include "SimplifyTerm.h"
-#include "transform.h"
 #include "Parser/Parser.h"
 
 #include "termcache.h"

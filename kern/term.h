@@ -24,7 +24,6 @@
 #include <sstream>
 #include "hash.h"
 #include <cassert>
-#include "transformtypes.h"
 #include <map>
 #include <vector>
 #include "rule.h"
@@ -80,10 +79,7 @@ class Term
     {
       return (TermReference *)1;
     }
-    
-    ///gibt einen transformierten Term, wie z. B. die Ableitung, Umkehrfunktion o. a. zurück
-    ///oder NULL (bei falschem Gebrauch oder Nichtexistenz)
-    virtual Term *Transform (TransformType t) const;
+        
     template<class T>
     T *Cast ()
     {

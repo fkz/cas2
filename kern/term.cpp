@@ -74,21 +74,6 @@ void SimpleTerm::toString(std::ostream& stream) const
   stream << "SIMPLE";
 }
 
-Term* Term::Transform(TransformType t) const
-{
-  //TODO: Transform an TermReference irgentwie anpassen
-  if (t == Transforms::Simplify)
-  {
-    assert(0);
-    Term *result = clone();
-    TermReference *ret = result->simplify();
-    if (ret)
-      return ret->get_unconst();
-    else
-      return result;
-  }
-  return NULL;
-}
 
 
 TermReference* Term::getChildren(void*& param) const
