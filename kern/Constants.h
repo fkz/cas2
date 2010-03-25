@@ -39,7 +39,7 @@ class Pi: public Term
     {
       return NULL;
     }
-    virtual void ToString(std::ostream& stream) const
+    virtual void toString(std::ostream& stream) const
     {
       stream << "PI";
     }
@@ -81,7 +81,7 @@ class UniqueTypes: public Term
     {
       return NULL;
     }
-    virtual void ToString(std::ostream& stream) const
+    virtual void toString(std::ostream& stream) const
     {
       stream << "unique[" << id << "]";
     }

@@ -258,7 +258,7 @@ Hash Add::getHashCode() const
   return GetPseudoHashCode (hashes::Add, 0);
 }
 
-void Add::ToString(std::ostream& stream) const
+void Add::toString(std::ostream& stream) const
 {
   PseudoToString(stream, "+");  
 }
@@ -554,7 +554,7 @@ void Mul::push_back(std::pair< TermReference*, Operator::NumberX > arg1)
 
 
 
-void Mul::ToString(std::ostream& stream) const
+void Mul::toString(std::ostream& stream) const
 {
   PseudoToString(stream, "*");
 }

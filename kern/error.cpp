@@ -2,7 +2,7 @@
 #include "termreference.h"
 
 
-void CAS::Unknown::ToString(std::ostream& stream) const
+void CAS::Unknown::toString(std::ostream& stream) const
 {
   stream << "Unknown";
 }
@@ -48,7 +48,7 @@ CAS::TermReference* CAS::Limit::simplify()
   return coll->simplify(this);
 }
 
-void CAS::Limit::ToString(std::ostream& stream) const
+void CAS::Limit::toString(std::ostream& stream) const
 {
   stream << "Infinity*(e^(i*" << *argument << "))";
 }

@@ -86,7 +86,7 @@ Table::Table(TermReference* term, TermReference* variable, TermReference* from, 
   
 }
 
-void Table::ToString(std::ostream& stream) const
+void Table::toString(std::ostream& stream) const
 {
   const Number *fromobj = from->get_const()->Cast< const Number > ();
   const Number *toobj = to->get_const()->Cast< const Number >();

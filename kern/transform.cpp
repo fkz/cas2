@@ -104,7 +104,7 @@ Hash Derive::getHashCode() const
   return Hash (hashes::Derive, 0) ^ child->getHashCode() ^ variable->getHashCode();
 }
 
-void Derive::ToString(std::ostream& stream) const
+void Derive::toString(std::ostream& stream) const
 {
   stream << "d/d" << *variable << " " << *child;
 }

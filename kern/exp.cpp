@@ -83,7 +83,7 @@ bool FunctionCall::IsSameFunction(const CAS::FunctionCall& cf) const
 }
 
 
-void FunctionCall::ToString(std::ostream& stream) const
+void FunctionCall::toString(std::ostream& stream) const
 {
   stream << GetFunctionName () << "(" << *parameter << ")";
 }
@@ -99,7 +99,7 @@ TermReference* FunctionCall::GetChildrenVar(void*& param) const
 }
 
 
-void BuildInFunction::ToString(std::ostream& stream) const
+void BuildInFunction::toString(std::ostream& stream) const
 {
   if (func == Exp)
   {
@@ -136,7 +136,7 @@ void BuildInFunction::ToString(std::ostream& stream) const
       delete children[0];
     }
   }
-  CAS::FunctionCall::ToString(stream);
+  CAS::FunctionCall::toString(stream);
 }
 
 

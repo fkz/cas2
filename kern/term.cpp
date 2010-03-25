@@ -26,7 +26,7 @@ using namespace CAS;
 
 std::ostream& CAS::operator<<(std::ostream &stream, const CAS::Term &term)
 {
-  term.ToString(stream);
+  term.toString(stream);
   return stream;
 }
 
@@ -69,7 +69,7 @@ SimpleTerm* SimpleTerm::obj()
   return result;
 }
 
-void SimpleTerm::ToString(std::ostream& stream) const
+void SimpleTerm::toString(std::ostream& stream) const
 {
   stream << "SIMPLE";
 }

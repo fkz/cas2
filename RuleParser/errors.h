@@ -55,7 +55,7 @@ class ErrorList
     
   public:
     bool HasErrors () const;
-    void ToString (std::ostream &stream) const;
+    void toString (std::ostream &stream) const;
     
     void Add (const ParseException &p) { }
     

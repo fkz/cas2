@@ -64,7 +64,7 @@ TermReference* Boolean::simplify()
   return NULL;
 }
 
-void Boolean::ToString(std::ostream& stream) const
+void Boolean::toString(std::ostream& stream) const
 {
   stream << (b ? "true" : "false");
 }
@@ -103,7 +103,7 @@ CAS::Hash Relations::getHashCode() const
   return Hash (hashes::Relation, type) ^ left->getHashCode () ^ (type == Equality ? right->getHashCode() : ~right->getHashCode());
 }
 
-void Relations::ToString(std::ostream& stream) const
+void Relations::toString(std::ostream& stream) const
 {
   stream << *left << (type == Equality ? "==" : ">") << *right;
 }

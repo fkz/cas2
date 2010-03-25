@@ -63,7 +63,7 @@ void RuleParser::Parser::CreateClass(std::string* classname, int paramcount, std
   outh << "{\n   return " << *type << ";\n}\n";
   outh << "virtual CAS::TermReference* simplify()\n";
   outh << "{\n   return coll->simplify (this);\n}\n";
-  outh << "virtual void ToString(std::ostream& stream) const\n{\n";
+  outh << "virtual void toString(std::ostream& stream) const\n{\n";
   outh << " stream << \"" << *classname << "[\" << *param0";
   for (int i = 1; i < paramcount; ++i)
     outh << "<< \",\" << *param" << i << "->get_const()";
@@ -164,7 +164,7 @@ void Parser::WriteFiles(const std::string &originalfilename, const std::string &
     {
       std::cout << "Verarbeite Regel " << ++numRules << std::endl;
       std::stringstream name; name << "Simplify" << index;
-      RuleParser::IntroPart *res = (*it)->ToString(stream, name.str());
+      RuleParser::IntroPart *res = (*it)->toString(stream, name.str());
       if (res)
       {
 	myrules.insert (std::make_pair(res->GetCPPClassName(), name.str()));

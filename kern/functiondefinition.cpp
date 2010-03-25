@@ -28,7 +28,7 @@ CAS::Hash FunctionDefinition::getHashCode() const
   return Hash (hashes::FunctionDefinition) ^ variable->getHashCode() ^ term->getHashCode();
 }
 
-void FunctionDefinition::ToString(std::ostream& stream) const
+void FunctionDefinition::toString(std::ostream& stream) const
 {
   stream << *variable << "->" << *term->get_const();
 }
@@ -124,7 +124,7 @@ TermReference* BuildInFunctionDefinition::simplify()
   return NULL;
 }
 
-void BuildInFunctionDefinition::ToString(std::ostream& stream) const
+void BuildInFunctionDefinition::toString(std::ostream& stream) const
 {
   return BuildInFunction::GetFunctionNameEx(stream, func);
 }

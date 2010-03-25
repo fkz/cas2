@@ -51,7 +51,7 @@ class Derive: public Transform
     virtual Term* CreateTerm(TermReference** children) const;
     virtual TermReference* GetChildrenVar(void*& param) const;
     virtual Hash getHashCode() const;
-    virtual void ToString(std::ostream& stream) const;
+    virtual void toString(std::ostream& stream) const;
     virtual TermReference* simplify();
 };
 

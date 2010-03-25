@@ -104,10 +104,10 @@ class ExpressionType
   public:
     ExpressionList (ExpressionType *type, Identification id);
     ExpressionList (Identification idLocal, Identification idGlobal, Expression *expr);
-    void ToString(std::ostream &out, const std::string &name, std::map< RuleParser::Identification, std::string >& vars, std::string endStr, std::string yesStr, int varIndex);
-    void ToStringDeclared(std::ostream& out, std::map< RuleParser::Identification, std::string >& vars, int& index);
+    void toString(std::ostream &out, const std::string &name, std::map< RuleParser::Identification, std::string >& vars, std::string endStr, std::string yesStr, int varIndex);
+    void toStringDeclared(std::ostream& out, std::map< RuleParser::Identification, std::string >& vars, int& index);
     std::string GetAnzahl (std::map< RuleParser::Identification, std::string >& vars);
-    void ToStringRight(std::ostream &out, const std::string &var, const std::string &indexStr, std::map< Identification, std::string > vars, int &varIndex);
+    void toStringRight(std::ostream &out, const std::string &var, const std::string &indexStr, std::map< Identification, std::string > vars, int &varIndex);
 };*/
 
 class ExpressionStringRight;
@@ -116,15 +116,15 @@ class AbstractExpressionRight
 {
   public:
     virtual ~AbstractExpressionRight () { }
-    virtual void ToStringRight (std::ostream &s, const std::string &obj, std::map< RuleParser::Identification, std::string > &vars, int &varIndex) const = 0;
+    virtual void toStringRight (std::ostream &s, const std::string &obj, std::map< RuleParser::Identification, std::string > &vars, int &varIndex) const = 0;
 };
 
 class AbstractExpressionLeft
 {
   public:
     virtual ~AbstractExpressionLeft ()  { }
-    virtual void ToStringDeclared (std::ostream &s, std::map< RuleParser::Identification, std::string > &vars, int &index) = 0;
-    virtual void ToString (std::ostream& s, const std::string& obj, bool isReference, std::map< RuleParser::Identification, std::string >& vars, int& varIndex, std::string endStr) const = 0;
+    virtual void toStringDeclared (std::ostream &s, std::map< RuleParser::Identification, std::string > &vars, int &index) = 0;
+    virtual void toString (std::ostream& s, const std::string& obj, bool isReference, std::map< RuleParser::Identification, std::string >& vars, int& varIndex, std::string endStr) const = 0;
     virtual ExpressionType *GetType () = 0;
     virtual int GetVerarbeitungsId() = 0;
 };
@@ -142,8 +142,8 @@ class ExpressionListLeft
     ExpressionListLeft (ExpressionType *type, Identification id)
     : id (id), type (type) { }
     
-    void ToString (std::ostream &out, const std::string &name, std::map< RuleParser::Identification, std::string >& vars, std::string endStr, std::string conStr, int varIndex);
-    void ToStringDeclared(std::ostream& out, std::map< RuleParser::Identification, std::string >& vars, int& index);
+    void toString (std::ostream &out, const std::string &name, std::map< RuleParser::Identification, std::string >& vars, std::string endStr, std::string conStr, int varIndex);
+    void toStringDeclared(std::ostream& out, std::map< RuleParser::Identification, std::string >& vars, int& index);
 };
 
 class ExpressionListRight
@@ -155,7 +155,7 @@ class ExpressionListRight
   public:
     ExpressionListRight (Identification localId, Identification normalId, AbstractExpressionRight *right)
     : localId(localId), normalId(normalId), expr(right) { }
-    void ToStringRight(std::ostream &out, const std::string &var, const std::string &indexStr, std::map< Identification, std::string > vars, int &varIndex);
+    void toStringRight(std::ostream &out, const std::string &var, const std::string &indexStr, std::map< Identification, std::string > vars, int &varIndex);
     std::string GetAnzahl(std::map< Identification, std::string > &vars);
 };
 
@@ -178,8 +178,8 @@ class NormalExpressionLeft: public AbstractExpressionLeft
     NormalExpressionLeft (ExpressionType *type, std::list< AbstractExpressionLeft * > *children1, std::list< ExpressionListLeft * > *children2, Identification id, int nr);
     NormalExpressionLeft (RuleParser::DefinitionList* definitions, RuleParser::NormalExpressionLeft::BuildInExpressionTypes buildInType, RuleParser::AbstractExpressionLeft* child1, RuleParser::AbstractExpressionLeft* evChild2 = 0);
     
-    virtual void ToString(std::ostream& s, const std::string& obj, bool isReference, std::map< Identification, std::string >& vars, int& varIndex, std::string endStr) const;
-    virtual void ToStringDeclared(std::ostream& s, std::map< Identification, std::string >& vars, int& index);
+    virtual void toString(std::ostream& s, const std::string& obj, bool isReference, std::map< Identification, std::string >& vars, int& varIndex, std::string endStr) const;
+    virtual void toStringDeclared(std::ostream& s, std::map< Identification, std::string >& vars, int& index);
     virtual ExpressionType* GetType()
     {
       return type;
@@ -196,8 +196,8 @@ class IdentificationExpressionLeft: public AbstractExpressionLeft
     Identification id;
   public:
     IdentificationExpressionLeft (Identification id) : id (id) { }
-    virtual void ToString(std::ostream& s, const std::string& obj, bool isReference, std::map< Identification, std::string >& vars, int& varIndex, std::string endStr) const;
-    virtual void ToStringDeclared(std::ostream& out, std::map< RuleParser::Identification, std::string >& vars, int& index);
+    virtual void toString(std::ostream& s, const std::string& obj, bool isReference, std::map< Identification, std::string >& vars, int& varIndex, std::string endStr) const;
+    virtual void toStringDeclared(std::ostream& out, std::map< RuleParser::Identification, std::string >& vars, int& index);
     virtual ExpressionType* GetType()
     {
       return NULL;
@@ -218,7 +218,7 @@ class NormalExpressionRight: public AbstractExpressionRight
   public:
     NormalExpressionRight (ExpressionType *type, std::list< ExpressionStringRight * > *buildinChilds, std::list <AbstractExpressionRight *> *children, std::list<ExpressionListRight *>*children2);
     
-    virtual void ToStringRight(std::ostream& s, const std::string& obj, std::map< Identification, std::string >& vars, int& varIndex) const;
+    virtual void toStringRight(std::ostream& s, const std::string& obj, std::map< Identification, std::string >& vars, int& varIndex) const;
 };
 
 class IdentificationExpressionRight: public AbstractExpressionRight
@@ -227,7 +227,7 @@ class IdentificationExpressionRight: public AbstractExpressionRight
     Identification id;
   public:
     IdentificationExpressionRight (Identification id) : id (id) { }
-    virtual void ToStringRight(std::ostream& s, const std::string& obj, std::map< Identification, std::string >& vars, int& varIndex) const;
+    virtual void toStringRight(std::ostream& s, const std::string& obj, std::map< Identification, std::string >& vars, int& varIndex) const;
 };
 
 class ExpressionCPPCode: public AbstractExpressionRight
@@ -284,7 +284,7 @@ class ExpressionCPPCode: public AbstractExpressionRight
   public: 
     void push_back (MyNode *node) { list.push_back (*node); delete node; }
     void push_front (MyNode *node) { list.push_front (*node); delete node; }
-    virtual void ToStringRight(std::ostream& s, const std::string& obj, std::map< Identification, std::string >& vars, int& varIndex) const;
+    virtual void toStringRight(std::ostream& s, const std::string& obj, std::map< Identification, std::string >& vars, int& varIndex) const;
 };
 
 class ExpressionStringRight
@@ -307,7 +307,7 @@ class AbstractRule
 {
   public:
     virtual ~AbstractRule () { }
-    virtual IntroPart *ToString (std::ostream& s, std::string name) const = 0;
+    virtual IntroPart *toString (std::ostream& s, std::string name) const = 0;
 };
 
 class NormalRule: public AbstractRule
@@ -317,7 +317,7 @@ class NormalRule: public AbstractRule
     AbstractExpressionRight *right;
     std::string condition;
   public:
-    virtual IntroPart* ToString(std::ostream& s, std::string name) const;
+    virtual IntroPart* toString(std::ostream& s, std::string name) const;
     NormalRule (AbstractExpressionLeft *left, std::string *condition, AbstractExpressionRight *right);
 };
 
@@ -328,7 +328,7 @@ class CPlusPlusCode: public AbstractRule
   public:
     CPlusPlusCode(std::string *str)
     : str (*str) { delete str; }
-    virtual IntroPart *ToString (std::ostream &s, std::string name) const { s << str; return NULL; }
+    virtual IntroPart *toString (std::ostream &s, std::string name) const { s << str; return NULL; }
 };
 
 class ExpressionChildren: public AbstractExpressionRight
@@ -340,7 +340,7 @@ class ExpressionChildren: public AbstractExpressionRight
   public:
     ExpressionChildren(Identification local, Identification normal, AbstractExpressionRight *expr)
     : localId(local), normalId(normal), expr(expr) { }
-    virtual void ToStringRight(std::ostream& out, const std::string& var, std::map< RuleParser::Identification, std::string >& vars, int& varIndex) const;
+    virtual void toStringRight(std::ostream& out, const std::string& var, std::map< RuleParser::Identification, std::string >& vars, int& varIndex) const;
 };
 
 class ExpressionString: public AbstractExpressionRight
@@ -350,7 +350,7 @@ class ExpressionString: public AbstractExpressionRight
   public:
     
     ExpressionString(std::string *str) : str (*str) { delete str; }
-    virtual void ToStringRight(std::ostream& s, const std::string& obj, std::map< Identification, std::string >& vars, int& varIndex) const
+    virtual void toStringRight(std::ostream& s, const std::string& obj, std::map< Identification, std::string >& vars, int& varIndex) const
     {
       s << obj << " = " << str << ";\n";
     }

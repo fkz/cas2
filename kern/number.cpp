@@ -46,7 +46,7 @@ bool Number::equals(const CAS::Term& t) const
   return ct->zahl == zahl;
 }
 
-void Number::ToString(std::ostream& stream) const
+void Number::toString(std::ostream& stream) const
 {
   stream << zahl.get_str();
 }
@@ -110,7 +110,7 @@ TermReference *Variable::simplify()
   return NULL;
 }
 
-void Variable::ToString(std::ostream& stream) const
+void Variable::toString(std::ostream& stream) const
 {
   #ifndef NUMBER_STYLE
   stream << static_cast<char> (id + 'a');

@@ -54,7 +54,7 @@ class Boolean: public CAS::Term
     virtual Hash getHashCode() const;
     virtual Type* GetType() const;
     virtual TermReference* simplify();
-    virtual void ToString(std::ostream& stream) const;
+    virtual void toString(std::ostream& stream) const;
     static Boolean *CreateTerm (bool b)
     {
       return new Boolean (b);
@@ -77,7 +77,7 @@ class Relations : public CAS::Term
     virtual Term *CreateTerm(CAS::TermReference** children) const;
     virtual CAS::TermReference* GetChildrenVar(void*& param) const;
     virtual CAS::Hash getHashCode() const;
-    virtual void ToString(std::ostream& stream) const;
+    virtual void toString(std::ostream& stream) const;
     virtual bool equals(const CAS::Term& t) const;
     virtual CAS::Type* GetType() const;
     virtual CAS::Term* clone() const;

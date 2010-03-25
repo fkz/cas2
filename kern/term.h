@@ -64,7 +64,7 @@ class Term
     virtual Term *clone () const = 0;
     virtual Type *GetType () const = 0;
     virtual bool equals (const Term &t) const = 0;
-    virtual void ToString (std::ostream &stream) const = 0;
+    virtual void toString (std::ostream &stream) const = 0;
     virtual Hash getHashCode () const = 0;
     virtual TermReference *GetChildren (void *&param) const;
     virtual TermReference *GetChildrenVar (void *&param) const = 0;
@@ -135,7 +135,7 @@ class SimpleTerm: public Term
     virtual Hash getHashCode() const;
     virtual Type* GetType() const;
     virtual TermReference* simplify();
-    virtual void ToString(std::ostream& stream) const;
+    virtual void toString(std::ostream& stream) const;
     virtual Term* CreateTerm(TermReference** children) const;
     virtual TermReference* GetChildrenVar(void*& param) const;
     static SimpleTerm *obj ();
@@ -186,7 +186,7 @@ class SimpleUniqueTerm: public Term
     {
       return NULL;
     }
-    virtual void ToString(std::ostream& stream) const
+    virtual void toString(std::ostream& stream) const
     {
       stream << "(Unique_" << id << ")";
     }

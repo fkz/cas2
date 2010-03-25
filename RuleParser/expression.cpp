@@ -31,14 +31,14 @@ RuleParser::NormalRule::NormalRule(AbstractExpressionLeft *left, std::string *co
   delete cond;
 }
 
-IntroPart* NormalRule::ToString(std::ostream& out, std::string name) const
+IntroPart* NormalRule::toString(std::ostream& out, std::string name) const
 {
   out << "/*inline */CAS::TermReference *" << name <<  "(const " << left->GetType()->GetData()->GetCPPClassName () << " *param)\n{\n";
   std::map< Identification, std::string > idStrings;
   int varIndex = 0;
-  left->ToStringDeclared(out, idStrings, varIndex);
+  left->toStringDeclared(out, idStrings, varIndex);
   varIndex = 0;
-  left->ToString(out, "param", false, idStrings, varIndex, "return NULL;");
+  left->toString(out, "param", false, idStrings, varIndex, "return NULL;");
   
   if (!condition.empty())
   {
@@ -88,7 +88,7 @@ IntroPart* NormalRule::ToString(std::ostream& out, std::string name) const
   }
   
   out << "CAS::TermReference *result;\n";
-  right->ToStringRight(out, "result", idStrings, varIndex);
+  right->toStringRight(out, "result", idStrings, varIndex);
   if (true)
   {
     out << "#ifdef SHOW_DEBUG\n";
@@ -132,7 +132,7 @@ NormalExpressionLeft::NormalExpressionLeft(DefinitionList *definitions, NormalEx
 
 
 
-void IdentificationExpressionRight::ToStringRight(std::ostream& out, const std::string& obj, std::map< Identification, std::string >& vars, int& varIndex) const
+void IdentificationExpressionRight::toStringRight(std::ostream& out, const std::string& obj, std::map< Identification, std::string >& vars, int& varIndex) const
 {
   std::map< Identification, std::string >::const_iterator it = vars.find (id);
   if (it == vars.end())
@@ -143,17 +143,17 @@ void IdentificationExpressionRight::ToStringRight(std::ostream& out, const std::
   out << obj << " = " << it->second << "->clone();\n";
 }
 
-void NormalExpressionLeft::ToStringDeclared(std::ostream& s, std::map< Identification, std::string >& vars, int& index)
+void NormalExpressionLeft::toStringDeclared(std::ostream& s, std::map< Identification, std::string >& vars, int& index)
 {
   if (children)
   for (std::list< AbstractExpressionLeft* >::iterator it = children->begin(); it != children->end(); ++it)
   {
-    (*it)->ToStringDeclared(s, vars, index);
+    (*it)->toStringDeclared(s, vars, index);
   }
   if (children2)
   for (std::list< ExpressionListLeft * >::iterator it = children2->begin(); it != children2->end(); ++it)
   {
-    (*it)->ToStringDeclared (s, vars, index);
+    (*it)->toStringDeclared (s, vars, index);
   }
   if (id.isId())
   {
@@ -166,7 +166,7 @@ void NormalExpressionLeft::ToStringDeclared(std::ostream& s, std::map< Identific
 }
 
 
-void IdentificationExpressionLeft::ToStringDeclared(std::ostream& out, std::map< Identification, std::string >& vars, int& index)
+void IdentificationExpressionLeft::toStringDeclared(std::ostream& out, std::map< Identification, std::string >& vars, int& index)
 {
     int myindex = ++index;
     out << "CAS::AutoTermReference namedData" << myindex << ";\n";
@@ -176,12 +176,12 @@ void IdentificationExpressionLeft::ToStringDeclared(std::ostream& out, std::map<
 }
 
 
-void IdentificationExpressionLeft::ToString(std::ostream& out, const std::string& obj, bool isReference, std::map< Identification, std::string >& vars, int& varIndex, std::string endStr) const
+void IdentificationExpressionLeft::toString(std::ostream& out, const std::string& obj, bool isReference, std::map< Identification, std::string >& vars, int& varIndex, std::string endStr) const
 {
   out << vars.find(id)->second << " = " << obj << ";\n";
 }
 
-void NormalExpressionLeft::ToString(std::ostream& out, const std::string& obj, bool isReference, std::map< Identification, std::string >& vars, int& varIndex, std::string endStr) const
+void NormalExpressionLeft::toString(std::ostream& out, const std::string& obj, bool isReference, std::map< Identification, std::string >& vars, int& varIndex, std::string endStr) const
 {
   int index = varIndex++;
   if (!type->HasType())
@@ -224,7 +224,7 @@ void NormalExpressionLeft::ToString(std::ostream& out, const std::string& obj, b
 	out << "finnished" << index << " = false;\n";
 	out << "for (std::list< CAS::AutoTermReference >::iterator it" << index << " = refList" << index << ".begin(); it" << index << " != refList" << index << ".end ();++it" << index << ")\n{\n";
 	std::stringstream str; str << "(*it" << index << ")";
-	(*it)->ToString (out, str.str(), true, vars, varIndex, "continue;");
+	(*it)->toString (out, str.str(), true, vars, varIndex, "continue;");
 	out << "refList" << index << ".erase (it" << index << ");\nfinnished" << index << " = true;\n break;\n}\n";
 	out << "if (!finnished" << index << ") " << endStr << "\n";
       }
@@ -240,7 +240,7 @@ void NormalExpressionLeft::ToString(std::ostream& out, const std::string& obj, b
 	std::stringstream conStrStream; conStrStream << "\n{\n  refList" << index << ".erase (it" << index << "++);\ncontinue;\n}\n";
 	for (std::list< ExpressionListLeft* >::iterator it = children2->begin(); it != children2->end(); ++it)
 	{
-	  (*it)->ToString(out, str.str(),  vars, "{}", conStrStream.str(), varIndex);
+	  (*it)->toString(out, str.str(),  vars, "{}", conStrStream.str(), varIndex);
 	}
 	out << "break;\n}\nif (!refList" << index << ".empty ()) " << endStr << "\n";
       }
@@ -265,7 +265,7 @@ void NormalExpressionLeft::ToString(std::ostream& out, const std::string& obj, b
 	  {
 	    std::stringstream cobj;
 	    cobj << "refArray" << index << "[" << it2->first << "]";
-	    it2->second->ToString(out, cobj.str(), true, vars, varIndex, endStr);
+	    it2->second->toString(out, cobj.str(), true, vars, varIndex, endStr);
 	  }
 	}
       }
@@ -283,7 +283,7 @@ void NormalExpressionLeft::ToString(std::ostream& out, const std::string& obj, b
 	for (std::list< ExpressionListLeft* >::iterator it = children2->begin(); it != children2->end(); ++it)
 	{
 	  std::stringstream str; str << "loc" << index;
-	  (*it)->ToString (out, str.str(), vars, "{}", "continue;", index);
+	  (*it)->toString (out, str.str(), vars, "{}", "continue;", index);
 	}
 	out << "//When this state is reached, the rule does not match\nnomatch" << index << "=true;break;\n";
 	out << "}\nif (nomatch" << index << ") " << endStr << "\n";
@@ -296,7 +296,7 @@ void NormalExpressionLeft::ToString(std::ostream& out, const std::string& obj, b
 
 
 
-void ExpressionCPPCode::ToStringRight(std::ostream& out, const std::string& obj, std::map< Identification, std::string >& vars, int& varIndex) const
+void ExpressionCPPCode::toStringRight(std::ostream& out, const std::string& obj, std::map< Identification, std::string >& vars, int& varIndex) const
 {
   int index = ++varIndex;
   out << "{\n";
@@ -304,9 +304,9 @@ void ExpressionCPPCode::ToStringRight(std::ostream& out, const std::string& obj,
   {
     if (it->type == MyNode::LEFT)
     {
-      it->exp.left->ToStringDeclared(out, vars, varIndex);
+      it->exp.left->toStringDeclared(out, vars, varIndex);
       out << "{\nbool finnished" << index << " = false;\n  for(;;) {\n";
-      it->exp.left->ToString (out, it->str.empty() ? vars[it->id] : (it->str == "$" ? obj : it->str), true, vars, varIndex, "break;");
+      it->exp.left->toString (out, it->str.empty() ? vars[it->id] : (it->str == "$" ? obj : it->str), true, vars, varIndex, "break;");
       out << "finnished" << index << " = true;\nbreak;\n"; //TODO: überprüfe, ob Änderung richtig war
       out << "}\nif (finnished" << index << ")\n" << it->strYes << "\nelse\n" << it->strNo << "\n}\n";
       continue;
@@ -351,7 +351,7 @@ void ExpressionCPPCode::ToStringRight(std::ostream& out, const std::string& obj,
       else
 	mystr = it->str;
       out << "{\n";
-      it->exp.right->ToStringRight(out, mystr, vars, varIndex);
+      it->exp.right->toStringRight(out, mystr, vars, varIndex);
       out << "}\n";
     }
   }
@@ -366,7 +366,7 @@ NormalExpressionRight::NormalExpressionRight(ExpressionType* type, std::list< Ex
 }
 
 
-void NormalExpressionRight::ToStringRight(std::ostream& out, const std::string& obj, std::map< Identification, std::string >& vars, int& varIndex) const
+void NormalExpressionRight::toStringRight(std::ostream& out, const std::string& obj, std::map< Identification, std::string >& vars, int& varIndex) const
 {
   int index = ++varIndex;
   if (children)
@@ -387,7 +387,7 @@ void NormalExpressionRight::ToStringRight(std::ostream& out, const std::string& 
     {
       std::stringstream loc;
       loc << "children" << index << "[" << i << "]";
-      (*it)->ToStringRight(out, loc.str(), vars, varIndex);
+      (*it)->toStringRight(out, loc.str(), vars, varIndex);
     }
     if (children2)
     {
@@ -396,7 +396,7 @@ void NormalExpressionRight::ToStringRight(std::ostream& out, const std::string& 
       {
 	std::stringstream children_stream; children_stream << "children" << index;
 	std::stringstream index_stream; index_stream << "index" << index;
-	(*myit)->ToStringRight (out, children_stream.str(), index_stream.str(), vars, varIndex);
+	(*myit)->toStringRight (out, children_stream.str(), index_stream.str(), vars, varIndex);
       }
     }
     IntroPart* data = type->GetData();
@@ -457,7 +457,7 @@ void NormalExpressionRight::ToStringRight(std::ostream& out, const std::string& 
 
 
 
-void ExpressionListLeft::ToString(std::ostream& out, const std::string& name, std::map< Identification, std::string >& vars, std::string endStr, std::string conStr, int varIndex)
+void ExpressionListLeft::toString(std::ostream& out, const std::string& name, std::map< Identification, std::string >& vars, std::string endStr, std::string conStr, int varIndex)
 {
   if (!id.isId())
     throw new ParseException (RuleParser::ParseException::SEMANTICERROR, "unnamed expression lists not allowd");
@@ -491,7 +491,7 @@ void ExpressionListLeft::ToString(std::ostream& out, const std::string& name, st
 }
 
 
-void ExpressionListLeft::ToStringDeclared(std::ostream& out, std::map< Identification, std::string >& vars, int& index)
+void ExpressionListLeft::toStringDeclared(std::ostream& out, std::map< Identification, std::string >& vars, int& index)
 {
   if (id.isId())
   {
@@ -509,7 +509,7 @@ std::string ExpressionListRight::GetAnzahl(std::map< Identification, std::string
 }
 
 
-void ExpressionListRight::ToStringRight(std::ostream& out, const std::string& var, const std::string& indexStr, std::map< Identification, std::string > vars, int& varIndex)
+void ExpressionListRight::toStringRight(std::ostream& out, const std::string& var, const std::string& indexStr, std::map< Identification, std::string > vars, int& varIndex)
 {
   int index = ++varIndex;
   out << "for (std::list< CAS::AutoTermReference >::const_iterator it" << index << " = " << vars[normalId] << ".begin(); it" << index << " != " << vars[normalId] << ".end(); ++it" << index << ", ++" << indexStr << ")\n";
@@ -517,13 +517,13 @@ void ExpressionListRight::ToStringRight(std::ostream& out, const std::string& va
   std::string varAndIndex = var + "[" + indexStr + "]";
   std::stringstream thevar; thevar << "(*it" << index << ")";
   vars.insert (std::make_pair(localId, thevar.str()));
-  expr->ToStringRight(out, varAndIndex, vars, varIndex);
+  expr->toStringRight(out, varAndIndex, vars, varIndex);
   vars.erase(localId);
   out << "}\n";
 }
 
 
-void ExpressionChildren::ToStringRight(std::ostream& out, const std::string& var, std::map< Identification, std::string >& vars, int& varIndex) const
+void ExpressionChildren::toStringRight(std::ostream& out, const std::string& var, std::map< Identification, std::string >& vars, int& varIndex) const
 {
   int index = ++varIndex;
   const std::string &nId = vars[normalId];
@@ -540,7 +540,7 @@ void ExpressionChildren::ToStringRight(std::ostream& out, const std::string& var
   std::stringstream thevar; thevar << "(*itL" << index << ")";
   std::stringstream retvar; retvar << "(*itA" << index << ")";
   vars.insert (std::make_pair (localId, thevar.str ()));
-  expr->ToStringRight (out, retvar.str(), vars, varIndex);
+  expr->toStringRight (out, retvar.str(), vars, varIndex);
   vars.erase (localId);
   out << "}\n";
   out << var << " = new CAS::TermReference (normal" << index << "->CreateTerm (childrenArray" << index << "));\n";

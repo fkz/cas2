@@ -46,7 +46,7 @@ class Table : public CAS::Term
     virtual Hash getHashCode() const;
     virtual Type* GetType() const;
     virtual TermReference* simplify();
-    virtual void ToString(std::ostream& stream) const;
+    virtual void toString(std::ostream& stream) const;
     
     static Term *CreateTerm (TermReference *term, TermReference *variable, TermReference *from, TermReference *to);
 };

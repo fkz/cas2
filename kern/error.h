@@ -42,7 +42,7 @@ class Unknown: public Term
     {
       return NULL;
     }
-    virtual void ToString(std::ostream& stream) const;
+    virtual void toString(std::ostream& stream) const;
     virtual bool IsCacheable() const
     {
       return false;
@@ -66,7 +66,7 @@ class Limit: public Term
     virtual Hash getHashCode() const;
     virtual Type* GetType() const;
     virtual TermReference* simplify();
-    virtual void ToString(std::ostream& stream) const;
+    virtual void toString(std::ostream& stream) const;
     virtual bool IsCacheable() const
     {
       return false;
