@@ -102,8 +102,8 @@ class Operator : public CAS::Term
     virtual TermReference *simplify();
     virtual ~Operator();
     virtual bool equals(const CAS::Term& t) const;
-    virtual TermReference* GetChildren(void*& param) const;
-    virtual TermReference* GetChildrenVar(void*& param) const;
+    virtual TermReference* getChildren(void*& param) const;
+    virtual TermReference* getChildrenVar(void*& param) const;
     
     //friend TermReference* OperatorRule::MatchRule(const TermReference* t, std::vector< TermReference* >::iterator params, int count) const;
 };

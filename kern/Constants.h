@@ -23,7 +23,7 @@ class Pi: public Term
     {
       return dynamic_cast < const Pi * > (&t);
     }
-    virtual TermReference* GetChildrenVar(void*& param) const
+    virtual TermReference* getChildrenVar(void*& param) const
     {
       return NULL;
     }
@@ -65,7 +65,7 @@ class UniqueTypes: public Term
 	return false;
       return id == tt->id;
     }
-    virtual TermReference* GetChildrenVar(void*& param) const
+    virtual TermReference* getChildrenVar(void*& param) const
     {
       return NULL;
     }

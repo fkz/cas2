@@ -214,7 +214,7 @@ void NormalExpressionLeft::toString(std::ostream& out, const std::string& obj, b
     if (data->isAssociative () && children->size() > 0)
     {
       out << "std::list< CAS::AutoTermReference > refList" << index << ";\n";
-      out << "while (true)\n{\nCAS::AutoTermReference ref = my" << index << "->GetChildren (param" << index << ");\n";
+      out << "while (true)\n{\nCAS::AutoTermReference ref = my" << index << "->getChildren (param" << index << ");\n";
       out << "if (ref)\n   refList" << index << ".push_back (ref); else break; }\n";
       out << "bool finnished" << index << ";\n";
       for (std::list< AbstractExpressionLeft* >::const_iterator it = children->begin(); it != children->end(); ++it)
@@ -254,7 +254,7 @@ void NormalExpressionLeft::toString(std::ostream& out, const std::string& obj, b
 	std::map< int, std::list< std::pair< size_t, AbstractExpressionLeft *> > > iList;
 	for (std::list< AbstractExpressionLeft* >::const_iterator it = children->begin(); it != children->end(); ++it, ++refArrayIndex)
 	{
-	  out << "refArray" << index << "[" << refArrayIndex << "] = my" << index << "->GetChildren (param" << index << ");\n";
+	  out << "refArray" << index << "[" << refArrayIndex << "] = my" << index << "->getChildren (param" << index << ");\n";
 	  out << "if (!refArray" << index << "[" << refArrayIndex << "]) " << endStr << "\n";
 	  iList[ (*it)->GetVerarbeitungsId() ].push_back(std::make_pair(refArrayIndex, *it));
 	}
@@ -271,14 +271,14 @@ void NormalExpressionLeft::toString(std::ostream& out, const std::string& obj, b
       }
       if (!children2)
       {
-	out << "CAS::AutoTermReference mytempchild" << index << " = my" << index << "->GetChildren (param" << index << ");\n";
+	out << "CAS::AutoTermReference mytempchild" << index << " = my" << index << "->getChildren (param" << index << ");\n";
 	out << "if (mytempchild" << index << " != NULL) " << endStr << "\n";
       }
       else
       {
 	out << "bool nomatch" << index << " = false;\nwhile (true)\n";
 	out << "{\n";
-	out << "CAS::AutoTermReference loc" << index << " = my" << index << "->GetChildren(param" << index << ");\n";
+	out << "CAS::AutoTermReference loc" << index << " = my" << index << "->getChildren(param" << index << ");\n";
 	out << "if (!loc" << index << ")\n   break;\n";
 	for (std::list< ExpressionListLeft* >::iterator it = children2->begin(); it != children2->end(); ++it)
 	{
@@ -530,7 +530,7 @@ void ExpressionChildren::toStringRight(std::ostream& out, const std::string& var
   out << "std::list< CAS::AutoTermReference > children" << index << ";\nvoid *param" << index << " = NULL;\n"
       << "const CAS::Term *normal" << index << " = " << nId << "->get_const ();\n";
   out << "while (true)\n{\n";
-  out << "CAS::TermReference *local" << index << " = normal" << index << "->GetChildren (param" << index << ");\n";
+  out << "CAS::TermReference *local" << index << " = normal" << index << "->getChildren (param" << index << ");\n";
   out << "if (local" << index << ") children" << index << ".push_back (local" << index << "); else break;\n";
   out << "}\n";
   out << "CAS::TermReference **childrenArray" << index << " = new CAS::TermReference * [ children" << index << ".size() ];\n";

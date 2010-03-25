@@ -8,7 +8,7 @@ inline bool HasX (const CAS::AutoTermReference &term, const CAS::AutoTermReferen
   void *param = NULL;
   while (true)
   {
-    CAS::AutoTermReference ref = term->GetChildren (param);
+    CAS::AutoTermReference ref = term->getChildren (param);
     if (!ref)
       break;
     if (HasX (ref, x))

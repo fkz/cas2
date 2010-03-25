@@ -66,8 +66,8 @@ class Term
     virtual bool equals (const Term &t) const = 0;
     virtual void toString (std::ostream &stream) const = 0;
     virtual Hash getHashCode () const = 0;
-    virtual TermReference *GetChildren (void *&param) const;
-    virtual TermReference *GetChildrenVar (void *&param) const = 0;
+    virtual TermReference *getChildren (void *&param) const;
+    virtual TermReference *getChildrenVar (void *&param) const = 0;
     virtual bool IsCacheable () const;
     virtual Term *CreateTerm(TermReference** children) const = 0;
     virtual ~Term () {}
@@ -137,7 +137,7 @@ class SimpleTerm: public Term
     virtual TermReference* simplify();
     virtual void toString(std::ostream& stream) const;
     virtual Term* CreateTerm(TermReference** children) const;
-    virtual TermReference* GetChildrenVar(void*& param) const;
+    virtual TermReference* getChildrenVar(void*& param) const;
     static SimpleTerm *obj ();
 };
 
@@ -170,7 +170,7 @@ class SimpleUniqueTerm: public Term
       const SimpleUniqueTerm *i = t.Cast<SimpleUniqueTerm>();
       return i && i->id == id;
     }
-    virtual TermReference* GetChildrenVar(void*& param) const
+    virtual TermReference* getChildrenVar(void*& param) const
     {
       return NULL;
     }

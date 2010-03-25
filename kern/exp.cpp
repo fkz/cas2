@@ -88,7 +88,7 @@ void FunctionCall::toString(std::ostream& stream) const
   stream << GetFunctionName () << "(" << *parameter << ")";
 }
 
-TermReference* FunctionCall::GetChildrenVar(void*& param) const
+TermReference* FunctionCall::getChildrenVar(void*& param) const
 {
   if (!param)
   {
@@ -108,10 +108,10 @@ void BuildInFunction::toString(std::ostream& stream) const
     {
       void *param = NULL;
       TermReference *children[2];
-      children[0] = p->GetChildren(param);
-      if (children[0] && (children[1] = p->GetChildren(param)))
+      children[0] = p->getChildren(param);
+      if (children[0] && (children[1] = p->getChildren(param)))
       {
-	TermReference* temp = p->GetChildren (param);
+	TermReference* temp = p->getChildren (param);
 	if (!temp)
 	{
 	  if (!children[0]->get_const()->Cast<const Number> ())
@@ -276,13 +276,13 @@ TermReference* BuildInFunction::simplify()
     {
       void *p = NULL;
       TermReference *tr[2];
-      tr[0] = m->GetChildren(p);
+      tr[0] = m->getChildren(p);
       if (tr[0])
       {
-	tr[1] = m->GetChildren(p);
+	tr[1] = m->getChildren(p);
 	TermReference* temp = NULL;
 	if (tr[1])
-	  temp = m->GetChildren(p);
+	  temp = m->getChildren(p);
 	delete temp;
 	if (tr[1] && !temp)
 	{

@@ -35,7 +35,7 @@ CAS::TermReference* ExpandRule::UseRule(const CAS::TermReference *p) const
     std::vector< TermReference * > terms;
     void *param = NULL;
     TermReference *t;
-    while (t = mul->GetChildren(param))
+    while (t = mul->getChildren(param))
       terms.push_back(t);
     for (int index = 0; index < terms.size(); ++index)
     {
@@ -44,7 +44,7 @@ CAS::TermReference* ExpandRule::UseRule(const CAS::TermReference *p) const
       {
 	std::vector< TermReference * > addTerms;
 	param = NULL;
-	while (t = add->GetChildren(param))
+	while (t = add->getChildren(param))
 	  addTerms.push_back(t);
 	TermReference **addTermsArray = new TermReference * [ addTerms.size() ] ;
 	TermReference **mulTermsArray = new TermReference * [ terms.size() ];
@@ -74,13 +74,13 @@ CAS::TermReference* ExpandRule::UseRule(const CAS::TermReference *p) const
   if (exp && exp->GetFunctionEnum () == BuildInFunction::Exp)
   {
     void *p = NULL;
-    const Mul *mul = exp->GetChildren (p)->get_const()->Cast<const Mul>();
+    const Mul *mul = exp->getChildren (p)->get_const()->Cast<const Mul>();
     if (mul)
     {
       p = NULL;
-      TermReference *t1 = mul->GetChildren(p);
-      TermReference *t2 = mul->GetChildren(p);
-      if (mul->GetChildren (p) == NULL)
+      TermReference *t1 = mul->getChildren(p);
+      TermReference *t2 = mul->getChildren(p);
+      if (mul->getChildren (p) == NULL)
       {
 	TermReference *other = t2;
 	const Number *number = t1->get_const()->Cast<const Number>();
@@ -95,7 +95,7 @@ CAS::TermReference* ExpandRule::UseRule(const CAS::TermReference *p) const
 	  if (bif && bif->GetFunctionEnum() == BuildInFunction::Ln)
 	  {
 	    p = NULL;
-	    const Add *add = bif->GetChildren(p)->get_const()->Cast<const Add>();
+	    const Add *add = bif->getChildren(p)->get_const()->Cast<const Add>();
 	    if (add)
 	    {
 	      const mpz_class &zahl = number->GetNumber();
@@ -106,7 +106,7 @@ CAS::TermReference* ExpandRule::UseRule(const CAS::TermReference *p) const
 	      std::vector< TermReference * > mulTerms;
 	      p = NULL;
 	      TermReference *a;
-	      while (a = add->GetChildren(p))
+	      while (a = add->getChildren(p))
 	      {
 		mulTerms.push_back(TermReference::Create< Mul > (a->clone(), expTerm->clone()));
 	      }

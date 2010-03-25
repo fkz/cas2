@@ -52,7 +52,7 @@ bool Table::equals(const CAS::Term& t) const
   return term->equals (tt->term) && variable->Equals(tt->variable) && from->Equals(tt->from) && to->Equals(tt->to);
 }
 
-TermReference* Table::GetChildrenVar(void*& param) const
+TermReference* Table::getChildrenVar(void*& param) const
 {
   param = (void *) ((int)param + 1);
   switch ((int)param)

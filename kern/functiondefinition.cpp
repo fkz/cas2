@@ -72,7 +72,7 @@ Term* FunctionDefinition::CreateTerm(TermReference** children) const
   return new FunctionDefinition (children[0], variable);
 }
 
-TermReference* FunctionDefinition::GetChildrenVar(void*& param) const
+TermReference* FunctionDefinition::getChildrenVar(void*& param) const
 {
   if (!param)
   {
@@ -151,7 +151,7 @@ Term* BuildInFunctionDefinition::CreateTerm(TermReference** children) const
   return new BuildInFunctionDefinition (func);
 }
 
-TermReference* BuildInFunctionDefinition::GetChildrenVar(void*& param) const
+TermReference* BuildInFunctionDefinition::getChildrenVar(void*& param) const
 {
   return NULL;
 }

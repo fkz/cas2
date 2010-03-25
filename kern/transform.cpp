@@ -25,7 +25,7 @@
 
 using namespace CAS;
 
-CAS::TermReference* Transform::GetChildrenVar(void*& param) const
+CAS::TermReference* Transform::getChildrenVar(void*& param) const
 {
   if (!param)
   {
@@ -84,7 +84,7 @@ Derive::Derive(TermReference* child, TermReference* variable)
   
 }
 
-TermReference* Derive::GetChildrenVar(void*& param) const
+TermReference* Derive::getChildrenVar(void*& param) const
 {
   switch ((int)param)
   {
@@ -113,7 +113,7 @@ TermReference* Derive::simplify()
 {
   
   /*
-  TODO: An neue GetChildren anpassen oder einfach Kommentar löschen
+  TODO: An neue getChildren anpassen oder einfach Kommentar löschen
   if (child->equals(variable))
   {
     delete this;
@@ -139,7 +139,7 @@ TermReference* Derive::simplify()
     std::vector< TermReference * > childs;
     void *param = NULL;
     TermReference *ref;
-    while (ref = adds->GetChildren(param))
+    while (ref = adds->getChildren(param))
     {
       childs.push_back(TermReference::Create< Derive > (ref->clone(), variable->Clone()));
     }
@@ -157,7 +157,7 @@ TermReference* Derive::simplify()
     std::vector< TermReference * > childs;
     void *param = NULL;
     TermReference *ref;
-    while (ref = mul->GetChildren(param))
+    while (ref = mul->getChildren(param))
     {
       childs.push_back(ref);
     }
@@ -190,8 +190,8 @@ TermReference* Derive::simplify()
   if (f)
   {
     void *p = NULL;
-    TermReference* c = f->GetChildren(p);
-    assert (f->GetChildren(p) == NULL);
+    TermReference* c = f->getChildren(p);
+    assert (f->getChildren(p) == NULL);
     if (f->GetFunctionEnum() == BuildInFunction::Exp)
     {
       TermReference *result = Create<Mul> (child->clone(), Create<Derive> (c->clone(), variable->clone()));

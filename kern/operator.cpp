@@ -162,13 +162,13 @@ void Operator::PseudoToString(std::ostream& stream, const std::string& op) const
   void *p = NULL;
   TermReference *ref;
   stream << "(";
-  ref = GetChildren(p);
+  ref = getChildren(p);
   if (ref)
     stream << *ref;
   while (ref)
   {
     delete ref;
-    ref = GetChildren(p);
+    ref = getChildren(p);
     if (ref)
       stream << op << *ref;
   }
@@ -189,7 +189,7 @@ std::pair<TermReference*, Operator::NumberX> Operator::GetSingleObject()
   return std::make_pair<TermReference *> (NULL,0);
 }
 
-TermReference* Operator::GetChildren(void*& param) const
+TermReference* Operator::getChildren(void*& param) const
 {
   TermCollectionTemplate<NumberX>::const_iterator *it;
   if (!param)
@@ -205,7 +205,7 @@ TermReference* Operator::GetChildren(void*& param) const
   }
 }
 
-TermReference* Operator::GetChildrenVar(void*& param) const
+TermReference* Operator::getChildrenVar(void*& param) const
 {
   TermCollectionTemplate<NumberX>::const_iterator *it;
   if (!param)
@@ -491,18 +491,18 @@ void Mul::push_back(TermReference* arg1)
   if (exp && exp->GetFunctionEnum() == BuildInFunction::Exp)
   {
     void *p = NULL;
-    TermReference* mulRef = exp->GetChildren(p);
+    TermReference* mulRef = exp->getChildren(p);
     const Mul *mul = mulRef->get_const()->Cast<const Mul>();
-    assert (exp->GetChildren(p) == NULL);
+    assert (exp->getChildren(p) == NULL);
     TermReference *mul_children[2];
     p = NULL;
     if (mul)
     {
-      mul_children[0] = mul->GetChildren(p);
+      mul_children[0] = mul->getChildren(p);
       if (mul_children[0])
       {
-	mul_children[1] = mul->GetChildren(p);
-	TermReference* mulnext = mul->GetChildren(p);
+	mul_children[1] = mul->getChildren(p);
+	TermReference* mulnext = mul->getChildren(p);
 	delete mulnext;
 	if (mul_children[1] && mulnext == NULL)
 	{
@@ -522,8 +522,8 @@ void Mul::push_back(TermReference* arg1)
 	  {
 	    number = num->GetNumber();
 	    p = NULL;
-	    TermReference *temp = ln->GetChildren(p);
-	    assert (ln->GetChildren(p) == NULL);
+	    TermReference *temp = ln->getChildren(p);
+	    assert (ln->getChildren(p) == NULL);
 	    delete arg1;
 	    arg1 = temp;
 	  }

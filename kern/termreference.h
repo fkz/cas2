@@ -136,13 +136,13 @@ class TermReference
     {
       return new TermReference (T::CreateTerm (p1, p2, p3, p4));
     }
-    TermReference *GetChildren(void *&arg1) const
+    TermReference *getChildren(void *&arg1) const
     {
-      return term->GetChildren(arg1);
+      return term->getChildren(arg1);
     }
-    TermReference *GetChildrenVar (void *&arg1) const
+    TermReference *getChildrenVar (void *&arg1) const
     {
-      return term->GetChildrenVar(arg1);
+      return term->getChildrenVar(arg1);
     } 
     
     void SetRuleCollection(CAS::AbstractSimplifyRuleCollection& coll);

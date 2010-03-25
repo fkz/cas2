@@ -42,7 +42,7 @@ class Number : public CAS::Term
     static Number *CreateTerm (const mpq_class &number);
     static Number *CreateTerm (const std::string &number, bool shouldCanonicalize = true);
     virtual Term* CreateTerm(TermReference** children) const;
-    virtual TermReference* GetChildrenVar(void*& param) const;
+    virtual TermReference* getChildrenVar(void*& param) const;
     
     const mpq_class &GetNumber () const
     {
@@ -64,7 +64,7 @@ class Variable: public CAS::Term
     virtual TermReference *simplify();
     virtual void toString(std::ostream& stream) const;
     virtual Term* CreateTerm(TermReference** children) const;
-    virtual TermReference* GetChildrenVar(void*& param) const;
+    virtual TermReference* getChildrenVar(void*& param) const;
     static Variable *CreateTerm (int id);
 };
 

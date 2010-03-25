@@ -22,7 +22,7 @@ bool CAS::Limit::equals(const CAS::Term& t) const
   return false;
 }
 
-CAS::TermReference* CAS::Limit::GetChildrenVar(void*& param) const
+CAS::TermReference* CAS::Limit::getChildrenVar(void*& param) const
 {
   if (param == 0)
   {

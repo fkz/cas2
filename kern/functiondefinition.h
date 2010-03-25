@@ -42,7 +42,7 @@ class FunctionDefinition : public CAS::Term
     virtual CAS::Term* clone() const;
     virtual CAS::TermReference* simplify();
     virtual Term* CreateTerm(CAS::TermReference **children) const;
-    virtual TermReference* GetChildrenVar(void*& param) const;
+    virtual TermReference* getChildrenVar(void*& param) const;
     static FunctionDefinition *CreateTerm (TermReference *, Variable *);
 };
 
@@ -60,7 +60,7 @@ class BuildInFunctionDefinition: public Term
     virtual void toString(std::ostream& stream) const;
     virtual Term* Transform(TransformType t) const;
     virtual Term* CreateTerm(TermReference** children) const;
-    virtual TermReference* GetChildrenVar(void*& param) const;
+    virtual TermReference* getChildrenVar(void*& param) const;
     static BuildInFunctionDefinition *GetStandardFunction (BuildInFunction::Function f);
     
 };

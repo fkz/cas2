@@ -83,8 +83,8 @@ namespace CAS
 	  std::vector< Term * > children;
 	  void *var = NULL;
 	  Term *term;
-	  //TODO: an neue GetChildren anpassen
-	  while (term = all_it->second.first->GetChildren(var))
+	  //TODO: an neue getChildren anpassen
+	  while (term = all_it->second.first->getChildren(var))
 	    children.push_back(term);
 	  
 	  size_t paramcount = children.size();

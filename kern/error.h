@@ -26,7 +26,7 @@ class Unknown: public Term
     {
       return false;
     }
-    virtual TermReference* GetChildrenVar(void*& param) const
+    virtual TermReference* getChildrenVar(void*& param) const
     {
       return NULL;
     }
@@ -62,7 +62,7 @@ class Limit: public Term
     virtual Term* clone() const;
     virtual Term* CreateTerm(TermReference** children) const;
     virtual bool equals(const CAS::Term& t) const;
-    virtual TermReference* GetChildrenVar(void*& param) const;
+    virtual TermReference* getChildrenVar(void*& param) const;
     virtual Hash getHashCode() const;
     virtual Type* GetType() const;
     virtual TermReference* simplify();

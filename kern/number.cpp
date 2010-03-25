@@ -77,7 +77,7 @@ Term* Number::CreateTerm(TermReference** children) const
 }
 
 
-TermReference* Number::GetChildrenVar(void*& param) const
+TermReference* Number::getChildrenVar(void*& param) const
 {
   return NULL;
 }
@@ -129,7 +129,7 @@ Term* Variable::CreateTerm(TermReference** children) const
   return new Variable (id);
 }
 
-TermReference* Variable::GetChildrenVar(void*& param) const
+TermReference* Variable::getChildrenVar(void*& param) const
 {
   return NULL;
 }

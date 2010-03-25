@@ -91,9 +91,9 @@ Term* Term::Transform(TransformType t) const
 }
 
 
-TermReference* Term::GetChildren(void*& param) const
+TermReference* Term::getChildren(void*& param) const
 {
-  TermReference* result = GetChildrenVar(param);
+  TermReference* result = getChildrenVar(param);
   if (!result)
     return NULL;
   else
@@ -105,12 +105,12 @@ bool Term::IsCacheable() const
   void *param = NULL;
   while (true)
   {
-    TermReference* temp = GetChildrenVar(param);
+    TermReference* temp = getChildrenVar(param);
     if (temp)
     {
       if (!temp->get_const()->IsCacheable())
       {
-	while (GetChildrenVar(param));
+	while (getChildrenVar(param));
 	return false;
       }
     }
@@ -126,7 +126,7 @@ Term* SimpleTerm::CreateTerm(TermReference** children) const
   return new SimpleTerm ();
 }
 
-TermReference* SimpleTerm::GetChildrenVar(void*& param) const
+TermReference* SimpleTerm::getChildrenVar(void*& param) const
 {
   return NULL;
 }
@@ -137,7 +137,7 @@ void Term::SetRuleCollection(CAS::AbstractSimplifyRuleCollection& collection)
 {
   void *param = NULL;
   TermReference *child;
-  while (child = GetChildrenVar(param))
+  while (child = getChildrenVar(param))
     child->SetRuleCollection (collection);
   coll = &collection;
 }

@@ -3,12 +3,12 @@
 
 void CAS::SimplifyWithRule(CAS::TermReference* ref, CAS::RuleCollection* rule, std::back_insert_iterator< std::vector< TermReference * > > output)
 {
-  //TODO: SimplifyWithRule an neue GetChildren-artigkeit anpassen (deletes erzeugen)
+  //TODO: SimplifyWithRule an neue getChildren-artigkeit anpassen (deletes erzeugen)
   void *param = NULL;
   std::vector< TermReference * > children;
   while (true)
   {
-    TermReference* p = ref->GetChildren(param);
+    TermReference* p = ref->getChildren(param);
     if (p)
       children.push_back(p);
     else
