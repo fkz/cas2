@@ -54,10 +54,10 @@ Hash Boolean::getHashCode() const
   return Hash (hashes::Boolean, b);
 }
 
-Type* Boolean::GetType() const
-{
-  return Type::GetBuildInType(Type::Boolean);
-}
+// Type* Boolean::GetType() const
+// {
+//   return Type::GetBuildInType(Type::Boolean);
+// }
 
 TermReference* Boolean::simplify()
 {
@@ -119,10 +119,10 @@ bool Relations::equals(const CAS::Term& t) const
     return type == tt->type && ((left->equals(*tt->left) && right->equals(*tt->right)) || (left->equals(*tt->right) && right->equals(*tt->left)));
 }
 
-CAS::Type* Relations::GetType() const
-{
-  return Type::GetBuildInType(Type::Boolean);
-}
+// CAS::Type* Relations::GetType() const
+// {
+//   return Type::GetBuildInType(Type::Boolean);
+// }
 
 CAS::Term* Relations::clone() const
 {

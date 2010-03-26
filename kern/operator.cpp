@@ -30,10 +30,10 @@
 
 using namespace CAS;
 
-CAS::Type* Operator::GetType() const
-{
-  return Type::GetBuildInType(Type::Term);
-}
+// CAS::Type* Operator::GetType() const
+// {
+//   return Type::GetBuildInType(Type::Term);
+// }
 
 TermReference *Operator::simplify()
 {

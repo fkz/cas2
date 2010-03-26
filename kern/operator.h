@@ -98,7 +98,7 @@ class Operator : public CAS::Term
     virtual TermReference *GetElement(TermCollectionTemplate<NumberX>::const_iterator arg1) const = 0;
     virtual void push_back(std::pair< TermReference*, NumberX > arg1) = 0;
   public:
-    virtual CAS::Type* GetType() const;
+//     virtual CAS::Type* GetType() const;
     virtual TermReference *simplify();
     virtual ~Operator();
     virtual bool equals(const CAS::Term& t) const;

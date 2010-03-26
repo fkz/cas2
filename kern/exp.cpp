@@ -43,10 +43,10 @@ FunctionCall::FunctionCall(TermReference* t)
 
 }
 
-Type* FunctionCall::GetType() const
-{
-  return Type::GetBuildInType(Type::Term);
-}
+// Type* FunctionCall::GetType() const
+// {
+//   return Type::GetBuildInType(Type::Term);
+// }
 
 TermReference *FunctionCall::simplify()
 {

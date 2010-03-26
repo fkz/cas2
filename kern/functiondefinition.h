@@ -38,7 +38,7 @@ class FunctionDefinition : public CAS::Term
     virtual CAS::Hash getHashCode() const;
     virtual void toString(std::ostream& stream) const;
     virtual bool equals(const CAS::Term& t) const;
-    virtual CAS::Type* GetType() const;
+//     virtual CAS::Type* GetType() const;
     virtual CAS::Term* clone() const;
     virtual CAS::TermReference* simplify();
     virtual Term* CreateTerm(CAS::TermReference **children) const;
@@ -55,7 +55,7 @@ class BuildInFunctionDefinition: public Term
     virtual Term* clone() const;
     virtual bool equals(const CAS::Term& t) const;
     virtual Hash getHashCode() const;
-    virtual Type* GetType() const;
+//     virtual Type* GetType() const;
     virtual TermReference* simplify();
     virtual void toString(std::ostream& stream) const;
     virtual Term* CreateTerm(TermReference** children) const;

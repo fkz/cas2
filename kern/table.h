@@ -44,7 +44,7 @@ class Table : public CAS::Term
     virtual bool equals(const CAS::Term& t) const;
     virtual TermReference* getChildrenVar(void*& param) const;
     virtual Hash getHashCode() const;
-    virtual Type* GetType() const;
+//     virtual Type* GetType() const;
     virtual TermReference* simplify();
     virtual void toString(std::ostream& stream) const;
     

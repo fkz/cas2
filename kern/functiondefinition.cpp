@@ -40,10 +40,10 @@ bool FunctionDefinition::equals(const CAS::Term& t) const
   return tt->term->equals(*term) && tt->variable->equals(*variable);
 }
 
-CAS::Type* FunctionDefinition::GetType() const
-{
-  return Type::GetBuildInType(Type::FunctionDefinition);
-}
+// CAS::Type* FunctionDefinition::GetType() const
+// {
+//   return Type::GetBuildInType(Type::FunctionDefinition);
+// }
 
 CAS::Term* FunctionDefinition::clone() const
 {
@@ -114,10 +114,10 @@ BuildInFunctionDefinition* BuildInFunctionDefinition::GetStandardFunction(BuildI
   return funcs[f];
 }
 
-Type* BuildInFunctionDefinition::GetType() const
-{
-  return Type::GetBuildInType(Type::FunctionDefinition);
-}
+// Type* BuildInFunctionDefinition::GetType() const
+// {
+//   return Type::GetBuildInType(Type::FunctionDefinition);
+// }
 
 TermReference* BuildInFunctionDefinition::simplify()
 {

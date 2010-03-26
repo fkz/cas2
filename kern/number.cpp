@@ -22,10 +22,10 @@
 
 using namespace CAS;
 
-CAS::Type* Number::GetType() const
-{
-  return Type::GetBuildInType(Type::Term);
-}
+// CAS::Type* Number::GetType() const
+// {
+//   return Type::GetBuildInType(Type::Term);
+// }
 
 TermReference *Number::simplify()
 {
@@ -100,10 +100,10 @@ Hash Variable::getHashCode() const
   return Hash (hashes::Variable, id);
 }
 
-Type* Variable::GetType() const
-{
-  return Type::GetBuildInType(Type::Term);
-}
+// Type* Variable::GetType() const
+// {
+//   return Type::GetBuildInType(Type::Term);
+// }
 
 TermReference *Variable::simplify()
 {

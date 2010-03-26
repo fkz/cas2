@@ -42,10 +42,10 @@ bool Transform::equals(const CAS::Term& t) const
   return tt && child->equals(tt->child);
 }
 
-CAS::Type* Transform::GetType() const
-{
-  return Type::GetBuildInType(Type::Term);
-}
+// CAS::Type* Transform::GetType() const
+// {
+//   return Type::GetBuildInType(Type::Term);
+// }
 
 CAS::TermReference* Transform::simplify()
 {

@@ -75,10 +75,10 @@ Hash Table::getHashCode() const
   return Hash (hashes::Table, 0) ^ term->getHashCode() ^ variable->getHashCode() ^ from->getHashCode() ^ to->getHashCode();
 }
 
-Type* Table::GetType() const
-{
-  return TableType::Instance();
-}
+// Type* Table::GetType() const
+// {
+//   return TableType::Instance();
+// }
 
 Table::Table(TermReference* term, TermReference* variable, TermReference* from, TermReference* to)
 : term (term), variable(variable), from(from), to(to)

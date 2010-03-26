@@ -61,7 +61,7 @@ class Term
     */
     virtual TermReference *simplify () = 0;
     virtual Term *clone () const = 0;
-    virtual Type *GetType () const = 0;
+//     virtual Type *GetType () const = 0;
     virtual bool equals (const Term &t) const = 0;
     virtual void toString (std::ostream &stream) const = 0;
     virtual Hash getHashCode () const = 0;
@@ -119,7 +119,7 @@ class SimpleTerm: public Term
     virtual Term* clone() const;
     virtual bool equals(const CAS::Term& t) const;
     virtual Hash getHashCode() const;
-    virtual Type* GetType() const;
+//     virtual Type* GetType() const;
     virtual TermReference* simplify();
     virtual void toString(std::ostream& stream) const;
     virtual Term* CreateTerm(TermReference** children) const;
@@ -164,10 +164,10 @@ class SimpleUniqueTerm: public Term
     {
       return Hash (hashes::SimpleUniqueTerm, id);
     }
-    virtual Type* GetType() const
-    {
-      return Type::GetBuildInType(Type::Term);
-    }
+//     virtual Type* GetType() const
+//     {
+//       return Type::GetBuildInType(Type::Term);
+//     }
     virtual TermReference* simplify()
     {
       return NULL;

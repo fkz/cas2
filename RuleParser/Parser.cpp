@@ -74,8 +74,8 @@ void RuleParser::Parser::CreateClass(std::string* classname, int paramcount, std
   for (int i = 0; i < paramcount; ++i)
     outh << " ^ param" << i << "->getHashCode ()";
   outh << ";\n}\n";
-  outh << "virtual CAS::Type* GetType() const\n";
-  outh << "{\n   return " << *type << ";\n}\n";
+//   outh << "virtual CAS::Type* GetType() const\n";
+//   outh << "{\n   return " << *type << ";\n}\n";
   outh << "virtual CAS::TermReference* simplify()\n";
   outh << "{\n   return coll->simplify (this);\n}\n";
   outh << "virtual void toString(std::ostream& stream) const\n{\n";

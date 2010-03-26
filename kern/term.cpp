@@ -52,10 +52,10 @@ Hash SimpleTerm::getHashCode() const
   return Hash (hashes::SimpleTerm, 0);
 }
 
-Type* SimpleTerm::GetType() const
-{
-  return Type::GetBuildInType(Type::Term);
-}
+// Type* SimpleTerm::GetType() const
+// {
+//   return Type::GetBuildInType(Type::Term);
+// }
 
 TermReference* SimpleTerm::simplify()
 {

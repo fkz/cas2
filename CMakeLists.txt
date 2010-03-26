@@ -14,6 +14,9 @@ include_directories(${CMAKE_SOURCE_DIR}/kern ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_
 add_executable(simple main.cpp Parser/Parser.cpp)
 target_link_libraries(simple libdl.so parser cas2)
 #add_dependencies(simple cas2_kern)
+if (WIN32)
+  target_link_libraries(simple dlfcn-win32/lib/libdl.a)
+endif (WIN32)
 
 add_subdirectory(Regeln)
 

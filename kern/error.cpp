@@ -38,10 +38,10 @@ CAS::Hash CAS::Limit::getHashCode() const
   return Hash (hashes::Limit, 0) ^ argument->getHashCode();
 }
 
-CAS::Type* CAS::Limit::GetType() const
-{
-  return Type::GetBuildInType(Type::Term);
-}
+// CAS::Type* CAS::Limit::GetType() const
+// {
+//   return Type::GetBuildInType(Type::Term);
+// }
 
 CAS::TermReference* CAS::Limit::simplify()
 {

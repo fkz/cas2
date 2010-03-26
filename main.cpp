@@ -10,7 +10,7 @@
 #include <fstream>
 #include <FlexLexer.h>
 
-#include <dlfcn.h>
+#include "dlfcn-win32/include/dlfcn.h"
 
 /**
 @author Fabian Schmitthenner
@@ -203,7 +203,7 @@ void Output (CAS::TermReference *t)
     delete t;
 }
 
-void OutputRule (CAS::TermReference *t, CAS::Rule *rule)
+/*void OutputRule (CAS::TermReference *t, CAS::Rule *rule)
 {
     std::cout << "Term: " << *t << std::endl;
     std::vector< CAS::TermReference * > its;
@@ -215,7 +215,7 @@ void OutputRule (CAS::TermReference *t, CAS::Rule *rule)
         delete *it;
     }
     delete t;
-}
+}*/
 
 CAS::TermReference *CreateLn (CAS::TermReference *t)
 {

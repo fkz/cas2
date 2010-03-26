@@ -30,10 +30,10 @@ bool FunctionChange::equals(const CAS::Term& t) const
   return definition->equals(*tt->definition);
 }
 
-CAS::Type* FunctionChange::GetType() const
+/*CAS::Type* FunctionChange::GetType() const
 {
   return Type::GetBuildInType(Type::FunctionDefinition);
-}
+}*/
 
 CAS::TermReference* FunctionChange::simplify()
 {

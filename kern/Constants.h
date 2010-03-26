@@ -31,10 +31,10 @@ class Pi: public Term
     {
       return Hash (hashes::Pi, 0);
     }
-    virtual Type* GetType() const
-    {
-      return Type::GetBuildInType(Type::Term);
-    }
+//     virtual Type* GetType() const
+//     {
+//       return Type::GetBuildInType(Type::Term);
+//     }
     virtual TermReference* simplify()
     {
       return NULL;
@@ -73,10 +73,10 @@ class UniqueTypes: public Term
     {
       return Hash (hashes::unique, id);
     }
-    virtual Type* GetType() const
-    {
-      return Type::GetBuildInType(Type::Term);
-    }
+//     virtual Type* GetType() const
+//     {
+//       return Type::GetBuildInType(Type::Term);
+//     }
     virtual TermReference* simplify()
     {
       return NULL;

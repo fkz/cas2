@@ -1,5 +1,5 @@
 #include "Parser.h"
-#include <dlfcn.h>
+#include "dlfcn-win32/include/dlfcn.h"
 #include <createclasscollection.h>
 
 void Parser::addLibrary(std::string* filename, std::string* name)
