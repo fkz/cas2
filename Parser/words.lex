@@ -24,6 +24,7 @@ ln   {return ParserBase::LN;  }
 e    {return ParserBase::E;   }
 \n   {return 0;  }
 diff {return ParserBase::DIFF; }
+hash { return Parser::HASH; }
 Table {return ParserBase::TABLE; }
 {id} {yylval.Number = installId (yytext, yyleng); return ParserBase::VARIABLE; }
 [A-Z]{id} {yylval.STRING = new std::string (yytext, yyleng); return ParserBase::STR; }
