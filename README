@@ -35,6 +35,3 @@ an example rule is
 
 Exp[ Ln[ {x} ] ] --> x;
 
-
-And of cause, you can hack the source code.
-

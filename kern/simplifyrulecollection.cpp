@@ -19,6 +19,8 @@
 */
 
 #include "simplifyrulecollection.h"
+#include "term.h"
+#include <typeinfo>
 
 using namespace CAS;
 
@@ -99,6 +101,31 @@ TermReference* SimplifyRuleCollectionList::simplify(Relations* t)
 }
 
 
+/*class MyClass
+{
+  public:
+    
+    template< size_t hash >
+    static TermReference *simplify (Term *t, size_t hash)
+    {
+      if (typeid (t) == typeid (Mul))
+	return simplify< Mul > ();
+      return NULL;
+    }
+    
+    static TermReference *simplify (Term *t, size_t hash)
+    {
+      switch (hash)
+      {
+	case 10:
+	  return simplify<10> (t);
+	case 20:
+	  return simplify<20> (t);
+	default:
+	  return NULL;
+      }
+    }
+};
 
 
-
+*/

@@ -107,9 +107,6 @@ an example rule is
 <pre>Exp[ Ln[ {x} ] ] --> x;</pre>
 
 
-And of cause, you can hack the source code.
-
-
 */
 
 //#define CACHE
