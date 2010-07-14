@@ -11,16 +11,16 @@ add_subdirectory(kern)
 
 add_definitions(-fexceptions)
 include_directories(${CMAKE_SOURCE_DIR}/kern ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR}/Parser ${CMAKE_SOURCE_DIR}/Parser ${CMAKE_BINARY_DIR} ${CMAKE_BINARY_DIR}/kern)
-add_executable(simple main.cpp Parser/Parser.cpp)
-target_link_libraries(simple libdl.so parser cas2)
+add_executable(simple2 main.cpp Parser/Parser.cpp)
+target_link_libraries(simple2 libdl.so parser cas2)
 #add_dependencies(simple cas2_kern)
 if (WIN32)
-  target_link_libraries(simple dlfcn-win32/lib/libdl.a)
+  target_link_libraries(simple2 dlfcn-win32/lib/libdl.a)
 endif (WIN32)
 
 add_subdirectory(Regeln)
 
-install(TARGETS simple
+install(TARGETS simple2
 	DESTINATION bin
 )
 
