@@ -25,15 +25,15 @@ NAMESPACE "MySimplifyRules";
 CLASS "MyClass";
 PLUGIN_NAME "BasicStuff";
 
-include_types "/home/fabian/svn/trunk/c++/mathematics/cas2/Regeln/types";
+include_types "types";
 
 
 //Exponentialfunktionen:
-include_rules "/home/fabian/svn/trunk/c++/mathematics/cas2/Regeln/functions";
-include_rules "/home/fabian/svn/trunk/c++/mathematics/cas2/Regeln/Exp";
-include_rules "/home/fabian/svn/trunk/c++/mathematics/cas2/Regeln/Diff";
-include_rules "/home/fabian/svn/trunk/c++/mathematics/cas2/Regeln/Set";
-include_rules "/home/fabian/svn/trunk/c++/mathematics/cas2/Regeln/Expand";
+include_rules "functions";
+include_rules "Exp";
+include_rules "Diff";
+include_rules "Set";
+include_rules "Expand";
 
 //Ausklammern
 Expand[Mul[Add[ ... {add}] ... {mul}]] --> Add[ ... i:add { Expand[Mul[ i ... y:mul {y} ]] } ];

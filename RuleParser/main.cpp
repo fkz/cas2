@@ -67,6 +67,15 @@ std::string ExtractFileName (const std::string &str)
     return str.substr(index+1);
 }
 
+std::string ExtractDirectory (const std::string &str)
+{
+  size_t index = str.find_last_of ("/\\");
+  if (index == std::string::npos)
+    return "./";
+  else
+    return str.substr(0,index+1);
+}
+
 
 
 int main(int argc, char **argv) {
@@ -118,7 +127,9 @@ int main(int argc, char **argv) {
     return 1;
   }
   
-  RuleParser::Parser parser (&input);
+  std::string directoryName = ExtractDirectory(it->second.c_str());
+  
+  RuleParser::Parser parser (&input, directoryName);
   
   std::cout << "Copyright by Fabian Schmitthenenr" << std::endl;
   

@@ -26,6 +26,10 @@ class Parser: public ParserBase
     std::string classname;
     std::string _namespace;
     std::string plugin_name;
+    
+    std::string currentDirectory;
+	
+    
     ErrorList problems;
       
       MyLexer lexer;
@@ -41,8 +45,8 @@ class Parser: public ParserBase
       void CreateClass (std::string *classname, int paramcount, std::string *type);
 	    
     public:
-      Parser (std::istream *input_stream, DefinitionList *list = NULL)
-      : lexer(input_stream, NULL), is_included(false), mydefinitions(list ? NULL : new DefinitionList ()), definitions(list ? *list : *mydefinitions)
+      Parser (std::istream *input_stream, const std::string &currentDirectory, DefinitionList *list = NULL)
+      : lexer(input_stream, NULL), is_included(false), currentDirectory(currentDirectory), mydefinitions(list ? NULL : new DefinitionList ()), definitions(list ? *list : *mydefinitions)
       {
 	
       }
@@ -61,6 +65,7 @@ class Parser: public ParserBase
 	/// this function should be called after parse()
 	void WriteIncludeFile (const std::string &headername2, std::ostream &stream);
 	void WriteFiles (const std::string& originalfilename, const std::string& headername, const std::string& headername2, std::ostream& cppfile, std::ostream& hfile, std::ostream& hfile2);
+    void getAbsolutePathOfFile(std::string& arg1);
 
     private:
         void error(char const *msg);    // called on (syntax) errors

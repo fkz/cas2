@@ -310,8 +310,25 @@ void Parser::WriteFiles(const std::string &originalfilename, const std::string &
 }
 
 
-void Parser::IncludeTypes(const std::string& filename)
+void Parser::getAbsolutePathOfFile(std::string &arg1)
 {
+  if (arg1[0] == '/')
+    return;
+  
+  arg1 = currentDirectory + arg1;
+}
+
+
+void Parser::IncludeTypes(const std::string& filenameEx)
+{
+  
+  // handle relative paths
+  //TODO: do this a more platform independent way
+  
+  std::string filename = filenameEx;
+  getAbsolutePathOfFile (filename);
+  
+  
   std::ifstream foo ((filename + ".configure").c_str(), std::ifstream::in);
   if (!foo.is_open())
   {
@@ -320,7 +337,7 @@ void Parser::IncludeTypes(const std::string& filename)
     if (!foo.is_open())
       throw ParseException (RuleParser::ParseException::SYNTAX, "file does not exist: " + filename);
   }
-  Parser parser (&foo);
+  Parser parser (&foo,currentDirectory);
   parser.setDebug(false);
   if (parser.parse() == PARSE_ABORT__)
   {
@@ -331,14 +348,17 @@ void Parser::IncludeTypes(const std::string& filename)
   createclass.push_back ( parser.plugin_name + "CreateClass" );
 }
 
-void Parser::IncludeRules(const std::string& filename)
+void Parser::IncludeRules(const std::string& filenameEx)
 {
+  std::string filename = filenameEx;
+  getAbsolutePathOfFile(filename);
+  
   std::ifstream input (filename.c_str());
   if (!input.is_open())
   {
     throw ParseException (RuleParser::ParseException::SYNTAX, "file does not exist: " + filename);
   }
-  Parser include (&input, &definitions);
+  Parser include (&input, currentDirectory, &definitions);
   if (include.parse () == PARSE_ABORT__)
     throw;
   
