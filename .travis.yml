@@ -2,9 +2,9 @@ language: cpp
 addons:
   apt_packages:
   - libgmp-dev
-  - bisonc++
 
 before_script:
+  - sudo apt-get install bisonc++
   - mkdir build
   - cd build
   - cmake ..
