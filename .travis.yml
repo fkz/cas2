@@ -2,6 +2,7 @@ language: cpp
 addons:
   apt_packages:
   - libgmp-dev
+  - bisonc++
 
 before_script:
   - mkdir build
