@@ -1,5 +1,6 @@
 language: cpp
 before_script:
+  - apt-get install libgmp-dev
   - mkdir build
   - cd build
   - cmake ..
