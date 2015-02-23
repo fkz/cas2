@@ -1,6 +1,9 @@
 language: cpp
+addons:
+  apt_packages:
+  - libgmp-dev
+
 before_script:
-  - apt-get install libgmp-dev
   - mkdir build
   - cd build
   - cmake ..
