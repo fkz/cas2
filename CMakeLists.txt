@@ -9,7 +9,7 @@ set (parser_source ${CMAKE_CURRENT_BINARY_DIR}/Parser/parse.cc ${CMAKE_CURRENT_B
 add_subdirectory(RuleParser)
 add_subdirectory(kern)
 
-add_definitions(-fexceptions)
+add_definitions(-fexceptions -fpermissive)
 include_directories(${CMAKE_SOURCE_DIR}/kern ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR}/Parser ${CMAKE_SOURCE_DIR}/Parser ${CMAKE_BINARY_DIR} ${CMAKE_BINARY_DIR}/kern)
 add_executable(simple2 main.cpp Parser/Parser.cpp)
 target_link_libraries(simple2 libdl.so parser cas2)

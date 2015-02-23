@@ -4,6 +4,7 @@ addons:
   - libgmp-dev
 
 before_script:
+  - sudo apt-get install bisonc++
   - mkdir build
   - cd build
   - cmake ..
